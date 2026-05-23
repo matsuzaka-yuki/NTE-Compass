@@ -3,12 +3,13 @@ import { computed, ref, nextTick, watch, onMounted, onUnmounted } from 'vue'
 import { useMarkerStore } from '@/stores/markerStore'
 import { MARKER_TYPE_CONFIG, MARKER_CATEGORIES } from '@/types'
 import type { MarkerType } from '@/types'
-import { EDITOR_ENABLED, resolveAssetUrl } from '@/config'
+import { resolveAssetUrl } from '@/config'
 
 const store = useMarkerStore()
 
 const detailScrollRef = ref<HTMLElement | null>(null)
 const maxDescLines = ref(3)
+const isMobile = ref(window.innerWidth < 768)
 
 let ro: ResizeObserver | null = null
 
@@ -16,12 +17,27 @@ function recalcLines() {
   const el = detailScrollRef.value
   if (!el) return
   const h = el.clientHeight
-  if (window.innerWidth < 768) {
-    const cardH = (h - 8) / 2
-    const overhead = 24 + 64 + 12 + 20 + 4
-    maxDescLines.value = Math.max(1, Math.floor((cardH - overhead) / 16))
+  isMobile.value = window.innerWidth < 768
+  if (isMobile.value) {
+    const gap = 8
+    const cardH = (h - gap) / 2
+    const imgSize = Math.round(Math.max(32, Math.min(64, cardH * 0.55)))
+    const cardW = Math.round(cardH * 2.2)
+    const fontSize = Math.round(Math.max(10, Math.min(14, cardH * 0.12)))
+    const nameH = Math.round(fontSize * 1.5) + 4
+    const availTextH = cardH - 24 - nameH
+    const lineH = Math.round(fontSize * 1.4)
+    maxDescLines.value = Math.max(1, Math.floor(availTextH / lineH))
+    el.style.setProperty('--card-row-h', `${cardH}px`)
+    el.style.setProperty('--card-img-size', `${imgSize}px`)
+    el.style.setProperty('--card-width', `${cardW}px`)
+    el.style.setProperty('--card-font-size', `${fontSize}px`)
   } else {
     maxDescLines.value = 3
+    el.style.removeProperty('--card-row-h')
+    el.style.removeProperty('--card-img-size')
+    el.style.removeProperty('--card-width')
+    el.style.removeProperty('--card-font-size')
   }
 }
 
@@ -37,34 +53,34 @@ onUnmounted(() => {
 const markerTypes = Object.keys(MARKER_TYPE_CONFIG) as MarkerType[]
 
 const allSelected = computed(() => markerTypes.every((t) => store.selectedTypes.has(t)))
-const noneSelected = computed(() => markerTypes.every((t) => !store.selectedTypes.has(t)))
 
 const detailType = ref<MarkerType | null>(null)
 const searchExpanded = ref(false)
-const toast = ref('')
-let toastTimer: ReturnType<typeof setTimeout> | null = null
 
 const searchInput = ref<HTMLInputElement | null>(null)
+
+const categoryRows = computed(() => {
+  if (!isMobile.value) return [MARKER_CATEGORIES]
+  const mid = Math.ceil(MARKER_CATEGORIES.length / 2)
+  return [MARKER_CATEGORIES.slice(0, mid), MARKER_CATEGORIES.slice(mid)]
+})
+
+watch([() => store.sidebarOpen, detailType], ([open, type]) => {
+  if (open && type !== null) {
+    nextTick(() => {
+      if (detailScrollRef.value && ro) {
+        ro.observe(detailScrollRef.value)
+        recalcLines()
+      }
+    })
+  }
+})
 
 function toggleSearch() {
   searchExpanded.value = !searchExpanded.value
   if (!searchExpanded.value) {
     store.searchQuery = ''
   }
-}
-
-function showToast(msg: string) {
-  toast.value = msg
-  if (toastTimer) clearTimeout(toastTimer)
-  toastTimer = setTimeout(() => {
-    toast.value = ''
-  }, 2000)
-}
-
-async function handleToggleEditorMode() {
-  const willEnable = !store.isEditorMode
-  await store.toggleEditorMode()
-  showToast(willEnable ? '编辑者模式已开启' : '编辑者模式已关闭')
 }
 
 watch(searchExpanded, (val) => {
@@ -86,6 +102,39 @@ function toggleCategory(types: MarkerType[]) {
     for (const t of types) store.selectedTypes.delete(t)
   } else {
     for (const t of types) store.selectedTypes.add(t)
+  }
+}
+
+function toggleSelectAll() {
+  if (allSelected.value) {
+    store.deselectAllTypes()
+  } else {
+    store.selectAllTypes()
+  }
+}
+
+const confirmVisible = ref(false)
+const confirmMessage = ref('')
+let confirmResolve: ((v: boolean) => void) | null = null
+
+function showConfirm(msg: string): Promise<boolean> {
+  confirmMessage.value = msg
+  confirmVisible.value = true
+  return new Promise((resolve) => {
+    confirmResolve = resolve
+  })
+}
+
+function onConfirmResult(result: boolean) {
+  confirmVisible.value = false
+  confirmResolve?.(result)
+  confirmResolve = null
+}
+
+async function handleResetProgress() {
+  const ok = await showConfirm('确定要重置所有收集进度吗？')
+  if (ok) {
+    store.resetProgress()
   }
 }
 
@@ -146,32 +195,76 @@ function scrollToList(id: string) {
   <Transition name="slide">
     <div
       v-if="store.sidebarOpen"
-      class="fixed z-50 flex flex-col bg-surface-900/95 backdrop-blur-xl border border-white/10 shadow-2xl inset-x-0 bottom-0 h-[38vh] rounded-t-2xl md:h-auto md:top-3 md:bottom-3 md:left-3 md:inset-x-auto md:w-[300px] md:rounded-2xl md:overflow-hidden"
+      class="fixed z-50 flex flex-col bg-surface-900/95 backdrop-blur-xl border border-white/10 shadow-2xl inset-x-0 bottom-0 rounded-t-2xl md:h-auto md:top-3 md:bottom-3 md:left-3 md:inset-x-auto md:w-[300px] md:rounded-2xl md:overflow-hidden"
+      :style="isMobile ? { height: 'clamp(280px, 42dvh, 600px)' } : {}"
     >
       <!-- Mobile close button (at top edge of panel) -->
       <button
         @click="store.sidebarOpen = false"
-        class="absolute left-4 z-30 w-9 h-9 rounded-lg bg-surface-800/90 backdrop-blur-md border border-white/10 shadow-lg flex items-center justify-center text-slate-300 hover:text-white hover:border-white/20 transition-all md:hidden"
-        style="top: -1.5rem;"
+        class="absolute left-2 z-30 w-9 h-9 rounded-lg bg-surface-800/90 backdrop-blur-md border border-white/10 shadow-lg flex items-center justify-center text-slate-300 hover:text-white hover:border-white/20 transition-all md:hidden"
+        style="top: -2.75rem;"
       >
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
         </svg>
       </button>
 
+      <!-- Mobile search button (collapsed) -->
+      <button
+        v-if="!searchExpanded"
+        @click="toggleSearch()"
+        class="absolute right-2 z-30 w-9 h-9 rounded-lg bg-surface-800/90 backdrop-blur-md border border-white/10 shadow-lg flex items-center justify-center text-slate-300 hover:text-white hover:border-white/20 transition-all md:hidden"
+        style="top: -2.75rem;"
+      >
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+      </button>
+
+      <!-- Mobile search bar (expanded) -->
+      <div
+        v-if="searchExpanded"
+        class="absolute z-30 md:hidden"
+        style="top: -2.75rem; left: 3.25rem; right: 0.5rem; height: 2.25rem;"
+      >
+        <div class="relative w-full h-full">
+          <svg
+            class="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none"
+            fill="none" stroke="currentColor" viewBox="0 0 24 24"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+          <input
+            v-model="store.searchQuery"
+            type="text"
+            placeholder="搜索..."
+            ref="searchInput"
+            @keydown.enter="($event.target as HTMLInputElement).blur()"
+            class="w-full h-full pl-8 pr-7 text-xs bg-surface-800/90 backdrop-blur-md border border-white/10 rounded-lg text-slate-200 placeholder-slate-500 focus:outline-none focus:border-primary-500 transition-colors"
+          />
+          <button
+            @click="toggleSearch()"
+            class="absolute right-1.5 top-1/2 -translate-y-1/2 w-4 h-4 flex items-center justify-center text-slate-400 hover:text-white transition-colors"
+            title="关闭"
+          >
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
       <!-- Fixed top section -->
-      <div class="flex-shrink-0 p-4 pb-2 space-y-3">
-        <!-- Header + Search + Editor -->
+      <div class="flex-shrink-0 space-y-3" :class="{ 'p-2': !(isMobile && detailType !== null) }">
+        <!-- Header -->
         <div class="flex items-center gap-2">
-          <h1 v-if="!searchExpanded" class="text-lg font-bold tracking-wide text-primary-400 select-none whitespace-nowrap truncate">
+          <h1 v-if="!searchExpanded" class="text-lg font-bold tracking-wide text-primary-400 select-none whitespace-nowrap truncate max-md:hidden">
             异环 大地图
           </h1>
-          <div v-if="searchExpanded" class="relative flex-1 min-w-0">
+          <div v-if="searchExpanded" class="relative flex-1 min-w-0 max-md:hidden">
             <svg
               class="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
+              fill="none" stroke="currentColor" viewBox="0 0 24 24"
             >
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
@@ -180,6 +273,7 @@ function scrollToList(id: string) {
               type="text"
               placeholder="搜索..."
               ref="searchInput"
+              @keydown.enter="($event.target as HTMLInputElement).blur()"
               class="w-full pl-8 pr-7 py-1.5 text-xs bg-surface-800 border border-white/10 rounded-lg text-slate-200 placeholder-slate-500 focus:outline-none focus:border-primary-500 transition-colors"
             />
             <button
@@ -192,40 +286,18 @@ function scrollToList(id: string) {
               </svg>
             </button>
           </div>
-          <div v-else class="flex-1 min-w-0" />
+          <div v-else class="flex-1 min-w-0 max-md:hidden" />
           <button
             v-if="!searchExpanded"
             @click="toggleSearch()"
-            class="w-7 h-7 flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/10 rounded-lg transition-colors flex-shrink-0"
+            class="w-7 h-7 flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/10 rounded-lg transition-colors flex-shrink-0 max-md:hidden"
             title="搜索"
           >
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
           </button>
-          <button
-            v-if="EDITOR_ENABLED"
-            @click="handleToggleEditorMode()"
-            class="w-7 h-7 flex items-center justify-center rounded-lg transition-colors flex-shrink-0"
-            :class="store.isEditorMode ? 'text-primary-400 bg-primary-500/15' : 'text-slate-400 hover:text-white hover:bg-white/10'"
-            title="编辑者模式"
-          >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-            </svg>
-          </button>
         </div>
-
-        <!-- Toast -->
-        <Transition name="toast">
-          <div
-            v-if="toast"
-            class="absolute top-3 left-4 right-4 z-30 px-4 py-3 text-sm font-medium text-center rounded-xl shadow-2xl pointer-events-none"
-            :class="store.isEditorMode ? 'text-primary-200 bg-primary-600/80 border border-primary-400/40' : 'text-slate-200 bg-surface-700/95 border border-white/10'"
-          >
-            {{ toast }}
-          </div>
-        </Transition>
       </div>
 
       <!-- Scrollable area -->
@@ -233,83 +305,65 @@ function scrollToList(id: string) {
         <!-- Type filters -->
         <div>
           <div class="flex items-center justify-between mb-2">
-            <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">分类筛选</span>
-            <div class="flex gap-2">
+            <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">分类</span>
+            <div class="flex items-center gap-2">
+              <label class="inline-flex items-center gap-1.5 cursor-pointer">
+                <span class="text-xs text-slate-500">仅未标记</span>
+                <div class="relative">
+                  <input
+                    type="checkbox"
+                    :checked="store.filterMode === 'unfound'"
+                    @change="store.filterMode = store.filterMode === 'unfound' ? 'all' : 'unfound'"
+                    class="sr-only peer"
+                  />
+                  <div class="w-8 h-4 bg-surface-700 rounded-full peer-checked:bg-primary-600 transition-colors"></div>
+                  <div
+                    class="absolute left-0.5 top-0.5 w-3 h-3 bg-white rounded-full transition-transform"
+                    :class="store.filterMode === 'unfound' ? 'translate-x-4' : ''"
+                  ></div>
+                </div>
+              </label>
               <button
-                @click="store.selectAllTypes()"
-                class="text-xs text-primary-400 hover:text-primary-300 transition-colors"
-                :class="{ 'opacity-50': allSelected }"
+                @click="handleResetProgress()"
+                class="text-xs text-slate-400 hover:text-red-400 transition-colors"
               >
-                全选
+                重置
               </button>
               <button
-                @click="store.deselectAllTypes()"
-                class="text-xs text-slate-400 hover:text-slate-300 transition-colors"
-                :class="{ 'opacity-50': noneSelected }"
+                @click="toggleSelectAll()"
+                class="text-xs text-primary-400 hover:text-primary-300 transition-colors"
               >
-                反选
+                {{ allSelected ? '反选' : '全选' }}
               </button>
             </div>
           </div>
-          <div class="space-y-2 max-md:flex max-md:gap-2 max-md:overflow-x-auto max-md:pb-1 max-md:space-y-0">
-            <div v-for="cat in MARKER_CATEGORIES" :key="cat.label" class="flex items-start gap-1.5 max-md:flex-shrink-0 max-md:bg-white/5 max-md:rounded-lg max-md:px-2.5 max-md:py-1.5 max-md:flex-col max-md:gap-1 max-md:min-w-[100px]">
-              <button
-                @click="toggleCategory(cat.types)"
-                class="text-xs font-medium pt-0.5 w-10 flex-shrink-0 text-right transition-colors max-md:w-auto max-md:text-left max-md:pt-0 max-md:text-[11px]"
-                :class="categoryAllSelected(cat.types) ? 'text-slate-200' : categoryAnySelected(cat.types) ? 'text-slate-400' : 'text-slate-600'"
-              >{{ cat.label }}</button>
-              <div class="flex flex-wrap gap-1 flex-1 max-md:flex-nowrap">
+          <div :class="isMobile ? 'flex flex-col gap-2 overflow-x-auto pb-1' : 'space-y-2'">
+            <div v-for="(row, ri) in categoryRows" :key="ri" :class="isMobile ? 'flex gap-2 w-max' : 'space-y-2'">
+              <div v-for="cat in row" :key="cat.label" :class="isMobile ? 'flex bg-white/5 rounded-lg px-2.5 py-1.5 flex-col gap-1 shrink-0' : 'flex items-start gap-1.5'">
                 <button
-                  v-for="type in cat.types"
-                  :key="type"
-                  @click="store.toggleType(type)"
-                  class="inline-flex items-center gap-1 px-2 py-0.5 text-xs rounded-full border transition-all"
-                  :class="
-                    store.selectedTypes.has(type)
-                      ? 'border-current text-white'
-                      : 'border-white/10 text-slate-500 bg-transparent'
-                  "
-                  :style="store.selectedTypes.has(type) ? { backgroundColor: MARKER_TYPE_CONFIG[type].color + '33', borderColor: MARKER_TYPE_CONFIG[type].color + '66' } : {}"
-                >
-                  <img
-                    :src="resolveAssetUrl(MARKER_TYPE_CONFIG[type].iconUrl)"
-                    :alt="MARKER_TYPE_CONFIG[type].label"
-                    class="w-3.5 h-3.5 rounded-full object-cover"
-                  />
-                  {{ MARKER_TYPE_CONFIG[type].label }}
-                </button>
+                  @click="toggleCategory(cat.types)"
+                  class="text-xs font-medium transition-colors"
+                  :class="[categoryAllSelected(cat.types) ? 'text-slate-200' : categoryAnySelected(cat.types) ? 'text-slate-400' : 'text-slate-600', isMobile ? 'w-auto text-left pt-0 text-[11px]' : 'w-10 flex-shrink-0 text-right pt-0.5']"
+                >{{ cat.label }}</button>
+                <div :class="isMobile ? 'flex flex-nowrap gap-1' : 'flex flex-wrap gap-1 flex-1'">
+                  <button
+                    v-for="type in cat.types"
+                    :key="type"
+                    @click="store.toggleType(type)"
+                    :class="['inline-flex items-center gap-1 px-2 py-0.5 text-xs rounded-full border transition-all', isMobile ? 'whitespace-nowrap shrink-0' : '', store.selectedTypes.has(type) ? 'border-current text-white' : 'border-white/10 text-slate-500 bg-transparent']"
+                    :style="store.selectedTypes.has(type) ? { backgroundColor: MARKER_TYPE_CONFIG[type].color + '33', borderColor: MARKER_TYPE_CONFIG[type].color + '66' } : {}"
+                  >
+                    <img
+                      :src="resolveAssetUrl(MARKER_TYPE_CONFIG[type].iconUrl)"
+                      :alt="MARKER_TYPE_CONFIG[type].label"
+                      class="w-3.5 h-3.5 rounded-full object-cover"
+                    />
+                    {{ MARKER_TYPE_CONFIG[type].label }}
+                  </button>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-
-        <!-- Display mode + Reset -->
-        <div class="flex items-center justify-between">
-          <label class="inline-flex items-center gap-2 cursor-pointer">
-            <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">显示模式</span>
-            <span class="text-xs text-slate-500">仅未收集</span>
-            <div class="relative">
-              <input
-                type="checkbox"
-                :checked="store.filterMode === 'unfound'"
-                @change="store.filterMode = store.filterMode === 'unfound' ? 'all' : 'unfound'"
-                class="sr-only peer"
-              />
-              <div
-                class="w-8 h-4 bg-surface-700 rounded-full peer-checked:bg-primary-600 transition-colors"
-              ></div>
-              <div
-                class="absolute left-0.5 top-0.5 w-3 h-3 bg-white rounded-full transition-transform"
-                :class="store.filterMode === 'unfound' ? 'translate-x-4' : ''"
-              ></div>
-            </div>
-          </label>
-          <button
-            @click="store.resetProgress()"
-            class="text-xs text-slate-400 hover:text-red-400 transition-colors px-2 py-1 rounded-lg hover:bg-white/5"
-          >
-            重置收集进度
-          </button>
         </div>
 
         <!-- Results count -->
@@ -358,7 +412,7 @@ function scrollToList(id: string) {
       <!-- Detail overlay -->
       <div
         v-if="detailType !== null"
-        class="flex-1 flex flex-col overflow-hidden"
+        class="flex-1 flex flex-col overflow-hidden max-md:rounded-t-2xl"
       >
         <!-- Back button + type header -->
         <div class="flex-shrink-0 flex items-center gap-2.5 px-4 py-1.5 border-b border-white/10 bg-surface-800/80">
@@ -387,29 +441,33 @@ function scrollToList(id: string) {
             v-for="m in detailMarkers"
             :key="m.id"
             @click="scrollToList(m.id)"
-            class="flex gap-3 p-3 rounded-xl cursor-pointer hover:bg-white/5 transition-colors border border-white/5 max-md:w-[260px] max-md:flex-shrink-0 max-md:overflow-hidden max-md:h-full"
+            class="flex gap-3 p-1 rounded-xl cursor-pointer hover:bg-white/5 transition-colors border border-white/5 max-md:flex-shrink-0 max-md:overflow-hidden max-md:h-full"
+            :style="isMobile ? { width: 'var(--card-width)', minWidth: 'var(--card-width)' } : {}"
             :class="{ 'bg-primary-500/10 border-primary-500/30': store.selectedMarkerId === m.id }"
           >
             <!-- Image -->
-            <div v-if="m.image || (m.images && m.images.length > 0)" class="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0 bg-surface-800">
+            <div v-if="m.image || (m.images && m.images.length > 0)" class="rounded-lg overflow-hidden flex-shrink-0 bg-surface-800 self-center"
+              :style="isMobile ? { width: 'var(--card-img-size)', height: 'var(--card-img-size)' } : { width: '64px', height: '64px' }">
               <img
                 :src="m.image ? resolveAssetUrl(m.image) : (m.images && m.images[0] ? resolveAssetUrl(m.images[0]) : undefined)"
                 :alt="m.name"
                 class="w-full h-full object-cover"
               />
             </div>
-            <div v-else class="w-16 h-16 rounded-lg flex-shrink-0 bg-surface-800 flex items-center justify-center">
+            <div v-else class="rounded-lg flex-shrink-0 bg-surface-800 flex items-center justify-center self-center"
+              :style="isMobile ? { width: 'var(--card-img-size)', height: 'var(--card-img-size)' } : { width: '64px', height: '64px' }">
               <img
                 :src="resolveAssetUrl(MARKER_TYPE_CONFIG[m.type].iconUrl)"
                 :alt="MARKER_TYPE_CONFIG[m.type].label"
-                class="w-8 h-8 rounded-full object-cover opacity-50"
+                class="rounded-full object-cover opacity-50"
+                :style="isMobile ? { width: `calc(var(--card-img-size) * 0.5)`, height: `calc(var(--card-img-size) * 0.5)` } : { width: '32px', height: '32px' }"
               />
             </div>
 
             <!-- Info -->
-            <div class="flex-1 min-w-0">
-              <div class="flex items-center gap-2">
-                <span class="text-sm font-medium truncate" :class="store.isFound(m.id) ? 'text-slate-500 line-through' : 'text-slate-200'">
+            <div class="flex-1 min-w-0 flex flex-col overflow-hidden">
+              <div class="flex items-center gap-2 flex-shrink-0">
+                <span class="font-medium truncate" :class="store.isFound(m.id) ? 'text-slate-500 line-through' : 'text-slate-200'" :style="isMobile ? { fontSize: 'var(--card-font-size)' } : { fontSize: '14px' }">
                   {{ m.name }}
                 </span>
                 <span
@@ -419,16 +477,13 @@ function scrollToList(id: string) {
               </div>
               <div
                 v-if="m.description"
-                class="text-xs text-slate-500 mt-1 overflow-hidden"
-                :style="{ display: '-webkit-box', '-webkit-box-orient': 'vertical', '-webkit-line-clamp': maxDescLines }"
+                class="text-slate-500 mt-0.5 overflow-y-auto flex-1 min-h-0"
+                :style="{ fontSize: isMobile ? 'var(--card-font-size)' : '12px' }"
               >
                 {{ m.description }}
               </div>
             </div>
 
-            <svg v-if="store.selectedMarkerId === m.id" class="w-4 h-4 text-primary-400 flex-shrink-0 self-center max-md:hidden" fill="currentColor" viewBox="0 0 20 20">
-              <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
-            </svg>
           </div>
 
           <div v-if="detailMarkers.length === 0" class="flex items-center justify-center gap-2 text-slate-500 max-md:row-span-2 max-md:w-[160px] max-md:flex-col max-md:rounded-xl max-md:bg-white/5 max-md:border max-md:border-white/5">
@@ -441,6 +496,32 @@ function scrollToList(id: string) {
       </div>
     </div>
   </Transition>
+
+  <!-- Confirm dialog (teleported to body for centered overlay) -->
+  <Teleport to="body">
+    <Transition name="confirm">
+      <div
+        v-if="confirmVisible"
+        class="fixed inset-0 z-[100] flex items-center justify-center"
+        @click.self="onConfirmResult(false)"
+      >
+        <div class="absolute inset-0 bg-black/60"></div>
+        <div class="relative bg-surface-800 border border-white/10 rounded-2xl shadow-2xl p-6 w-72 mx-4">
+          <p class="text-sm text-slate-200 text-center leading-relaxed">{{ confirmMessage }}</p>
+          <div class="flex gap-3 mt-5">
+            <button
+              @click="onConfirmResult(false)"
+              class="flex-1 py-2 text-xs font-medium rounded-lg bg-surface-700 text-slate-300 hover:bg-surface-600 transition-colors"
+            >取消</button>
+            <button
+              @click="onConfirmResult(true)"
+              class="flex-1 py-2 text-xs font-medium rounded-lg bg-primary-600 text-white hover:bg-primary-500 transition-colors"
+            >确定</button>
+          </div>
+        </div>
+      </div>
+    </Transition>
+  </Teleport>
 </template>
 
 <style scoped>
@@ -468,14 +549,16 @@ function scrollToList(id: string) {
 .fade-leave-to {
   opacity: 0;
 }
+</style>
 
-.toast-enter-active,
-.toast-leave-active {
-  transition: opacity 0.25s ease, transform 0.25s ease;
+<style>
+.confirm-enter-active,
+.confirm-leave-active {
+  transition: opacity 0.2s ease, transform 0.2s ease;
 }
-.toast-enter-from,
-.toast-leave-to {
+.confirm-enter-from,
+.confirm-leave-to {
   opacity: 0;
-  transform: translateY(-8px);
+  transform: scale(0.95);
 }
 </style>

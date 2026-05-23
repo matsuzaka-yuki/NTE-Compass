@@ -736,5 +736,25 @@
       "images/uploads/pilgrimage_104.webp"
     ],
     "id": "user_1779157587706_1"
+  },
+  {
+    "name": "叉车",
+    "type": "car",
+    "lat": 0.6429208008779329,
+    "lng": 0.617605877035848,
+    "images": [
+      "images/uploads/car_7.webp"
+    ],
+    "id": "user_1779378715094_2"
+  },
+  {
+    "name": "卡车",
+    "type": "car",
+    "lat": 0.6481438623576475,
+    "lng": 0.6204270872727291,
+    "images": [
+      "images/uploads/car_6.webp"
+    ],
+    "id": "user_1779378730917_3"
   }
 ]
