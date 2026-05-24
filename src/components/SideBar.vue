@@ -20,9 +20,11 @@ function recalcLines() {
   isMobile.value = window.innerWidth < 768
   if (isMobile.value) {
     const gap = 8
-    const cardH = (h - gap) / 2
+    const padV = 24 // pt-3 + pb-3 = 12px + 12px
+    const cardH = (h - padV - gap) / 2
     const imgSize = Math.round(Math.max(32, Math.min(64, cardH * 0.55)))
     const cardW = Math.round(cardH * 2.2)
+    const cardWNarrow = Math.round((cardW - gap) / 2)
     const fontSize = Math.round(Math.max(10, Math.min(14, cardH * 0.12)))
     const nameH = Math.round(fontSize * 1.5) + 4
     const availTextH = cardH - 24 - nameH
@@ -31,12 +33,14 @@ function recalcLines() {
     el.style.setProperty('--card-row-h', `${cardH}px`)
     el.style.setProperty('--card-img-size', `${imgSize}px`)
     el.style.setProperty('--card-width', `${cardW}px`)
+    el.style.setProperty('--card-width-narrow', `${cardWNarrow}px`)
     el.style.setProperty('--card-font-size', `${fontSize}px`)
   } else {
     maxDescLines.value = 3
     el.style.removeProperty('--card-row-h')
     el.style.removeProperty('--card-img-size')
     el.style.removeProperty('--card-width')
+    el.style.removeProperty('--card-width-narrow')
     el.style.removeProperty('--card-font-size')
   }
 }
@@ -155,6 +159,17 @@ const flatVisibleTypes = computed(() => {
 const detailMarkers = computed(() => {
   if (!detailType.value) return []
   return store.filteredMarkers.filter((m) => m.type === detailType.value)
+})
+
+const detailMarkerRows = computed(() => {
+  const markers = detailMarkers.value
+  if (!isMobile.value) return [markers]
+  const row1: typeof markers = []
+  const row2: typeof markers = []
+  markers.forEach((m, i) => {
+    (i % 2 === 0 ? row1 : row2).push(m)
+  })
+  return [row1, row2]
 })
 
 function showDetail(type: MarkerType) {
@@ -436,57 +451,68 @@ function scrollToList(id: string) {
         </div>
 
         <!-- Marker cards -->
-        <div ref="detailScrollRef" class="flex-1 overflow-y-auto px-4 pb-4 space-y-2 pt-3 max-md:grid max-md:grid-rows-2 max-md:grid-flow-col max-md:gap-2 max-md:space-y-0 max-md:overflow-x-auto max-md:overflow-y-hidden">
-          <div
-            v-for="m in detailMarkers"
-            :key="m.id"
-            @click="scrollToList(m.id)"
-            class="flex gap-3 p-1 rounded-xl cursor-pointer hover:bg-white/5 transition-colors border border-white/5 max-md:flex-shrink-0 max-md:overflow-hidden max-md:h-full"
-            :style="isMobile ? { width: 'var(--card-width)', minWidth: 'var(--card-width)' } : {}"
-            :class="{ 'bg-primary-500/10 border-primary-500/30': store.selectedMarkerId === m.id }"
-          >
-            <!-- Image -->
-            <div v-if="m.image || (m.images && m.images.length > 0)" class="rounded-lg overflow-hidden flex-shrink-0 bg-surface-800 self-center"
-              :style="isMobile ? { width: 'var(--card-img-size)', height: 'var(--card-img-size)' } : { width: '64px', height: '64px' }">
-              <img
-                :src="m.image ? resolveAssetUrl(m.image) : (m.images && m.images[0] ? resolveAssetUrl(m.images[0]) : undefined)"
-                :alt="m.name"
-                class="w-full h-full object-cover"
-              />
-            </div>
-            <div v-else class="rounded-lg flex-shrink-0 bg-surface-800 flex items-center justify-center self-center"
-              :style="isMobile ? { width: 'var(--card-img-size)', height: 'var(--card-img-size)' } : { width: '64px', height: '64px' }">
-              <img
-                :src="resolveAssetUrl(MARKER_TYPE_CONFIG[m.type].iconUrl)"
-                :alt="MARKER_TYPE_CONFIG[m.type].label"
-                class="rounded-full object-cover opacity-50"
-                :style="isMobile ? { width: `calc(var(--card-img-size) * 0.5)`, height: `calc(var(--card-img-size) * 0.5)` } : { width: '32px', height: '32px' }"
-              />
-            </div>
-
-            <!-- Info -->
-            <div class="flex-1 min-w-0 flex flex-col overflow-hidden">
-              <div class="flex items-center gap-2 flex-shrink-0">
-                <span class="font-medium truncate" :class="store.isFound(m.id) ? 'text-slate-500 line-through' : 'text-slate-200'" :style="isMobile ? { fontSize: 'var(--card-font-size)' } : { fontSize: '14px' }">
-                  {{ m.name }}
-                </span>
-                <span
-                  v-if="store.isFound(m.id)"
-                  class="text-xs px-1.5 py-0.5 rounded-full bg-green-500/15 text-green-400 flex-shrink-0"
-                >已标记</span>
-              </div>
+        <div ref="detailScrollRef" :class="isMobile ? 'flex-1 flex flex-col gap-2 overflow-x-auto overflow-y-hidden px-4 pb-3 pt-3' : 'flex-1 overflow-y-auto px-4 pb-3 space-y-2 pt-3'">
+          <template v-if="detailMarkers.length > 0">
+            <div v-for="(row, ri) in detailMarkerRows" :key="ri" :class="isMobile ? 'flex gap-2 w-max' : 'space-y-2'">
               <div
-                v-if="m.description"
-                class="text-slate-500 mt-0.5 overflow-y-auto flex-1 min-h-0"
-                :style="{ fontSize: isMobile ? 'var(--card-font-size)' : '12px' }"
+                v-for="m in row"
+                :key="m.id"
+                @click="scrollToList(m.id)"
+                class="flex gap-3 p-1 rounded-xl cursor-pointer hover:bg-white/5 transition-colors border border-white/5 max-md:flex-shrink-0 max-md:overflow-hidden"
+                :style="isMobile ? { width: m.description ? 'var(--card-width)' : 'var(--card-width-narrow)', minWidth: m.description ? 'var(--card-width)' : 'var(--card-width-narrow)', height: 'var(--card-row-h)' } : {}"
+                :class="[
+                  { 'bg-primary-500/10 border-primary-500/30': store.selectedMarkerId === m.id },
+                  isMobile && !m.description ? 'flex-col items-center justify-center gap-1' : '',
+                ]"
               >
-                {{ m.description }}
+                <!-- Image -->
+                <div v-if="m.image || (m.images && m.images.length > 0)" class="rounded-lg overflow-hidden flex-shrink-0 bg-surface-800"
+                  :class="{ 'self-center': !isMobile || !!m.description }"
+                  :style="isMobile ? { width: 'var(--card-img-size)', height: 'var(--card-img-size)' } : { width: '64px', height: '64px' }">
+                  <img
+                    :src="m.image ? resolveAssetUrl(m.image) : (m.images && m.images[0] ? resolveAssetUrl(m.images[0]) : undefined)"
+                    :alt="m.name"
+                    class="w-full h-full object-cover"
+                  />
+                </div>
+                <div v-else class="rounded-lg flex-shrink-0 bg-surface-800 flex items-center justify-center"
+                  :class="{ 'self-center': !isMobile || !!m.description }"
+                  :style="isMobile ? { width: 'var(--card-img-size)', height: 'var(--card-img-size)' } : { width: '64px', height: '64px' }">
+                  <img
+                    :src="resolveAssetUrl(MARKER_TYPE_CONFIG[m.type].iconUrl)"
+                    :alt="MARKER_TYPE_CONFIG[m.type].label"
+                    class="rounded-full object-cover opacity-50"
+                    :style="isMobile ? { width: `calc(var(--card-img-size) * 0.5)`, height: `calc(var(--card-img-size) * 0.5)` } : { width: '32px', height: '32px' }"
+                  />
+                </div>
+
+                <!-- Info -->
+                <div class="flex-1 min-w-0 flex flex-col overflow-hidden"
+                  :class="isMobile && !m.description ? 'flex-initial items-center text-center' : ''">
+                  <div class="flex items-center gap-2 flex-shrink-0"
+                    :class="isMobile && !m.description ? 'flex-col gap-0.5' : ''">
+                    <span class="font-medium truncate" :class="store.isFound(m.id) ? 'text-slate-500 line-through' : 'text-slate-200'" :style="isMobile ? { fontSize: 'var(--card-font-size)' } : { fontSize: '14px' }">
+                      {{ m.name }}
+                    </span>
+                    <span
+                      v-if="store.isFound(m.id)"
+                      class="text-xs px-1.5 py-0.5 rounded-full bg-green-500/15 text-green-400 flex-shrink-0"
+                    >已标记</span>
+                  </div>
+                  <div
+                    v-if="m.description"
+                    class="text-slate-500 mt-0.5 overflow-y-auto flex-1 min-h-0"
+                    :style="{ fontSize: isMobile ? 'var(--card-font-size)' : '12px' }"
+                  >
+                    {{ m.description }}
+                  </div>
+                </div>
+
               </div>
             </div>
+          </template>
 
-          </div>
-
-          <div v-if="detailMarkers.length === 0" class="flex items-center justify-center gap-2 text-slate-500 max-md:row-span-2 max-md:w-[160px] max-md:flex-col max-md:rounded-xl max-md:bg-white/5 max-md:border max-md:border-white/5">
+          <div v-else class="flex items-center justify-center gap-2 text-slate-500 max-md:flex-shrink-0 max-md:flex-col max-md:rounded-xl max-md:bg-white/5 max-md:border max-md:border-white/5" :style="isMobile ? { minWidth: '160px', height: 'calc(var(--card-row-h) * 2 + 8px)' } : {}">
             <svg class="w-8 h-8 opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
