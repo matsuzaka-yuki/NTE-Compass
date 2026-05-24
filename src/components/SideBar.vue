@@ -59,6 +59,8 @@ const markerTypes = Object.keys(MARKER_TYPE_CONFIG) as MarkerType[]
 const allSelected = computed(() => markerTypes.every((t) => store.selectedTypes.has(t)))
 
 const detailType = ref<MarkerType | null>(null)
+const showCategoryList = ref(false)
+const categoryScrollRef = ref<HTMLElement | null>(null)
 const searchExpanded = ref(false)
 
 const searchInput = ref<HTMLInputElement | null>(null)
@@ -68,6 +70,32 @@ const categoryRows = computed(() => {
   const mid = Math.ceil(MARKER_CATEGORIES.length / 2)
   return [MARKER_CATEGORIES.slice(0, mid), MARKER_CATEGORIES.slice(mid)]
 })
+
+const categoryListData = computed(() => {
+  return MARKER_CATEGORIES.map((cat) => ({
+    label: cat.label,
+    types: cat.types.map((type) => ({
+      type,
+      config: MARKER_TYPE_CONFIG[type],
+      selected: store.selectedTypes.has(type),
+    })),
+  }))
+})
+
+function openCategoryList() {
+  showCategoryList.value = true
+}
+
+function closeCategoryList() {
+  showCategoryList.value = false
+}
+
+function scrollToCategory(label: string) {
+  const el = document.getElementById(`cat-section-${label}`)
+  if (el && categoryScrollRef.value) {
+    categoryScrollRef.value.scrollTo({ top: el.offsetTop - categoryScrollRef.value.offsetTop, behavior: 'smooth' })
+  }
+}
 
 watch([() => store.sidebarOpen, detailType], ([open, type]) => {
   if (open && type !== null) {
@@ -178,6 +206,7 @@ function showDetail(type: MarkerType) {
 
 function backToList() {
   detailType.value = null
+  showCategoryList.value = false
 }
 
 function scrollToList(id: string) {
@@ -270,7 +299,7 @@ function scrollToList(id: string) {
       </div>
 
       <!-- Fixed top section -->
-      <div class="flex-shrink-0 space-y-3" :class="{ 'p-2': !(isMobile && detailType !== null) }">
+      <div class="flex-shrink-0 space-y-3" :class="{ 'p-2': !isMobile, 'p-1': isMobile && detailType === null && !showCategoryList }">
         <!-- Header -->
         <div class="flex items-center gap-2">
           <h1 v-if="!searchExpanded" class="text-lg font-bold tracking-wide text-primary-400 select-none whitespace-nowrap truncate max-md:hidden">
@@ -315,12 +344,20 @@ function scrollToList(id: string) {
         </div>
       </div>
 
-      <!-- Scrollable area -->
-      <div v-if="detailType === null" class="flex-1 overflow-y-auto overflow-hidden px-4 pb-4 space-y-3">
+      <!-- Scrollable area: main list -->
+      <div v-if="detailType === null && !showCategoryList" class="flex-1 overflow-y-auto overflow-hidden px-4 pb-4 space-y-3 max-md:space-y-2">
         <!-- Type filters -->
         <div>
           <div class="flex items-center justify-between mb-2">
-            <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">分类</span>
+            <button
+              @click="openCategoryList()"
+              class="flex items-center gap-1 px-2 py-1 rounded-lg border border-white/10 hover:border-white/20 hover:bg-white/5 transition-colors"
+            >
+              <span class="text-xs text-slate-400">分类</span>
+              <svg class="w-3 h-3 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
             <div class="flex items-center gap-2">
               <label class="inline-flex items-center gap-1.5 cursor-pointer">
                 <span class="text-xs text-slate-500">仅未标记</span>
@@ -354,7 +391,7 @@ function scrollToList(id: string) {
           </div>
           <div :class="isMobile ? 'flex flex-col gap-2 overflow-x-auto pb-1' : 'space-y-2'">
             <div v-for="(row, ri) in categoryRows" :key="ri" :class="isMobile ? 'flex gap-2 w-max' : 'space-y-2'">
-              <div v-for="cat in row" :key="cat.label" :class="isMobile ? 'flex bg-white/5 rounded-lg px-2.5 py-1.5 flex-col gap-1 shrink-0' : 'flex items-start gap-1.5'">
+              <div v-for="cat in row" :key="cat.label" :class="isMobile ? 'flex bg-white/5 rounded-lg px-2 py-1 flex-col gap-1 shrink-0' : 'flex items-start gap-1.5'">
                 <button
                   @click="toggleCategory(cat.types)"
                   class="text-xs font-medium transition-colors"
@@ -387,7 +424,7 @@ function scrollToList(id: string) {
         </div>
 
         <!-- Flat type list -->
-        <div class="max-md:flex max-md:gap-2 max-md:overflow-x-auto max-md:pb-1">
+        <div class="max-md:flex max-md:gap-2 max-md:overflow-x-auto max-md:pb-1 max-md:mt-2">
           <template v-for="item in flatVisibleTypes" :key="item.type">
             <div
               @click="showDetail(item.type)"
@@ -420,6 +457,88 @@ function scrollToList(id: string) {
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
             <span class="text-xs">无匹配</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Category list view: two-panel layout -->
+      <div
+        v-else-if="showCategoryList"
+        class="flex-1 flex flex-col overflow-hidden max-md:rounded-t-2xl"
+      >
+        <!-- Back button + header -->
+        <div class="flex-shrink-0 flex items-center gap-2.5 px-4 py-1.5 border-b border-white/10 bg-surface-800/80">
+          <button
+            @click="closeCategoryList()"
+            class="w-6 h-6 flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/10 rounded-md transition-colors flex-shrink-0"
+          >
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+          <span class="flex-1 text-sm leading-none font-medium text-slate-200 truncate">分类列表</span>
+        </div>
+
+        <!-- Two panels -->
+        <div class="flex-1 flex overflow-hidden">
+          <!-- Left panel: category labels -->
+          <div class="w-[72px] flex-shrink-0 overflow-y-auto border-r border-white/5 py-1.5 space-y-0.5 px-1.5">
+            <button
+              v-for="cat in categoryListData"
+              :key="cat.label"
+              @click="scrollToCategory(cat.label)"
+              class="w-full text-center px-1 py-3 rounded-lg text-slate-400 hover:bg-white/10 hover:text-slate-200 transition-colors text-[11px] font-medium leading-tight"
+            >{{ cat.label }}</button>
+
+            <div v-if="categoryListData.length === 0" class="flex flex-col items-center gap-1 py-4 text-slate-600">
+              <svg class="w-5 h-5 opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+              <span class="text-[10px]">无</span>
+            </div>
+          </div>
+
+          <!-- Right panel: type cards grouped by category -->
+          <div ref="categoryScrollRef" class="flex-1 overflow-y-auto py-2 px-2 space-y-3">
+            <template v-for="cat in categoryListData" :key="cat.label">
+              <div :id="`cat-section-${cat.label}`">
+                <div class="text-xs font-medium text-slate-400 px-1 mb-2">{{ cat.label }}</div>
+                <div class="flex flex-wrap gap-1.5">
+                  <div
+                    v-for="t in cat.types"
+                    :key="t.type"
+                    class="flex flex-col items-center gap-1"
+                  >
+                    <div
+                      @click="store.toggleType(t.type)"
+                      class="flex items-center justify-center w-[60px] h-[44px] rounded-lg cursor-pointer border transition-colors"
+                      :class="t.selected
+                        ? 'border-current'
+                        : 'border-white/5 hover:bg-white/5'"
+                      :style="t.selected ? { backgroundColor: t.config.color + '22', borderColor: t.config.color + '66' } : {}"
+                      :title="t.config.label"
+                    >
+                      <img
+                        :src="resolveAssetUrl(t.config.iconUrl)"
+                        :alt="t.config.label"
+                        class="w-8 h-8 rounded-full object-cover"
+                      />
+                    </div>
+                    <span
+                      class="text-[10px] leading-tight text-center w-[60px] truncate"
+                      :class="t.selected ? 'text-slate-200' : 'text-slate-500'"
+                    >{{ t.config.label }}</span>
+                  </div>
+                </div>
+              </div>
+            </template>
+
+            <div v-if="categoryListData.length === 0" class="flex items-center justify-center gap-2 text-slate-500 py-8">
+              <svg class="w-8 h-8 opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+              <span class="text-xs">无匹配</span>
+            </div>
           </div>
         </div>
       </div>
@@ -458,7 +577,7 @@ function scrollToList(id: string) {
                 v-for="m in row"
                 :key="m.id"
                 @click="scrollToList(m.id)"
-                class="flex gap-3 p-1 rounded-xl cursor-pointer hover:bg-white/5 transition-colors border border-white/5 max-md:flex-shrink-0 max-md:overflow-hidden"
+                class="flex gap-3 p-2 rounded-xl cursor-pointer hover:bg-white/5 transition-colors border border-white/5 max-md:flex-shrink-0 max-md:overflow-hidden"
                 :style="isMobile ? { width: m.description ? 'var(--card-width)' : 'var(--card-width-narrow)', minWidth: m.description ? 'var(--card-width)' : 'var(--card-width-narrow)', height: 'var(--card-row-h)' } : {}"
                 :class="[
                   { 'bg-primary-500/10 border-primary-500/30': store.selectedMarkerId === m.id },

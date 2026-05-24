@@ -125,7 +125,7 @@ export const useMarkerStore = defineStore('markers', () => {
 
   function selectMarker(id: string | null) {
     selectedMarkerId.value = id
-    if (!id) selectedMarkerScreenPos.value = null
+    selectedMarkerScreenPos.value = null
   }
 
   function toggleSidebar() {
