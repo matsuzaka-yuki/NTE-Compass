@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { useMarkerStore } from '@/stores/markerStore'
-import { MARKER_TYPE_CONFIG } from '@/types'
+import { MARKER_TYPE_CONFIG, getItemById } from '@/types'
 import { resolveAssetUrl } from '@/config'
 
 const store = useMarkerStore()
@@ -23,6 +23,17 @@ const allImages = computed(() => {
   return list
 })
 
+const itemImages = computed(() => {
+  const m = store.selectedMarker
+  if (!m || !m.relatedItems) return []
+  const list: string[] = []
+  for (const itemId of m.relatedItems) {
+    const item = getItemById(itemId)
+    if (item?.image) list.push(resolveAssetUrl('./' + item.image))
+  }
+  return list
+})
+
 // ── Image preview (gallery + zoom/pan) ──
 const previewIndex = ref(-1)
 const previewScale = ref(1)
@@ -39,11 +50,21 @@ const touchStartDist = ref(0)
 const touchStartScale = ref(1)
 const swipeHandled = ref(false)
 
-const previewOpen = computed(() => previewIndex.value >= 0)
+const previewDirectUrl = ref<string | null>(null)
+
+const previewOpen = computed(() => previewIndex.value >= 0 || previewDirectUrl.value !== null)
 const previewSrc = computed(() => {
-  if (!previewOpen.value) return ''
-  return allImages.value[previewIndex.value] || ''
+  if (previewDirectUrl.value) return previewDirectUrl.value
+  if (previewIndex.value >= 0) return allImages.value[previewIndex.value] || ''
+  return ''
 })
+const isDirectPreview = computed(() => previewDirectUrl.value !== null)
+const relatedItems = computed(() => {
+  const m = store.selectedMarker
+  if (!m || !m.relatedItems || m.relatedItems.length === 0) return []
+  return m.relatedItems.map((id) => getItemById(id)).filter(Boolean) as { id: string; name: string; image?: string }[]
+})
+
 const hasMultipleImages = computed(() => allImages.value.length > 1)
 const canGoPrev = computed(() => previewIndex.value > 0)
 const canGoNext = computed(() => previewIndex.value < allImages.value.length - 1)
@@ -59,8 +80,14 @@ function openPreviewAt(index: number) {
   resetZoom()
 }
 
+function openItemPreview(url: string) {
+  previewDirectUrl.value = url
+  resetZoom()
+}
+
 function closePreview() {
   previewIndex.value = -1
+  previewDirectUrl.value = null
 }
 
 function resetZoom() {
@@ -329,6 +356,17 @@ watch(previewOpen, (open) => {
               <h3 class="text-base font-bold text-white truncate">{{ store.selectedMarker.name }}</h3>
             </div>
 
+            <!-- Count -->
+            <div
+              v-if="store.selectedMarker.count !== undefined && store.selectedMarker.count > 0"
+              class="flex items-center gap-1.5 text-xs"
+            >
+              <span class="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full bg-red-500/20 text-red-400 font-bold text-xs">
+                {{ store.selectedMarker.count }}
+              </span>
+              <span class="text-slate-500">数量</span>
+            </div>
+
             <!-- Description -->
             <p
               v-if="store.selectedMarker.description"
@@ -347,6 +385,27 @@ watch(previewOpen, (open) => {
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
               {{ store.selectedMarker.refreshTime }}
+            </div>
+
+            <!-- Related items -->
+            <div
+              v-if="relatedItems.length > 0"
+              class="flex flex-wrap gap-1.5"
+            >
+              <div
+                v-for="item in relatedItems"
+                :key="item.id"
+                class="flex items-center gap-1 px-2 py-1 rounded-lg bg-white/5 border border-white/10 text-xs text-slate-300"
+              >
+                <img
+                  v-if="item.image"
+                  :src="resolveAssetUrl('./' + item.image)"
+                  :alt="item.name"
+                  class="w-4 h-4 rounded object-cover cursor-pointer hover:opacity-80 transition-opacity"
+                  @click.stop="openItemPreview(resolveAssetUrl('./' + item.image!))"
+                />
+                {{ item.name }}
+              </div>
             </div>
 
             <!-- Related quest -->
@@ -439,7 +498,7 @@ watch(previewOpen, (open) => {
         <!-- Top bar -->
         <div class="absolute top-0 left-0 right-0 flex items-center justify-between px-4 py-3 z-10">
           <span
-            v-if="hasMultipleImages"
+            v-if="hasMultipleImages && !isDirectPreview"
             class="text-white/80 text-sm font-mono bg-white/10 rounded-full px-3 py-1"
           >
             {{ previewIndex + 1 }} / {{ allImages.length }}
@@ -457,7 +516,7 @@ watch(previewOpen, (open) => {
 
         <!-- Prev button -->
         <button
-          v-if="canGoPrev"
+          v-if="canGoPrev && !isDirectPreview"
           class="absolute left-3 top-1/2 -translate-y-1/2 z-10 w-12 h-12 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
           @click.stop="prevImage"
         >
@@ -479,7 +538,7 @@ watch(previewOpen, (open) => {
 
         <!-- Next button -->
         <button
-          v-if="canGoNext"
+          v-if="canGoNext && !isDirectPreview"
           class="absolute right-3 top-1/2 -translate-y-1/2 z-10 w-12 h-12 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
           @click.stop="nextImage"
         >

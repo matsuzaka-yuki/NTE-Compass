@@ -9,6 +9,10 @@ export type MarkerType =
   | 'sidequest'
   | 'pilgrimage'
   | 'car'
+  | 'pyz'
+  | 'msz'
+  | 'fdz'
+  | 'dyz'
 
 export interface MarkerData {
   id: string
@@ -21,7 +25,23 @@ export interface MarkerData {
   images?: string[]
   refreshTime?: string
   relatedQuest?: string
+  relatedItems?: string[]
+  count?: number
   isUserCreated?: boolean
+}
+
+export interface ItemData {
+  id: string
+  name: string
+  image?: string
+}
+
+export const ALL_ITEMS: ItemData[] = [
+  { id: 'xy', name: '絮语', image: './images/objects/xy.png' },
+]
+
+export function getItemById(id: string): ItemData | undefined {
+  return ALL_ITEMS.find((item) => item.id === id)
 }
 
 export type FilterMode = 'all' | 'unfound'
@@ -37,6 +57,10 @@ export const ALL_MARKER_TYPES: MarkerType[] = [
   'sidequest',
   'pilgrimage',
   'car',
+  'pyz',
+  'msz',
+  'fdz',
+  'dyz',
 ]
 
 export interface CategoryDef {
@@ -49,6 +73,7 @@ export const MARKER_CATEGORIES: CategoryDef[] = [
   { label: '收集品', types: ['oraclestone', 'gift21', 'package'] },
   { label: '任务', types: ['anomaly', 'sidequest'] },
   { label: '景点', types: ['checkin', 'pilgrimage'] },
+  { label: '敌影清剿', types: ['pyz', 'msz', 'fdz', 'dyz'] },
   { label: '其他', types: ['car'] },
 ]
 
@@ -132,5 +157,33 @@ export const MARKER_TYPE_CONFIG: Record<
     bgColor: '#f5f5f4',
     icon: 'M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.22.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.85 7h10.29l1.08 3.11H5.77L6.85 7zM19 17H5v-5h14v5zM7.5 16c-.83 0-1.5-.67-1.5-1.5S6.67 13 7.5 13s1.5.67 1.5 1.5S8.33 16 7.5 16zm9 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z',
     iconUrl: './images/icons/car.png',
+  },
+  pyz: {
+    label: '凭依种',
+    color: '#c084fc',
+    bgColor: '#f3e8ff',
+    icon: 'M12 2l4 6-4 6-4-6 4-6zm0 4.5L10.5 9 12 11.25 13.5 9 12 6.5z',
+    iconUrl: './images/icons/pyz.png',
+  },
+  msz: {
+    label: '迷失种',
+    color: '#60a5fa',
+    bgColor: '#e0f2fe',
+    icon: 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z',
+    iconUrl: './images/icons/msz.png',
+  },
+  fdz: {
+    label: '风洞种',
+    color: '#34d399',
+    bgColor: '#d1fae5',
+    icon: 'M4 18h8c1.1 0 2-.9 2-2s-.9-2-2-2H4v-2h8c2.21 0 4 1.79 4 4s-1.79 4-4 4H4v-2zm0-8h11c1.1 0 2-.9 2-2s-.9-2-2-2H4v2h11v2H4z',
+    iconUrl: './images/icons/fdz.png',
+  },
+  dyz: {
+    label: '低语种',
+    color: '#f472b6',
+    bgColor: '#fce7f3',
+    icon: 'M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H5.17L4 17.17V4h16v12z',
+    iconUrl: './images/icons/dyz.png',
   },
 }

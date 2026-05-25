@@ -617,6 +617,10 @@ function scrollToList(id: string) {
                       v-if="store.isFound(m.id)"
                       class="text-xs px-1.5 py-0.5 rounded-full bg-green-500/15 text-green-400 flex-shrink-0"
                     >已标记</span>
+                    <span
+                      v-if="m.count !== undefined && m.count > 0"
+                      class="text-xs px-1.5 py-0.5 rounded-full bg-red-500/15 text-red-400 flex-shrink-0 font-mono"
+                    >{{ m.count }}</span>
                   </div>
                   <div
                     v-if="m.description"

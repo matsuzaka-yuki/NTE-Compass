@@ -756,5 +756,98 @@
       "images/uploads/car_6.webp"
     ],
     "id": "user_1779378730917_3"
+  },
+  {
+    "name": "凭依种",
+    "type": "pyz",
+    "lat": 0.4422734673523949,
+    "lng": 0.3571069020761591,
+    "description": "进入巷子中出现",
+    "refreshTime": "每日刷新/夜间出现",
+    "relatedItems": [
+      "xy"
+    ],
+    "count": 2,
+    "images": [
+      "images/uploads/pyz_1.webp"
+    ],
+    "id": "user_1779694165215_1"
+  },
+  {
+    "name": "凭依种",
+    "type": "pyz",
+    "lat": 0.40670483287101533,
+    "lng": 0.31734601778489363,
+    "description": "靠近桥下石头旁出现",
+    "refreshTime": "每日刷新/夜间出现",
+    "relatedItems": [
+      "xy"
+    ],
+    "count": 2,
+    "images": [
+      "images/uploads/pyz_2.webp"
+    ],
+    "id": "user_1779695694687_1"
+  },
+  {
+    "name": "凭依种",
+    "type": "pyz",
+    "lat": 0.5277804502131234,
+    "lng": 0.3199358709742519,
+    "description": "进入巷子中出现",
+    "refreshTime": "每日刷新/夜间出现",
+    "relatedItems": [
+      "xy"
+    ],
+    "count": 3,
+    "images": [
+      "images/uploads/pyz_3.webp"
+    ],
+    "id": "user_1779695904976_2"
+  },
+  {
+    "name": "凭依种",
+    "type": "pyz",
+    "lat": 0.5733729540066915,
+    "lng": 0.4838102634432636,
+    "description": "到达护栏下方出现",
+    "refreshTime": "每日刷新/夜间出现",
+    "relatedItems": [
+      "xy"
+    ],
+    "count": 3,
+    "images": [
+      "images/uploads/pyz_4.webp"
+    ],
+    "id": "user_1779696103316_3"
+  },
+  {
+    "name": "凭依种",
+    "type": "pyz",
+    "lat": 0.5235902518024544,
+    "lng": 0.6294470610145932,
+    "description": "到达此处地面后出现",
+    "refreshTime": "每日刷新/夜间出现",
+    "relatedItems": [
+      "xy"
+    ],
+    "count": 2,
+    "images": [
+      "images/uploads/pyz_5.webp"
+    ],
+    "id": "user_1779696623523_4"
+  },
+  {
+    "name": "迷失种与低语种",
+    "type": "msz",
+    "lat": 0.4947109466879988,
+    "lng": 0.5503288121548978,
+    "description": "高楼中间快递柜",
+    "refreshTime": "每日刷新",
+    "relatedItems": [
+      "xy"
+    ],
+    "count": 3,
+    "id": "user_1779711223389_1"
   }
 ]

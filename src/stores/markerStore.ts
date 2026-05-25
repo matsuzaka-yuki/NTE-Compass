@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import type { MarkerData, MarkerType } from '@/types'
-import { ALL_MARKER_TYPES } from '@/types'
+import { ALL_MARKER_TYPES, ALL_ITEMS } from '@/types'
 import markersRaw from '@/data/markers.json'
 import { EDITOR_ENABLED } from '@/config'
 
@@ -60,7 +60,16 @@ export const useMarkerStore = defineStore('markers', () => {
 
     const q = searchQuery.value.trim().toLowerCase()
     if (q) {
-      list = list.filter((m) => m.name.toLowerCase().includes(q))
+      list = list.filter((m) => {
+        if (m.name.toLowerCase().includes(q)) return true
+        if (m.relatedItems && m.relatedItems.length > 0) {
+          return m.relatedItems.some((itemId) => {
+            const item = ALL_ITEMS.find((i) => i.id === itemId)
+            return item && item.name.toLowerCase().includes(q)
+          })
+        }
+        return false
+      })
     }
 
     return list

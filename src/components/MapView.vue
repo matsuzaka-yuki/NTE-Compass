@@ -50,13 +50,15 @@ function createMarkerIcon(m: MarkerData, found: boolean): L.DivIcon {
   const cfg = MARKER_TYPE_CONFIG[m.type]
   const size = 36
   const imgSrc = resolveAssetUrl(cfg.iconUrl)
+  const hasCount = m.count !== undefined && m.count > 0
 
   return L.divIcon({
     className: `custom-marker${found ? ' found' : ''}`,
     html: `
       <div style="position:relative;width:${size}px;height:${size}px">
         <img src="${imgSrc}" style="width:${size}px;height:${size}px;border-radius:50%;object-fit:cover;object-position:center;box-shadow:0 2px 6px rgba(0,0,0,0.45)" />
-        ${found ? `<svg width="${size}" height="${size}" viewBox="0 0 36 36" style="position:absolute;top:0;left:0"><circle cx="31" cy="7" r="4.5" fill="#22c55e" stroke="white" stroke-width="1.5"/><path d="M28.5 7 l2 2 l4-4" stroke="white" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>` : ''}
+        ${found ? `<svg width="${size}" height="${size}" viewBox="0 0 36 36" style="position:absolute;top:0;left:0;pointer-events:none"><circle cx="31" cy="7" r="4.5" fill="#22c55e" stroke="white" stroke-width="1.5"/><path d="M28.5 7 l2 2 l4-4" stroke="white" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>` : ''}
+        ${hasCount ? `<svg width="${size}" height="${size}" viewBox="0 0 36 36" style="position:absolute;top:0;left:0;pointer-events:none"><circle cx="30" cy="30" r="6" fill="#f0441c"/><text x="30" y="32.5" text-anchor="middle" fill="white" font-size="9" font-weight="bold">${m.count}</text></svg>` : ''}
       </div>`,
     iconSize: [size, size],
     iconAnchor: [size / 2, size / 2],

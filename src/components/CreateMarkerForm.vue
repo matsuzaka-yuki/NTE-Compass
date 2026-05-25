@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, watch, computed } from 'vue'
 import { useMarkerStore } from '@/stores/markerStore'
-import { MARKER_TYPE_CONFIG } from '@/types'
+import { MARKER_TYPE_CONFIG, ALL_ITEMS } from '@/types'
 import type { MarkerType } from '@/types'
 import { resolveAssetUrl } from '@/config'
 
@@ -16,6 +16,8 @@ const uploading = ref(false)
 const description = ref('')
 const refreshTime = ref('')
 const relatedQuest = ref('')
+const selectedItems = ref<string[]>([])
+const count = ref<number | undefined>(undefined)
 
 const isEditing = computed(() => !!store.editingMarker)
 
@@ -109,6 +111,8 @@ async function handleSave() {
       description: description.value.trim() || undefined,
       refreshTime: refreshTime.value.trim() || undefined,
       relatedQuest: relatedQuest.value.trim() || undefined,
+      relatedItems: selectedItems.value.length > 0 ? selectedItems.value : undefined,
+      count: count.value !== undefined ? count.value : undefined,
       images: paths.length > 0 ? paths : undefined,
     })
     resetForm()
@@ -130,6 +134,8 @@ async function handleSave() {
     description: description.value.trim() || undefined,
     refreshTime: refreshTime.value.trim() || undefined,
     relatedQuest: relatedQuest.value.trim() || undefined,
+    relatedItems: selectedItems.value.length > 0 ? selectedItems.value : undefined,
+    count: count.value !== undefined ? count.value : undefined,
     images: paths.length > 0 ? paths : undefined,
   })
 
@@ -185,6 +191,8 @@ function resetForm() {
   description.value = ''
   refreshTime.value = ''
   relatedQuest.value = ''
+  selectedItems.value = []
+  count.value = undefined
 }
 
 // Pre-fill form when editing a marker
@@ -195,6 +203,8 @@ watch(() => store.editingMarker, (m) => {
     description.value = m.description || ''
     refreshTime.value = m.refreshTime || ''
     relatedQuest.value = m.relatedQuest || ''
+    selectedItems.value = m.relatedItems ? [...m.relatedItems] : []
+    count.value = m.count
     images.value = m.images ? [...m.images] : []
   }
 })
@@ -378,6 +388,42 @@ watch(() => store.pendingMarkerPos, (pos) => {
                 v-model="relatedQuest"
                 type="text"
                 placeholder="输入关联任务名称..."
+                class="w-full px-3 py-2 text-sm bg-surface-900 border border-white/10 rounded-lg text-slate-200 placeholder-slate-500 focus:outline-none focus:border-primary-500 transition-colors"
+              />
+            </div>
+
+            <!-- Related items -->
+            <div v-if="ALL_ITEMS.length > 0">
+              <label class="block text-xs font-medium text-slate-400 mb-2">关联物品</label>
+              <div class="flex flex-wrap gap-2">
+                <button
+                  v-for="item in ALL_ITEMS"
+                  :key="item.id"
+                  @click="selectedItems.includes(item.id) ? selectedItems = selectedItems.filter(id => id !== item.id) : selectedItems = [...selectedItems, item.id]"
+                  class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs transition-all"
+                  :class="selectedItems.includes(item.id)
+                    ? 'border-primary-500 bg-primary-500/10 text-primary-300'
+                    : 'border-white/10 text-slate-500 hover:border-white/20 hover:text-slate-300'"
+                >
+                  <img
+                    v-if="item.image"
+                    :src="resolveAssetUrl('./' + item.image)"
+                    :alt="item.name"
+                    class="w-4 h-4 rounded object-cover"
+                  />
+                  {{ item.name }}
+                </button>
+              </div>
+            </div>
+
+            <!-- Count -->
+            <div>
+              <label class="block text-xs font-medium text-slate-400 mb-1.5">数量</label>
+              <input
+                v-model.number="count"
+                type="number"
+                min="0"
+                placeholder="留空则不显示..."
                 class="w-full px-3 py-2 text-sm bg-surface-900 border border-white/10 rounded-lg text-slate-200 placeholder-slate-500 focus:outline-none focus:border-primary-500 transition-colors"
               />
             </div>
