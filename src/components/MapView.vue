@@ -106,8 +106,8 @@ function buildMarkers() {
     marker.on('click', () => {
       store.selectMarker(m.id)
     })
-    const isMobile = window.innerWidth < 768
-    if (!isMobile) {
+    const canHover = window.matchMedia('(hover: hover)').matches
+    if (canHover) {
       marker.on('mouseover', () => {
         if (!map) return
         const point = map.latLngToContainerPoint([m.lat, m.lng])

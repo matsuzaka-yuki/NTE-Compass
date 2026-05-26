@@ -89,13 +89,15 @@ html, body, #app {
   scrollbar-color: rgba(148, 163, 184, 0.35) transparent;
 }
 
-/* custom marker animation */
-.custom-marker:hover {
-  z-index: 999 !important;
-}
-.custom-marker:hover > div {
-  transform: scale(1.25);
-  transition: transform 0.15s ease;
+/* custom marker animation — only on devices with hover (mouse) */
+@media (hover: hover) {
+  .custom-marker:hover {
+    z-index: 999 !important;
+  }
+  .custom-marker:hover > div {
+    transform: scale(1.25);
+    transition: transform 0.15s ease;
+  }
 }
 .custom-marker.found {
   opacity: 0.4;

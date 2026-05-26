@@ -13,6 +13,12 @@ export type MarkerType =
   | 'msz'
   | 'fdz'
   | 'dyz'
+  | 'tcs'
+  | 'lmz'
+  | 'sxyx'
+  | 'sqn'
+  | 'kkj'
+  | 'yo'
 
 export interface MarkerData {
   id: string
@@ -104,6 +110,12 @@ export const ALL_MARKER_TYPES: MarkerType[] = [
   'msz',
   'fdz',
   'dyz',
+  'tcs',
+  'lmz',
+  'sxyx',
+  'sqn',
+  'kkj',
+  'yo',
 ]
 
 export interface CategoryDef {
@@ -111,7 +123,7 @@ export interface CategoryDef {
   types: MarkerType[]
 }
 
-export const ENEMY_CLEARING_TYPES: MarkerType[] = ['pyz', 'msz', 'fdz', 'dyz']
+export const ENEMY_CLEARING_TYPES: MarkerType[] = ['pyz', 'msz', 'fdz', 'dyz', 'tcs', 'lmz', 'sxyx', 'sqn', 'kkj', 'yo']
 
 export function isEnemyClearingType(type: MarkerType): boolean {
   return (ENEMY_CLEARING_TYPES as MarkerType[]).includes(type)
@@ -136,7 +148,7 @@ export const MARKER_CATEGORIES: CategoryDef[] = [
   { label: '收集品', types: ['oraclestone', 'gift21', 'package'] },
   { label: '任务', types: ['anomaly', 'sidequest'] },
   { label: '景点', types: ['checkin', 'pilgrimage'] },
-  { label: '敌影清剿', types: ['pyz', 'msz', 'fdz', 'dyz'] },
+  { label: '敌影清剿', types: ['pyz', 'msz', 'fdz', 'dyz', 'tcs', 'lmz', 'sxyx', 'sqn', 'kkj', 'yo'] },
   { label: '其他', types: ['car'] },
 ]
 
@@ -248,5 +260,47 @@ export const MARKER_TYPE_CONFIG: Record<
     bgColor: '#fce7f3',
     icon: 'M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H5.17L4 17.17V4h16v12z',
     iconUrl: './images/icons/dyz.png',
+  },
+  tcs: {
+    label: '拖车艄',
+    color: '#fb923c',
+    bgColor: '#fff7ed',
+    icon: 'M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.22.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.85 7h10.29l1.08 3.11H5.77L6.85 7zM19 17H5v-5h14v5z',
+    iconUrl: './images/icons/tcs.png',
+  },
+  lmz: {
+    label: '流梦种',
+    color: '#a78bfa',
+    bgColor: '#ede9fe',
+    icon: 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z',
+    iconUrl: './images/icons/lmz.png',
+  },
+  sxyx: {
+    label: '伤心英熊',
+    color: '#f87171',
+    bgColor: '#fef2f2',
+    icon: 'M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z',
+    iconUrl: './images/icons/sxyx.png',
+  },
+  sqn: {
+    label: '扫晴娘',
+    color: '#fbbf24',
+    bgColor: '#fffbeb',
+    icon: 'M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9-4.03-9-9-9zm0 16c-3.86 0-7-3.14-7-7s3.14-7 7-7 7 3.14 7 7-3.14 7-7 7zm1-11h-2v3H8v2h3v3h2v-3h3v-2h-3V8z',
+    iconUrl: './images/icons/sqn.png',
+  },
+  kkj: {
+    label: '空铠甲',
+    color: '#94a3b8',
+    bgColor: '#f1f5f9',
+    icon: 'M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zM7 12h2v5H7v-5zm4-4h2v9h-2V8zm4 3h2v6h-2v-6z',
+    iconUrl: './images/icons/kkj.png',
+  },
+  yo: {
+    label: '羽偶',
+    color: '#2dd4bf',
+    bgColor: '#ccfbf1',
+    icon: 'M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z',
+    iconUrl: './images/icons/yo.png',
   },
 }

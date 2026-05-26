@@ -50,6 +50,46 @@ function getTypeIndex(type: MarkerType): number | null {
 // Uploaded paths cache (data URL → server path)
 const uploadedPaths = ref<Map<string, string>>(new Map())
 
+// Existing image browser
+const showImageBrowser = ref(false)
+const existingImages = ref<{ name: string; path: string }[]>([])
+const loadingExisting = ref(false)
+const selectedExisting = ref<Set<string>>(new Set())
+
+async function fetchExistingImages() {
+  loadingExisting.value = true
+  try {
+    const res = await fetch('/api/uploads')
+    const json = await res.json()
+    if (Array.isArray(json)) {
+      existingImages.value = json
+    }
+  } catch { /* ignore */ }
+  loadingExisting.value = false
+}
+
+function toggleExistingSelect(img: { name: string; path: string }) {
+  const s = new Set(selectedExisting.value)
+  if (s.has(img.path)) {
+    s.delete(img.path)
+  } else {
+    s.add(img.path)
+  }
+  selectedExisting.value = s
+}
+
+function addSelectedImages() {
+  const toAdd = existingImages.value
+    .filter(img => selectedExisting.value.has(img.path))
+    .map(img => img.path)
+  if (toAdd.length === 0) return
+  // Filter out paths already in images
+  const newPaths = toAdd.filter(p => !images.value.includes(p))
+  images.value = [...images.value, ...newPaths]
+  selectedExisting.value = new Set()
+  showImageBrowser.value = false
+}
+
 function handleFiles(e: Event) {
   const input = e.target as HTMLInputElement
   const files = input.files
@@ -400,6 +440,58 @@ watch(() => store.pendingMarkerPos, (pos) => {
                 />
               </label>
               <p class="mt-1 text-xs text-slate-600">图片将自动压缩为 WebP 格式，最大宽度 1920px</p>
+
+              <!-- Select existing image -->
+              <div class="mt-2">
+                <button
+                  @click="showImageBrowser = !showImageBrowser; if (showImageBrowser && existingImages.length === 0) fetchExistingImages()"
+                  class="flex items-center justify-center gap-1.5 w-full px-3 py-2 border border-dashed border-white/10 rounded-lg cursor-pointer hover:border-white/20 hover:bg-surface-900/50 transition-colors text-xs text-slate-400"
+                >
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  选择已有图片
+                </button>
+
+                <!-- Existing images panel -->
+                <div v-if="showImageBrowser" class="mt-2 p-3 rounded-lg border border-white/10 bg-surface-900/50">
+                  <div v-if="loadingExisting" class="flex items-center justify-center py-4 text-xs text-slate-500">
+                    加载中...
+                  </div>
+                  <template v-else-if="existingImages.length > 0">
+                    <div class="flex flex-wrap gap-2 max-h-48 overflow-y-auto">
+                      <div
+                        v-for="img in existingImages"
+                        :key="img.path"
+                        @click="toggleExistingSelect(img)"
+                        class="relative w-16 h-16 rounded-lg overflow-hidden border-2 cursor-pointer transition-all flex-shrink-0"
+                        :class="selectedExisting.has(img.path) ? 'border-primary-400' : 'border-transparent hover:border-white/20'"
+                      >
+                        <img :src="resolveAssetUrl('./' + img.path)" class="w-full h-full object-cover" />
+                        <div
+                          v-if="selectedExisting.has(img.path)"
+                          class="absolute inset-0 bg-primary-500/20 flex items-center justify-center"
+                        >
+                          <svg class="w-5 h-5 text-primary-400" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                          </svg>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="flex items-center justify-between mt-2">
+                      <span class="text-xs text-slate-500">已选 {{ selectedExisting.size }} 张</span>
+                      <button
+                        @click="addSelectedImages"
+                        :disabled="selectedExisting.size === 0"
+                        class="px-3 py-1 rounded-lg text-xs font-medium bg-primary-600 text-white hover:bg-primary-500 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                      >添加选中图片</button>
+                    </div>
+                  </template>
+                  <div v-else class="text-xs text-slate-500 text-center py-4">
+                    暂无已上传的图片
+                  </div>
+                </div>
+              </div>
             </div>
 
             <!-- Description -->

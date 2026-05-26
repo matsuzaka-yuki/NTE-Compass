@@ -124,6 +124,42 @@ function markersApiPlugin() {
         res.end('Method Not Allowed')
       })
 
+      // GET /api/uploads — list all uploaded images
+      server.middlewares.use('/api/uploads', (req: any, res: any) => {
+        res.setHeader('Access-Control-Allow-Origin', '*')
+        res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS')
+        res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
+
+        if (req.method === 'OPTIONS') {
+          res.statusCode = 204
+          res.end()
+          return
+        }
+
+        if (req.method === 'GET') {
+          try {
+            fs.mkdirSync(UPLOADS_DIR, { recursive: true })
+            const files = fs.readdirSync(UPLOADS_DIR)
+            const images = files
+              .filter(f => /\.(png|jpe?g|webp|gif|svg)$/i.test(f))
+              .map(f => ({
+                name: f,
+                path: `images/uploads/${f}`,
+              }))
+              .sort((a, b) => a.name.localeCompare(b.name))
+            res.setHeader('Content-Type', 'application/json')
+            res.end(JSON.stringify(images))
+          } catch (e: any) {
+            res.statusCode = 500
+            res.end(JSON.stringify({ error: e.message || '读取图片列表失败' }))
+          }
+          return
+        }
+
+        res.statusCode = 405
+        res.end('Method Not Allowed')
+      })
+
       // DELETE /api/image — delete an uploaded image
       server.middlewares.use('/api/image', (req: any, res: any) => {
         res.setHeader('Access-Control-Allow-Origin', '*')
