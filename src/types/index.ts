@@ -19,6 +19,9 @@ export type MarkerType =
   | 'sqn'
   | 'kkj'
   | 'yo'
+  | 'yxxl'
+  | 'yxjy'
+  | 'yxqd'
 
 export interface MarkerData {
   id: string
@@ -116,6 +119,9 @@ export const ALL_MARKER_TYPES: MarkerType[] = [
   'sqn',
   'kkj',
   'yo',
+  'yxxl',
+  'yxjy',
+  'yxqd',
 ]
 
 export interface CategoryDef {
@@ -144,7 +150,7 @@ export function getOverlayTypes(types: MarkerType[], selectedTypes: Set<MarkerTy
 }
 
 export const MARKER_CATEGORIES: CategoryDef[] = [
-  { label: '传送点', types: ['phonebooth', 'tower'] },
+  { label: '传送点', types: ['phonebooth', 'tower', 'yxxl', 'yxjy', 'yxqd'] },
   { label: '收集品', types: ['oraclestone', 'gift21', 'package'] },
   { label: '任务', types: ['anomaly', 'sidequest'] },
   { label: '景点', types: ['checkin', 'pilgrimage'] },
@@ -302,5 +308,26 @@ export const MARKER_TYPE_CONFIG: Record<
     bgColor: '#ccfbf1',
     icon: 'M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z',
     iconUrl: './images/icons/yo.png',
+  },
+  yxxl: {
+    label: '异象巡礼',
+    color: '#e11d48',
+    bgColor: '#ffe4e6',
+    icon: 'M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z',
+    iconUrl: './images/icons/yxxl.png',
+  },
+  yxjy: {
+    label: '异象界域',
+    color: '#7c3aed',
+    bgColor: '#ede9fe',
+    icon: 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z',
+    iconUrl: './images/icons/yxjy.png',
+  },
+  yxqd: {
+    label: '异象追猎',
+    color: '#dc2626',
+    bgColor: '#fecaca',
+    icon: 'M15 3H9v3H3v2h2v12h14V8h2V6h-6V3zm-4 2h2v2h-2V5zM7 8h10v12H7V8zm5 5l-4 4h8l-4-4z',
+    iconUrl: './images/icons/yxqd.png',
   },
 }
