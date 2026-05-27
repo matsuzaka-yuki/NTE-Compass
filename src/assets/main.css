@@ -89,8 +89,8 @@ html, body, #app {
   scrollbar-color: rgba(148, 163, 184, 0.35) transparent;
 }
 
-/* custom marker animation — only on devices with hover (mouse) */
-@media (hover: hover) {
+/* custom marker animation — only on non-mobile devices with hover (mouse) */
+@media (hover: hover) and (min-width: 768px) {
   .custom-marker:hover {
     z-index: 999 !important;
   }

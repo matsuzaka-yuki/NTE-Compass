@@ -82,6 +82,19 @@ export function migrateMarker(raw: LegacyMarkerData): MarkerData {
   }
 }
 
+export interface RouteSegment {
+  id: string
+  name: string
+  markerIds: string[]
+}
+
+export interface RouteData {
+  id: string
+  name: string
+  image?: string
+  segments: RouteSegment[]
+}
+
 export interface ItemData {
   id: string
   name: string

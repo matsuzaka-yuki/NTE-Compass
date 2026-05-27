@@ -6,6 +6,7 @@ import path from 'node:path'
 
 const MARKERS_FILE = fileURLToPath(new URL('./markers-data.json', import.meta.url))
 const SRC_MARKERS_FILE = fileURLToPath(new URL('./src/data/markers.json', import.meta.url))
+const ROUTES_FILE = fileURLToPath(new URL('./routes-data.json', import.meta.url))
 const UPLOADS_DIR = fileURLToPath(new URL('./public/images/uploads', import.meta.url))
 
 function markersApiPlugin() {
@@ -191,6 +192,60 @@ function markersApiPlugin() {
             res.statusCode = 500
             res.end(JSON.stringify({ error: e.message || '删除失败' }))
           }
+          return
+        }
+
+        res.statusCode = 405
+        res.end('Method Not Allowed')
+      })
+
+      // GET / POST /api/routes — manage routes file
+      server.middlewares.use('/api/routes', (req: any, res: any) => {
+        res.setHeader('Access-Control-Allow-Origin', '*')
+        res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+        res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
+
+        if (req.method === 'OPTIONS') {
+          res.statusCode = 204
+          res.end()
+          return
+        }
+
+        if (req.method === 'GET') {
+          try {
+            if (!fs.existsSync(ROUTES_FILE)) {
+              fs.writeFileSync(ROUTES_FILE, '[]', 'utf-8')
+            }
+            const data = fs.readFileSync(ROUTES_FILE, 'utf-8')
+            res.setHeader('Content-Type', 'application/json')
+            res.end(data)
+          } catch {
+            res.statusCode = 500
+            res.end(JSON.stringify({ error: '读取路线文件失败' }))
+          }
+          return
+        }
+
+        if (req.method === 'POST') {
+          let body = ''
+          req.on('data', (chunk: string) => { body += chunk })
+          req.on('end', () => {
+            try {
+              const routes = JSON.parse(body)
+              if (!Array.isArray(routes)) {
+                res.statusCode = 400
+                res.end(JSON.stringify({ error: '数据格式应为数组' }))
+                return
+              }
+              fs.mkdirSync(path.dirname(ROUTES_FILE), { recursive: true })
+              fs.writeFileSync(ROUTES_FILE, JSON.stringify(routes, null, 2), 'utf-8')
+              res.setHeader('Content-Type', 'application/json')
+              res.end(JSON.stringify({ ok: true, count: routes.length }))
+            } catch (e: any) {
+              res.statusCode = 500
+              res.end(JSON.stringify({ error: e.message || '保存失败' }))
+            }
+          })
           return
         }
 

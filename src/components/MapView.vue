@@ -12,6 +12,8 @@ const store = useMarkerStore()
 const mapContainer = ref<HTMLElement | null>(null)
 let map: L.Map | null = null
 let markerClusterGroup: L.MarkerClusterGroup | null = null
+let arrowLayerGroup: L.LayerGroup | null = null
+let tempHighlightLayer: L.LayerGroup | null = null
 let defaultZoom = 5
 
 const hoveredMarker = ref<MarkerData | null>(null)
@@ -45,6 +47,21 @@ function loadImageDimensions(url: string): Promise<{ w: number; h: number }> {
     img.src = url
   })
 }
+
+const canHover = window.matchMedia('(hover: hover)').matches && window.innerWidth >= 768
+const isMobileSegmentNav = window.innerWidth < 768
+
+const segmentColors = ['#f59e0b', '#3b82f6', '#22c55e', '#ef4444', '#8b5cf6', '#ec4899']
+
+const focusedSegment = computed(() => {
+  if (!store.currentRoute || store.currentSegmentIndex < 0) return null
+  return store.currentRoute.segments[store.currentSegmentIndex] ?? null
+})
+
+const focusedSegmentColor = computed(() => {
+  if (store.currentSegmentIndex < 0) return null
+  return segmentColors[store.currentSegmentIndex % segmentColors.length]
+})
 
 function createMarkerIcon(m: MarkerData, found: boolean): L.DivIcon {
   const primaryType = getPrimaryType(m.types, store.selectedTypes)
@@ -82,7 +99,7 @@ function createMarkerIcon(m: MarkerData, found: boolean): L.DivIcon {
     className: `custom-marker${found ? ' found' : ''}`,
     html: `
       <div style="position:relative;width:${size}px;height:${size}px"
-        ${overlayTypes.length > 1 ? `onmouseover="const t=this.querySelector('.marker-overlay-track');if(t)t.style.width='${totalOverlayWidth}px'" onmouseout="const t=this.querySelector('.marker-overlay-track');if(t)t.style.width='${overlayIconSize}px'"` : ''}
+        ${overlayTypes.length > 1 && canHover ? `onmouseover="const t=this.querySelector('.marker-overlay-track');if(t)t.style.width='${totalOverlayWidth}px'" onmouseout="const t=this.querySelector('.marker-overlay-track');if(t)t.style.width='${overlayIconSize}px'"` : ''}
       >
         <img src="${imgSrc}" style="width:${size}px;height:${size}px;border-radius:50%;object-fit:cover;object-position:center;box-shadow:0 2px 6px rgba(0,0,0,0.45)" />
         ${overlaysHtml}
@@ -95,6 +112,77 @@ function createMarkerIcon(m: MarkerData, found: boolean): L.DivIcon {
   })
 }
 
+function drawArrowLine(from: MarkerData, to: MarkerData, color: string, isTemp: boolean) {
+  if (!arrowLayerGroup) return
+  const latlngs: L.LatLngTuple[] = [[from.lat, from.lng], [to.lat, to.lng]]
+  const polyline = L.polyline(latlngs, {
+    color,
+    weight: 3,
+    opacity: isTemp ? 0.7 : 0.9,
+    dashArray: isTemp ? '8 6' : undefined,
+  })
+  arrowLayerGroup.addLayer(polyline)
+
+  const midLat = (from.lat + to.lat) / 2
+  const midLng = (from.lng + to.lng) / 2
+  const angle = Math.atan2(to.lat - from.lat, to.lng - from.lng) * (180 / Math.PI)
+
+  const arrowIcon = L.divIcon({
+    className: 'route-arrow-head',
+    html: `<div style="width:0;height:0;border-left:8px solid ${color};border-top:5px solid transparent;border-bottom:5px solid transparent;transform:rotate(${angle}deg);filter:drop-shadow(0 1px 2px rgba(0,0,0,0.4));"></div>`,
+    iconSize: [8, 10],
+    iconAnchor: [4, 5],
+  })
+  L.marker([midLat, midLng], { icon: arrowIcon, interactive: false }).addTo(arrowLayerGroup)
+}
+
+function buildRouteArrows() {
+  if (!arrowLayerGroup) return
+  arrowLayerGroup.clearLayers()
+
+  if (store.isAddingSegment) {
+    const markers = store.segmentTempMarkers
+    for (let i = 0; i < markers.length - 1; i++) {
+      drawArrowLine(markers[i], markers[i + 1], '#f59e0b', true)
+    }
+    return
+  }
+
+  if (store.currentRoute) {
+    let colorIdx = 0
+    for (const segment of store.currentRoute.segments) {
+      const color = segmentColors[colorIdx % segmentColors.length]
+      for (let i = 0; i < segment.markerIds.length - 1; i++) {
+        const from = store.getMarkerById(segment.markerIds[i])
+        const to = store.getMarkerById(segment.markerIds[i + 1])
+        if (from && to) {
+          drawArrowLine(from, to, color, false)
+        }
+      }
+      colorIdx++
+    }
+  }
+}
+
+function updateTempHighlights() {
+  if (!tempHighlightLayer) return
+  tempHighlightLayer.clearLayers()
+  if (!store.isAddingSegment) return
+  for (const id of store.segmentTempMarkerIds) {
+    const m = store.getMarkerById(id)
+    if (!m) continue
+    const circle = L.circleMarker([m.lat, m.lng], {
+      radius: 22,
+      color: '#f59e0b',
+      fillColor: '#f59e0b',
+      fillOpacity: 0.2,
+      weight: 3,
+      interactive: false,
+    })
+    tempHighlightLayer.addLayer(circle)
+  }
+}
+
 function buildMarkers() {
   if (!markerClusterGroup) return
   markerClusterGroup.clearLayers()
@@ -104,9 +192,12 @@ function buildMarkers() {
     const icon = createMarkerIcon(m, found)
     const marker = L.marker([m.lat, m.lng], { icon })
     marker.on('click', () => {
-      store.selectMarker(m.id)
+      if (store.isAddingSegment) {
+        store.addTempMarker(m.id)
+      } else {
+        store.selectMarker(m.id)
+      }
     })
-    const canHover = window.matchMedia('(hover: hover)').matches
     if (canHover) {
       marker.on('mouseover', () => {
         if (!map) return
@@ -160,11 +251,47 @@ function updateSelectedMarkerScreenPos(m?: MarkerData) {
 }
 
 watch(
-  () => [store.filteredMarkers, store.foundIds] as const,
+  () => [store.filteredMarkers, store.foundIds, store.segmentTempMarkerIds] as const,
   () => {
     buildMarkers()
+    nextTick(() => buildRouteArrows())
   },
   { deep: false }
+)
+
+watch(
+  () => [store.isAddingSegment, store.segmentTempMarkerIds.length] as const,
+  () => {
+    buildRouteArrows()
+    updateTempHighlights()
+  }
+)
+
+watch(
+  () => store.currentRouteId,
+  () => {
+    nextTick(() => buildRouteArrows())
+  }
+)
+
+watch(
+  () => store.focusMarkerIds,
+  (ids) => {
+    if (!map || ids.length === 0) return
+    const positions: L.LatLngTuple[] = []
+    for (const id of ids) {
+      const m = store.getMarkerById(id)
+      if (m) positions.push([m.lat, m.lng])
+    }
+    if (positions.length === 0) return
+    if (positions.length === 1) {
+      const m = store.getMarkerById(ids[0])
+      if (m) flyToMarker(m)
+      return
+    }
+    const bounds = L.latLngBounds(positions)
+    map.flyToBounds(bounds, { padding: [40, 40], duration: 0.6, easeLinearity: 0.25 })
+  }
 )
 
 watch(
@@ -228,6 +355,9 @@ onMounted(async () => {
 
   map.addLayer(markerClusterGroup)
 
+  arrowLayerGroup = L.layerGroup().addTo(map)
+  tempHighlightLayer = L.layerGroup().addTo(map)
+
   map.on('moveend', () => {
     if (store.selectedMarker) {
       updateSelectedMarkerScreenPos()
@@ -242,6 +372,9 @@ onMounted(async () => {
     const target = (e as any).originalEvent?.target as HTMLElement | undefined
     if (target?.closest('.custom-marker, .leaflet-popup, .marker-cluster')) return
 
+    if (store.isAddingSegment) {
+      return
+    }
     if (store.selectedMarkerId) {
       store.selectMarker(null)
     } else if (store.isEditorMode) {
@@ -309,6 +442,57 @@ defineExpose({ flyToMarker })
         </div>
       </div>
     </Transition>
+  </Teleport>
+
+  <!-- Focused segment top bar -->
+  <Teleport to="body">
+    <Transition name="hover-card">
+      <div
+        v-if="focusedSegment && focusedSegmentColor"
+        class="fixed z-30 left-1/2 flex items-center gap-2 px-3 py-1.5 rounded-lg bg-surface-900/90 backdrop-blur-xl border border-white/10 shadow-lg select-none"
+        :class="isMobileSegmentNav ? 'top-3' : 'top-4'"
+        :style="{ transform: 'translateX(-50%)' }"
+      >
+        <span
+          class="w-2.5 h-2.5 rounded-full flex-shrink-0"
+          :style="{ backgroundColor: focusedSegmentColor }"
+        ></span>
+        <span class="text-xs font-medium text-slate-200 whitespace-nowrap">{{ focusedSegment.name }}</span>
+      </div>
+    </Transition>
+  </Teleport>
+
+  <!-- Segment navigation: prev / name / next -->
+  <Teleport to="body">
+    <div
+      v-if="store.currentRoute && store.currentRoute.segments.length > 0"
+      class="fixed z-30 left-1/2 flex items-center gap-1.5 px-3 py-2 rounded-xl bg-surface-900/90 backdrop-blur-xl border border-white/10 shadow-xl select-none"
+      :class="isMobileSegmentNav ? 'bottom-5' : 'bottom-4'"
+      :style="{ transform: 'translateX(-50%)' }"
+    >
+      <button
+        class="flex-shrink-0 w-7 h-7 flex items-center justify-center rounded-lg text-slate-300 hover:text-white hover:bg-white/10 transition-colors disabled:opacity-30 disabled:cursor-default"
+        :disabled="store.currentRoute.segments.length <= 1"
+        @click="store.focusPrevSegment()"
+      >
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
+      <span
+        v-if="focusedSegmentColor"
+        class="w-2 h-2 rounded-full flex-shrink-0"
+        :style="{ backgroundColor: focusedSegmentColor }"
+      ></span>
+      <span class="text-xs font-medium text-slate-200 whitespace-nowrap">
+        路段 {{ store.currentSegmentIndex >= 0 ? store.currentSegmentIndex + 1 : '?' }} / {{ store.currentRoute.segments.length }}
+      </span>
+      <button
+        class="flex-shrink-0 w-7 h-7 flex items-center justify-center rounded-lg text-slate-300 hover:text-white hover:bg-white/10 transition-colors disabled:opacity-30 disabled:cursor-default"
+        :disabled="store.currentRoute.segments.length <= 1"
+        @click="store.focusNextSegment()"
+      >
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+      </button>
+    </div>
   </Teleport>
 </template>
 

@@ -1,8 +1,9 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import type { MarkerData, MarkerType, LegacyMarkerData } from '@/types'
+import type { MarkerData, MarkerType, LegacyMarkerData, RouteData, RouteSegment } from '@/types'
 import { migrateMarker, ALL_MARKER_TYPES, ALL_ITEMS } from '@/types'
 import markersRaw from '@/data/markers.json'
+import routesRaw from '@/data/routes.json'
 import { EDITOR_ENABLED } from '@/config'
 
 const STORAGE_KEY = 'isekai-map-found'
@@ -17,6 +18,27 @@ function loadFound(): Set<string> {
 
 function saveFound(set: Set<string>) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify([...set]))
+}
+
+async function loadRoutesFromApi(): Promise<RouteData[]> {
+  try {
+    const res = await fetch('/api/routes')
+    if (res.ok) {
+      const json = await res.json()
+      if (Array.isArray(json)) return json
+    }
+  } catch { /* ignore */ }
+  return []
+}
+
+async function saveRoutesToApi(routes: RouteData[]) {
+  try {
+    await fetch('/api/routes', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(routes),
+    })
+  } catch { /* ignore */ }
 }
 
 let nextId = 1
@@ -45,6 +67,7 @@ export const useMarkerStore = defineStore('markers', () => {
   const sidebarOpen = ref(window.innerWidth >= 768)
   const pendingMarkerPos = ref<{ lat: number; lng: number } | null>(null)
   const editingMarkerId = ref<string | null>(null)
+  const routeMarkerFilterIds = ref<Set<string> | null>(null)
 
   const editingMarker = computed(() => {
     if (!editingMarkerId.value) return null
@@ -58,7 +81,11 @@ export const useMarkerStore = defineStore('markers', () => {
       list = list.filter((m) => !foundIds.value.has(m.id))
     }
 
-    list = list.filter((m) => m.types.some((t) => selectedTypes.value.has(t)))
+    if (routeMarkerFilterIds.value) {
+      list = list.filter((m) => routeMarkerFilterIds.value!.has(m.id))
+    } else {
+      list = list.filter((m) => m.types.some((t) => selectedTypes.value.has(t)))
+    }
 
     const q = searchQuery.value.trim().toLowerCase()
     if (q) {
@@ -161,6 +188,8 @@ export const useMarkerStore = defineStore('markers', () => {
       isEditorMode.value = false
     } else {
       await loadLatestMarkers()
+      const latestRoutes = await loadRoutesFromApi()
+      routes.value = latestRoutes
       isEditorMode.value = true
     }
   }
@@ -235,6 +264,205 @@ export const useMarkerStore = defineStore('markers', () => {
     editingMarkerId.value = null
   }
 
+  // ---- routes ----
+  const routes = ref<RouteData[]>(routesRaw as RouteData[])
+
+  // Override with API data if available (dev server)
+  if (EDITOR_ENABLED) {
+    loadRoutesFromApi().then(data => {
+      if (data.length > 0 || routes.value.length === 0) {
+        routes.value = data
+      }
+    })
+  }
+  const showRouteView = ref(false)
+  const currentRouteId = ref<string | null>(null)
+  const isAddingSegment = ref(false)
+  const segmentTempMarkerIds = ref<string[]>([])
+  const currentSegmentIndex = ref(-1)
+
+  const currentRoute = computed(() => {
+    if (!currentRouteId.value) return null
+    return routes.value.find(r => r.id === currentRouteId.value) ?? null
+  })
+
+  const segmentTempMarkers = computed(() => {
+    return segmentTempMarkerIds.value
+      .map(id => markers.value.find(m => m.id === id))
+      .filter((m): m is MarkerData => m != null)
+  })
+
+  function openRouteList() {
+    showRouteView.value = true
+    currentRouteId.value = null
+  }
+
+  function openRouteDetail(routeId: string) {
+    showRouteView.value = true
+    currentRouteId.value = routeId
+    currentSegmentIndex.value = 0
+    const route = routes.value.find(r => r.id === routeId)
+    if (route && route.segments.length > 0) {
+      requestFocusMarkers(route.segments[0].markerIds)
+    }
+  }
+
+  function closeRouteView() {
+    showRouteView.value = false
+    currentRouteId.value = null
+    currentSegmentIndex.value = -1
+    isAddingSegment.value = false
+    segmentTempMarkerIds.value = []
+    routeMarkerFilterIds.value = null
+  }
+
+  function addRoute(name: string, image?: string) {
+    const id = generateId()
+    const route: RouteData = { id, name, image, segments: [] }
+    routes.value = [...routes.value, route]
+    saveRoutesToApi(routes.value)
+    currentRouteId.value = id
+    return route
+  }
+
+  function updateRoute(routeId: string, data: Partial<Pick<RouteData, 'name' | 'image'>>) {
+    const idx = routes.value.findIndex(r => r.id === routeId)
+    if (idx === -1) return
+    const updated = { ...routes.value[idx], ...data }
+    routes.value = [...routes.value.slice(0, idx), updated, ...routes.value.slice(idx + 1)]
+    saveRoutesToApi(routes.value)
+  }
+
+  function updateSegment(segmentId: string, data: Partial<Pick<RouteSegment, 'name'>>) {
+    if (!currentRouteId.value) return
+    const routeIdx = routes.value.findIndex(r => r.id === currentRouteId.value)
+    if (routeIdx === -1) return
+    const route = routes.value[routeIdx]
+    const updatedSegments = route.segments.map(s =>
+      s.id === segmentId ? { ...s, ...data } : s
+    )
+    const updated = { ...route, segments: updatedSegments }
+    routes.value = [...routes.value.slice(0, routeIdx), updated, ...routes.value.slice(routeIdx + 1)]
+    saveRoutesToApi(routes.value)
+  }
+
+  function reorderSegments(fromIdx: number, toIdx: number) {
+    if (!currentRouteId.value) return
+    const routeIdx = routes.value.findIndex(r => r.id === currentRouteId.value)
+    if (routeIdx === -1) return
+    const route = routes.value[routeIdx]
+    if (fromIdx < 0 || fromIdx >= route.segments.length) return
+    if (toIdx < 0 || toIdx >= route.segments.length) return
+    const segments = [...route.segments]
+    const [moved] = segments.splice(fromIdx, 1)
+    segments.splice(toIdx, 0, moved)
+    const updated = { ...route, segments }
+    routes.value = [...routes.value.slice(0, routeIdx), updated, ...routes.value.slice(routeIdx + 1)]
+    saveRoutesToApi(routes.value)
+  }
+
+  function deleteRoute(routeId: string) {
+    routes.value = routes.value.filter(r => r.id !== routeId)
+    saveRoutesToApi(routes.value)
+    if (currentRouteId.value === routeId) {
+      currentRouteId.value = null
+    }
+  }
+
+  function focusSegment(index: number) {
+    const route = currentRoute.value
+    if (!route) return
+    if (index < 0 || index >= route.segments.length) return
+    currentSegmentIndex.value = index
+    requestFocusMarkers(route.segments[index].markerIds)
+  }
+
+  function focusPrevSegment() {
+    const route = currentRoute.value
+    if (!route) return
+    const count = route.segments.length
+    if (count === 0) return
+    const next = (currentSegmentIndex.value - 1 + count) % count
+    focusSegment(next)
+  }
+
+  function focusNextSegment() {
+    const route = currentRoute.value
+    if (!route) return
+    const count = route.segments.length
+    if (count === 0) return
+    const next = (currentSegmentIndex.value + 1) % count
+    focusSegment(next)
+  }
+
+  function startAddSegment() {
+    isAddingSegment.value = true
+    segmentTempMarkerIds.value = []
+  }
+
+  function addTempMarker(markerId: string) {
+    if (!isAddingSegment.value) return
+    if (segmentTempMarkerIds.value.includes(markerId)) return
+    segmentTempMarkerIds.value = [...segmentTempMarkerIds.value, markerId]
+  }
+
+  function removeLastTempMarker() {
+    segmentTempMarkerIds.value = segmentTempMarkerIds.value.slice(0, -1)
+  }
+
+  function cancelAddSegment() {
+    isAddingSegment.value = false
+    segmentTempMarkerIds.value = []
+  }
+
+  function finishAddSegment(name: string) {
+    if (!currentRouteId.value || segmentTempMarkerIds.value.length < 2) return
+    const route = routes.value.find(r => r.id === currentRouteId.value)
+    if (!route) return
+    const segment: RouteSegment = {
+      id: generateId(),
+      name,
+      markerIds: [...segmentTempMarkerIds.value],
+    }
+    const updated = { ...route, segments: [...route.segments, segment] }
+    const idx = routes.value.findIndex(r => r.id === currentRouteId.value)
+    if (idx === -1) return
+    routes.value = [...routes.value.slice(0, idx), updated, ...routes.value.slice(idx + 1)]
+    saveRoutesToApi(routes.value)
+    isAddingSegment.value = false
+    segmentTempMarkerIds.value = []
+  }
+
+  function deleteSegment(segmentId: string) {
+    if (!currentRouteId.value) return
+    const route = routes.value.find(r => r.id === currentRouteId.value)
+    if (!route) return
+    const updated = { ...route, segments: route.segments.filter(s => s.id !== segmentId) }
+    const idx = routes.value.findIndex(r => r.id === currentRouteId.value)
+    if (idx === -1) return
+    routes.value = [...routes.value.slice(0, idx), updated, ...routes.value.slice(idx + 1)]
+    saveRoutesToApi(routes.value)
+  }
+
+  function getMarkerById(id: string): MarkerData | undefined {
+    return markers.value.find(m => m.id === id)
+  }
+
+  // ---- map focus ----
+  const focusMarkerIds = ref<string[]>([])
+
+  function requestFocusMarkers(ids: string[]) {
+    focusMarkerIds.value = [...ids]
+  }
+
+  function setRouteMarkerFilter(ids: string[] | null) {
+    routeMarkerFilterIds.value = ids ? new Set(ids) : null
+  }
+
+  function clearRouteMarkerFilter() {
+    routeMarkerFilterIds.value = null
+  }
+
   return {
     // state
     isEditorMode,
@@ -270,5 +498,39 @@ export const useMarkerStore = defineStore('markers', () => {
     updateMarker,
     openCreateMarker,
     closeCreateMarker,
+    // routes
+    routes,
+    showRouteView,
+    currentRouteId,
+    currentRoute,
+    currentSegmentIndex,
+    isAddingSegment,
+    segmentTempMarkerIds,
+    segmentTempMarkers,
+    openRouteList,
+    openRouteDetail,
+    closeRouteView,
+    addRoute,
+    updateRoute,
+    updateSegment,
+    reorderSegments,
+    deleteRoute,
+    focusSegment,
+    focusPrevSegment,
+    focusNextSegment,
+    startAddSegment,
+    addTempMarker,
+    removeLastTempMarker,
+    cancelAddSegment,
+    finishAddSegment,
+    deleteSegment,
+    getMarkerById,
+    // map focus
+    focusMarkerIds,
+    requestFocusMarkers,
+    // route marker filter
+    routeMarkerFilterIds,
+    setRouteMarkerFilter,
+    clearRouteMarkerFilter,
   }
 })

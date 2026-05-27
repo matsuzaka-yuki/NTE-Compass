@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed, ref, nextTick, watch, onMounted, onUnmounted } from 'vue'
 import { useMarkerStore } from '@/stores/markerStore'
-import { MARKER_TYPE_CONFIG, MARKER_CATEGORIES, ENEMY_CLEARING_TYPES } from '@/types'
-import type { MarkerType } from '@/types'
+import { MARKER_TYPE_CONFIG, MARKER_CATEGORIES, ENEMY_CLEARING_TYPES, ALL_ITEMS } from '@/types'
+import type { MarkerType, MarkerData } from '@/types'
 import { resolveAssetUrl } from '@/config'
 
 const store = useMarkerStore()
@@ -272,6 +272,208 @@ function backToList() {
 function scrollToList(id: string) {
   store.selectMarker(id)
 }
+
+// ---- Route state ----
+const routeImageOptions = computed(() => {
+  const images: { url: string; label: string }[] = []
+  const seen = new Set<string>()
+
+  for (const item of ALL_ITEMS) {
+    if (item.image && !seen.has(item.image)) {
+      seen.add(item.image)
+      images.push({ url: resolveAssetUrl(item.image), label: item.name })
+    }
+  }
+
+  for (const m of store.markers) {
+    const img = m.images?.[0] || m.image
+    if (img && !seen.has(img)) {
+      seen.add(img)
+      const url = img.startsWith('data:') ? img : resolveAssetUrl('./' + img)
+      images.push({ url, label: m.name })
+    }
+  }
+
+  return images
+})
+
+const showCreateRouteDialog = ref(false)
+const newRouteName = ref('')
+const newRouteImage = ref('')
+
+const showCreateSegmentDialog = ref(false)
+const newSegmentName = ref('')
+
+const showEditRouteDialog = ref(false)
+const editRouteName = ref('')
+const editRouteImage = ref('')
+
+const showEditSegmentDialog = ref(false)
+const editSegmentName = ref('')
+const editingSegmentId = ref<string | null>(null)
+
+function openCreateRouteDialog() {
+  newRouteName.value = ''
+  newRouteImage.value = routeImageOptions.value[0]?.url ?? ''
+  showCreateRouteDialog.value = true
+}
+
+function confirmCreateRoute() {
+  const name = newRouteName.value.trim()
+  if (!name) return
+  store.addRoute(name, newRouteImage.value || undefined)
+  showCreateRouteDialog.value = false
+}
+
+function openCreateSegmentDialog() {
+  newSegmentName.value = ''
+  showCreateSegmentDialog.value = true
+}
+
+function confirmCreateSegment() {
+  const name = newSegmentName.value.trim()
+  if (!name) return
+  store.finishAddSegment(name)
+  showCreateSegmentDialog.value = false
+}
+
+function openEditRouteDialog() {
+  if (!store.currentRoute) return
+  editRouteName.value = store.currentRoute.name
+  editRouteImage.value = store.currentRoute.image ?? ''
+  showEditRouteDialog.value = true
+}
+
+function confirmEditRoute() {
+  const name = editRouteName.value.trim()
+  if (!name || !store.currentRouteId) return
+  store.updateRoute(store.currentRouteId, {
+    name,
+    image: editRouteImage.value || undefined,
+  })
+  showEditRouteDialog.value = false
+}
+
+function openEditSegmentDialog(segmentId: string) {
+  const route = store.currentRoute
+  if (!route) return
+  const seg = route.segments.find(s => s.id === segmentId)
+  if (!seg) return
+  editingSegmentId.value = segmentId
+  editSegmentName.value = seg.name
+  showEditSegmentDialog.value = true
+}
+
+function confirmEditSegment() {
+  const name = editSegmentName.value.trim()
+  if (!name || !editingSegmentId.value) return
+  store.updateSegment(editingSegmentId.value, { name })
+  showEditSegmentDialog.value = false
+  editingSegmentId.value = null
+}
+
+// Segment drag-and-drop
+const dragIdx = ref<number | null>(null)
+
+function onDragStart(idx: number, e: DragEvent) {
+  if (!store.isEditorMode) return
+  dragIdx.value = idx
+  if (e.dataTransfer) {
+    e.dataTransfer.effectAllowed = 'move'
+    e.dataTransfer.setData('text/plain', String(idx))
+  }
+  ;(e.target as HTMLElement).classList.add('opacity-50')
+}
+
+function onDragEnd(e: DragEvent) {
+  dragIdx.value = null
+  ;(e.target as HTMLElement).classList.remove('opacity-50')
+}
+
+function onDragOver(idx: number, e: DragEvent) {
+  e.preventDefault()
+  if (dragIdx.value === null || dragIdx.value === idx) return
+  e.dataTransfer!.dropEffect = 'move'
+}
+
+function onDrop(idx: number, e: DragEvent) {
+  e.preventDefault()
+  if (dragIdx.value === null || dragIdx.value === idx) return
+  store.reorderSegments(dragIdx.value, idx)
+  dragIdx.value = null
+}
+
+function handleAddSegmentClick() {
+  store.startAddSegment()
+}
+
+function handleFinishSegmentClick() {
+  if (store.segmentTempMarkerIds.length < 2) return
+  openCreateSegmentDialog()
+}
+
+function handleCancelSegmentClick() {
+  store.cancelAddSegment()
+}
+
+function handleRouteClick(routeId: string) {
+  store.openRouteDetail(routeId)
+}
+
+function handleBackToRouteList() {
+  store.clearRouteMarkerFilter()
+  store.currentRouteId = null
+}
+
+function handleDeleteRoute(routeId: string) {
+  store.deleteRoute(routeId)
+}
+
+function handleDeleteSegment(segmentId: string) {
+  store.deleteSegment(segmentId)
+}
+
+function getAllRouteMarkerIds(): string[] {
+  if (!store.currentRoute) return []
+  const ids = new Set<string>()
+  for (const seg of store.currentRoute.segments) {
+    for (const id of seg.markerIds) {
+      ids.add(id)
+    }
+  }
+  return [...ids]
+}
+
+function toggleRouteMarkerFilter() {
+  if (store.routeMarkerFilterIds) {
+    store.clearRouteMarkerFilter()
+  } else {
+    store.setRouteMarkerFilter(getAllRouteMarkerIds())
+  }
+}
+
+function getMarkerName(id: string): string {
+  return store.getMarkerById(id)?.name ?? id
+}
+
+function getSegmentMarkerNames(ids: string[]): string {
+  return ids.map(id => getMarkerName(id)).join(' → ')
+}
+
+function getSegmentTypeStats(markerIds: string[]): { type: MarkerType; count: number }[] {
+  const counts: Record<string, number> = {}
+  for (const id of markerIds) {
+    const m = store.getMarkerById(id)
+    if (!m) continue
+    for (const t of m.types) {
+      counts[t] = (counts[t] || 0) + 1
+    }
+  }
+  return Object.entries(counts)
+    .map(([type, count]) => ({ type: type as MarkerType, count }))
+    .sort((a, b) => b.count - a.count)
+}
+
 </script>
 
 <template>
@@ -359,7 +561,7 @@ function scrollToList(id: string) {
       </div>
 
       <!-- Fixed top section -->
-      <div class="flex-shrink-0 space-y-3" :class="{ 'p-2': !isMobile, 'p-1': isMobile && detailType === null && !showCategoryList && !enemyMobileView }">
+      <div v-if="!store.showRouteView" class="flex-shrink-0 space-y-3" :class="{ 'p-2': !isMobile, 'p-1': isMobile && detailType === null && !showCategoryList && !enemyMobileView }">
         <!-- Header -->
         <div class="flex items-center gap-2">
           <h1 v-if="!searchExpanded" class="text-lg font-bold tracking-wide text-primary-400 select-none whitespace-nowrap truncate max-md:hidden">
@@ -391,6 +593,17 @@ function scrollToList(id: string) {
             </button>
           </div>
           <div v-else class="flex-1 min-w-0 max-md:hidden" />
+          <!-- Route button (desktop) -->
+          <button
+            @click="store.showRouteView ? store.closeRouteView() : store.openRouteList()"
+            class="w-7 h-7 flex items-center justify-center rounded-lg transition-colors flex-shrink-0 max-md:hidden"
+            :class="store.showRouteView ? 'text-primary-400 bg-primary-500/10' : 'text-slate-400 hover:text-white hover:bg-white/10'"
+            title="路线"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+            </svg>
+          </button>
           <button
             v-if="!searchExpanded"
             @click="toggleSearch()"
@@ -404,7 +617,223 @@ function scrollToList(id: string) {
         </div>
       </div>
 
+      <!-- Route views -->
+      <template v-if="store.showRouteView">
+        <!-- Route list view -->
+        <div v-if="!store.currentRouteId" class="flex-1 flex flex-col overflow-hidden" :class="{ 'rounded-t-2xl': isMobile }">
+          <div class="flex-shrink-0 flex items-center gap-2.5 px-4 py-1.5 border-b border-white/10 bg-surface-800/80">
+            <button
+              @click="store.closeRouteView()"
+              class="w-6 h-6 flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/10 rounded-md transition-colors flex-shrink-0"
+            >
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+            <span class="flex-1 text-sm leading-none font-medium text-slate-200 truncate">路线</span>
+            <button
+              v-if="store.isEditorMode"
+              @click="openCreateRouteDialog()"
+              class="w-6 h-6 flex items-center justify-center text-slate-400 hover:text-primary-400 hover:bg-white/10 rounded-md transition-colors flex-shrink-0"
+              title="创建路线"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+              </svg>
+            </button>
+          </div>
+
+          <div class="flex-1 overflow-y-auto px-4 py-3 space-y-2">
+            <template v-if="store.routes.length > 0">
+              <div
+                v-for="route in store.routes"
+                :key="route.id"
+                @click="handleRouteClick(route.id)"
+                class="flex items-center gap-3 p-2 rounded-xl cursor-pointer hover:bg-white/5 transition-colors border border-white/5"
+              >
+                <div class="w-10 h-10 rounded-lg overflow-hidden flex-shrink-0 bg-surface-800">
+                  <img v-if="route.image" :src="route.image" class="w-full h-full object-cover" />
+                  <div v-else class="w-full h-full flex items-center justify-center">
+                    <svg class="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                    </svg>
+                  </div>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="text-sm text-slate-200 truncate">{{ route.name }}</div>
+                  <div class="text-xs text-slate-500">{{ route.segments.length }} 个路段</div>
+                </div>
+                <button
+                  v-if="store.isEditorMode"
+                  @click.stop="handleDeleteRoute(route.id)"
+                  class="w-6 h-6 flex items-center justify-center text-slate-500 hover:text-red-400 rounded transition-colors flex-shrink-0"
+                >
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                </button>
+                <svg class="w-3.5 h-3.5 text-slate-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                </svg>
+              </div>
+            </template>
+
+            <div v-else class="flex flex-col items-center justify-center gap-2 text-slate-500 py-12">
+              <svg class="w-10 h-10 opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+              </svg>
+              <span class="text-xs">暂无路线</span>
+              <span v-if="store.isEditorMode" class="text-xs text-slate-600">点击右上角 + 创建路线</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Route detail view -->
+        <div v-else class="flex-1 flex flex-col overflow-hidden" :class="{ 'rounded-t-2xl': isMobile }">
+          <div class="flex-shrink-0 flex items-center gap-2.5 px-4 py-1.5 border-b border-white/10 bg-surface-800/80">
+            <button
+              @click="handleBackToRouteList()"
+              class="w-6 h-6 flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/10 rounded-md transition-colors flex-shrink-0"
+            >
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+            <div v-if="store.currentRoute?.image" class="w-5 h-5 rounded overflow-hidden flex-shrink-0 bg-surface-800">
+              <img :src="store.currentRoute.image" class="w-full h-full object-cover" />
+            </div>
+            <span class="flex-1 text-sm leading-none font-medium text-slate-200 truncate">{{ store.currentRoute?.name ?? '' }}</span>
+            <button
+              v-if="store.isEditorMode"
+              @click="openEditRouteDialog()"
+              class="w-6 h-6 flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/10 rounded-md transition-colors flex-shrink-0"
+              title="编辑路线"
+            >
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+              </svg>
+            </button>
+            <button
+              v-if="!store.isAddingSegment"
+              @click="toggleRouteMarkerFilter()"
+              class="w-6 h-6 flex items-center justify-center rounded-md transition-colors flex-shrink-0"
+              :class="store.routeMarkerFilterIds ? 'text-amber-400 bg-amber-500/10' : 'text-slate-400 hover:text-white hover:bg-white/10'"
+              :title="store.routeMarkerFilterIds ? '显示全部标点' : '仅显示路线标点'"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+              </svg>
+            </button>
+            <button
+              v-if="store.isEditorMode && !store.isAddingSegment"
+              @click="handleAddSegmentClick()"
+              class="w-6 h-6 flex items-center justify-center text-slate-400 hover:text-primary-400 hover:bg-white/10 rounded-md transition-colors flex-shrink-0"
+              title="添加路段"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+              </svg>
+            </button>
+          </div>
+
+          <!-- Adding segment status bar -->
+          <div
+            v-if="store.isAddingSegment"
+            class="flex-shrink-0 flex items-center gap-2 px-4 py-2 bg-amber-500/10 border-b border-amber-500/20"
+          >
+            <span class="text-xs text-amber-300 flex-1">
+              已选 {{ store.segmentTempMarkerIds.length }} 个标点
+            </span>
+            <button
+              @click="handleCancelSegmentClick()"
+              class="px-2 py-1 text-xs text-slate-400 hover:text-white rounded transition-colors"
+            >取消</button>
+            <button
+              @click="handleFinishSegmentClick()"
+              :disabled="store.segmentTempMarkerIds.length < 2"
+              class="px-2.5 py-1 text-xs font-medium rounded bg-amber-500 text-white hover:bg-amber-400 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            >完成</button>
+          </div>
+
+          <div class="flex-1 overflow-y-auto px-4 py-3 space-y-2">
+            <template v-if="store.currentRoute && store.currentRoute.segments.length > 0">
+              <div
+                v-for="(segment, idx) in store.currentRoute.segments"
+                :key="segment.id"
+                @click="store.focusSegment(idx)"
+                :draggable="store.isEditorMode"
+                @dragstart="onDragStart(idx, $event)"
+                @dragend="onDragEnd($event)"
+                @dragover="onDragOver(idx, $event)"
+                @drop="onDrop(idx, $event)"
+                class="p-3 rounded-xl border border-white/5 bg-white/[0.02] cursor-pointer hover:bg-white/[0.04] transition-colors group"
+              >
+                <div class="flex items-center gap-2 mb-2">
+                  <button
+                    v-if="store.isEditorMode"
+                    class="w-4 h-4 flex items-center justify-center text-slate-600 hover:text-slate-400 cursor-grab active:cursor-grabbing flex-shrink-0"
+                    title="拖动排序"
+                    @click.stop
+                  >
+                    <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M8 6h2v2H8V6zm6 0h2v2h-2V6zM8 11h2v2H8v-2zm6 0h2v2h-2v-2zm-6 5h2v2H8v-2zm6 0h2v2h-2v-2z"/>
+                    </svg>
+                  </button>
+                  <span
+                    class="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold text-white flex-shrink-0"
+                    :style="{ backgroundColor: ['#f59e0b','#3b82f6','#22c55e','#ef4444','#8b5cf6','#ec4899'][idx % 6] }"
+                  >{{ idx + 1 }}</span>
+                  <span class="text-sm font-medium text-slate-200 truncate flex-1">{{ segment.name }}</span>
+                  <button
+                    v-if="store.isEditorMode"
+                    @click.stop="openEditSegmentDialog(segment.id)"
+                    class="w-5 h-5 flex items-center justify-center text-slate-500 hover:text-white rounded transition-colors flex-shrink-0"
+                  >
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                  </button>
+                  <button
+                    v-if="store.isEditorMode"
+                    @click.stop="handleDeleteSegment(segment.id)"
+                    class="w-5 h-5 flex items-center justify-center text-slate-500 hover:text-red-400 rounded transition-colors flex-shrink-0"
+                  >
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                  </button>
+                </div>
+                <div class="flex flex-wrap gap-1.5 mt-1">
+                  <span
+                    v-for="stat in getSegmentTypeStats(segment.markerIds)"
+                    :key="stat.type"
+                    class="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] rounded bg-surface-700 text-slate-300"
+                  >
+                    <img
+                      :src="resolveAssetUrl(MARKER_TYPE_CONFIG[stat.type].iconUrl)"
+                      :alt="MARKER_TYPE_CONFIG[stat.type].label"
+                      class="w-3.5 h-3.5 rounded-full object-cover flex-shrink-0"
+                    />
+                    <span>{{ MARKER_TYPE_CONFIG[stat.type].label }}</span>
+                    <span class="font-mono text-slate-400">{{ stat.count }}</span>
+                  </span>
+                </div>
+              </div>
+            </template>
+
+            <div v-else-if="!store.isAddingSegment" class="flex flex-col items-center justify-center gap-2 text-slate-500 py-12">
+              <svg class="w-10 h-10 opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
+              <span class="text-xs">暂无路段</span>
+              <span v-if="store.isEditorMode" class="text-xs text-slate-600">点击右上角 + 添加路段</span>
+            </div>
+          </div>
+        </div>
+      </template>
+
       <!-- Scrollable area: main list -->
+      <template v-else>
       <div v-if="detailType === null && !showCategoryList && !enemyMobileView" class="flex-1 overflow-y-auto overflow-hidden px-4 pb-4 space-y-3 max-md:space-y-2" @click.self="enemyExpanded = false">
         <!-- Type filters -->
         <div>
@@ -785,6 +1214,7 @@ function scrollToList(id: string) {
           </div>
         </div>
       </div>
+      </template>
     </div>
   </Transition>
 
@@ -844,6 +1274,200 @@ function scrollToList(id: string) {
         </button>
       </div>
     </div>
+  </Teleport>
+
+  <!-- Create route dialog -->
+  <Teleport to="body">
+    <Transition name="confirm">
+      <div
+        v-if="showCreateRouteDialog"
+        class="fixed inset-0 z-[100] flex items-center justify-center"
+        @click.self="showCreateRouteDialog = false"
+      >
+        <div class="absolute inset-0 bg-black/60"></div>
+        <div class="relative bg-surface-800 border border-white/10 rounded-2xl shadow-2xl p-5 w-[380px] max-w-[92vw] max-h-[85vh] flex flex-col">
+          <h3 class="text-sm font-medium text-slate-200 mb-4">创建路线</h3>
+          <div class="mb-3">
+            <label class="block text-xs text-slate-400 mb-1.5">路线名称</label>
+            <input
+              v-model="newRouteName"
+              type="text"
+              placeholder="输入路线名称"
+              class="w-full px-3 py-2 text-sm bg-surface-700 border border-white/10 rounded-lg text-slate-200 placeholder-slate-500 focus:outline-none focus:border-primary-500 transition-colors"
+              @keydown.enter="confirmCreateRoute()"
+            />
+          </div>
+          <div class="flex-1 min-h-0 mb-4">
+            <label class="block text-xs text-slate-400 mb-1.5">选择路线图片</label>
+            <div v-if="routeImageOptions.length > 0" class="grid grid-cols-5 gap-2 max-h-[240px] overflow-y-auto">
+              <div
+                v-for="(img, idx) in routeImageOptions"
+                :key="idx"
+                @click="newRouteImage = img.url"
+                class="aspect-square rounded-lg overflow-hidden cursor-pointer border-2 transition-colors bg-surface-700"
+                :class="newRouteImage === img.url ? 'border-primary-500' : 'border-transparent hover:border-white/20'"
+                :title="img.label"
+              >
+                <img :src="img.url" class="w-full h-full object-cover" />
+              </div>
+            </div>
+            <div v-else class="text-xs text-slate-500 py-4 text-center">暂无可用图片</div>
+          </div>
+          <div class="flex gap-3 flex-shrink-0">
+            <button
+              @click="showCreateRouteDialog = false"
+              class="flex-1 py-2 text-xs font-medium rounded-lg bg-surface-700 text-slate-300 hover:bg-surface-600 transition-colors"
+            >取消</button>
+            <button
+              @click="confirmCreateRoute()"
+              :disabled="!newRouteName.trim()"
+              class="flex-1 py-2 text-xs font-medium rounded-lg bg-primary-600 text-white hover:bg-primary-500 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            >创建</button>
+          </div>
+        </div>
+      </div>
+    </Transition>
+  </Teleport>
+
+  <!-- Create segment dialog -->
+  <Teleport to="body">
+    <Transition name="confirm">
+      <div
+        v-if="showCreateSegmentDialog"
+        class="fixed inset-0 z-[100] flex items-center justify-center"
+        @click.self="showCreateSegmentDialog = false"
+      >
+        <div class="absolute inset-0 bg-black/60"></div>
+        <div class="relative bg-surface-800 border border-white/10 rounded-2xl shadow-2xl p-5 w-[380px] max-w-[92vw] max-h-[85vh] flex flex-col">
+          <h3 class="text-sm font-medium text-slate-200 mb-4">新建路段</h3>
+          <div class="mb-3">
+            <label class="block text-xs text-slate-400 mb-1.5">路段名称</label>
+            <input
+              v-model="newSegmentName"
+              type="text"
+              placeholder="输入路段名称"
+              class="w-full px-3 py-2 text-sm bg-surface-700 border border-white/10 rounded-lg text-slate-200 placeholder-slate-500 focus:outline-none focus:border-primary-500 transition-colors"
+              @keydown.enter="confirmCreateSegment()"
+            />
+          </div>
+          <div class="mb-4">
+            <label class="block text-xs text-slate-400 mb-1.5">连接标点 ({{ store.segmentTempMarkerIds.length }} 个)</label>
+            <div class="max-h-[160px] overflow-y-auto space-y-1">
+              <div
+                v-for="(mid, idx) in store.segmentTempMarkerIds"
+                :key="mid"
+                class="flex items-center gap-2 px-2 py-1 rounded bg-surface-700 text-xs text-slate-300"
+              >
+                <span class="w-4 h-4 rounded-full bg-amber-500 flex items-center justify-center text-[9px] font-bold text-white flex-shrink-0">{{ idx + 1 }}</span>
+                <span class="truncate">{{ getMarkerName(mid) }}</span>
+              </div>
+              <div v-if="store.segmentTempMarkerIds.length === 0" class="text-xs text-slate-500 py-2 text-center">无标点</div>
+            </div>
+          </div>
+          <div class="flex gap-3 flex-shrink-0">
+            <button
+              @click="showCreateSegmentDialog = false"
+              class="flex-1 py-2 text-xs font-medium rounded-lg bg-surface-700 text-slate-300 hover:bg-surface-600 transition-colors"
+            >取消</button>
+            <button
+              @click="confirmCreateSegment()"
+              :disabled="!newSegmentName.trim() || store.segmentTempMarkerIds.length < 2"
+              class="flex-1 py-2 text-xs font-medium rounded-lg bg-amber-500 text-white hover:bg-amber-400 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            >保存</button>
+          </div>
+        </div>
+      </div>
+    </Transition>
+  </Teleport>
+
+  <!-- Edit route dialog -->
+  <Teleport to="body">
+    <Transition name="confirm">
+      <div
+        v-if="showEditRouteDialog"
+        class="fixed inset-0 z-[100] flex items-center justify-center"
+        @click.self="showEditRouteDialog = false"
+      >
+        <div class="absolute inset-0 bg-black/60"></div>
+        <div class="relative bg-surface-800 border border-white/10 rounded-2xl shadow-2xl p-5 w-[380px] max-w-[92vw] max-h-[85vh] flex flex-col">
+          <h3 class="text-sm font-medium text-slate-200 mb-4">编辑路线</h3>
+          <div class="mb-3">
+            <label class="block text-xs text-slate-400 mb-1.5">路线名称</label>
+            <input
+              v-model="editRouteName"
+              type="text"
+              placeholder="输入路线名称"
+              class="w-full px-3 py-2 text-sm bg-surface-700 border border-white/10 rounded-lg text-slate-200 placeholder-slate-500 focus:outline-none focus:border-primary-500 transition-colors"
+              @keydown.enter="confirmEditRoute()"
+            />
+          </div>
+          <div class="flex-1 min-h-0 mb-4">
+            <label class="block text-xs text-slate-400 mb-1.5">选择路线图片</label>
+            <div v-if="routeImageOptions.length > 0" class="grid grid-cols-5 gap-2 max-h-[240px] overflow-y-auto">
+              <div
+                v-for="(img, idx) in routeImageOptions"
+                :key="idx"
+                @click="editRouteImage = img.url"
+                class="aspect-square rounded-lg overflow-hidden cursor-pointer border-2 transition-colors bg-surface-700"
+                :class="editRouteImage === img.url ? 'border-primary-500' : 'border-transparent hover:border-white/20'"
+                :title="img.label"
+              >
+                <img :src="img.url" class="w-full h-full object-cover" />
+              </div>
+            </div>
+            <div v-else class="text-xs text-slate-500 py-4 text-center">暂无可用图片</div>
+          </div>
+          <div class="flex gap-3 flex-shrink-0">
+            <button
+              @click="showEditRouteDialog = false"
+              class="flex-1 py-2 text-xs font-medium rounded-lg bg-surface-700 text-slate-300 hover:bg-surface-600 transition-colors"
+            >取消</button>
+            <button
+              @click="confirmEditRoute()"
+              :disabled="!editRouteName.trim()"
+              class="flex-1 py-2 text-xs font-medium rounded-lg bg-primary-600 text-white hover:bg-primary-500 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            >保存</button>
+          </div>
+        </div>
+      </div>
+    </Transition>
+  </Teleport>
+
+  <!-- Edit segment dialog -->
+  <Teleport to="body">
+    <Transition name="confirm">
+      <div
+        v-if="showEditSegmentDialog"
+        class="fixed inset-0 z-[100] flex items-center justify-center"
+        @click.self="showEditSegmentDialog = false"
+      >
+        <div class="absolute inset-0 bg-black/60"></div>
+        <div class="relative bg-surface-800 border border-white/10 rounded-2xl shadow-2xl p-5 w-[320px] max-w-[92vw]">
+          <h3 class="text-sm font-medium text-slate-200 mb-4">编辑路段</h3>
+          <div class="mb-4">
+            <label class="block text-xs text-slate-400 mb-1.5">路段名称</label>
+            <input
+              v-model="editSegmentName"
+              type="text"
+              placeholder="输入路段名称"
+              class="w-full px-3 py-2 text-sm bg-surface-700 border border-white/10 rounded-lg text-slate-200 placeholder-slate-500 focus:outline-none focus:border-primary-500 transition-colors"
+              @keydown.enter="confirmEditSegment()"
+            />
+          </div>
+          <div class="flex gap-3">
+            <button
+              @click="showEditSegmentDialog = false"
+              class="flex-1 py-2 text-xs font-medium rounded-lg bg-surface-700 text-slate-300 hover:bg-surface-600 transition-colors"
+            >取消</button>
+            <button
+              @click="confirmEditSegment()"
+              :disabled="!editSegmentName.trim()"
+              class="flex-1 py-2 text-xs font-medium rounded-lg bg-primary-600 text-white hover:bg-primary-500 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            >保存</button>
+          </div>
+        </div>
+      </div>
+    </Transition>
   </Teleport>
 </template>
 
