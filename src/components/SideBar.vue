@@ -2,7 +2,7 @@
 import { computed, ref, nextTick, watch, onMounted, onUnmounted } from 'vue'
 import { useMarkerStore } from '@/stores/markerStore'
 import { MARKER_TYPE_CONFIG, MARKER_CATEGORIES, ENEMY_CLEARING_TYPES, ALL_ITEMS } from '@/types'
-import type { MarkerType, MarkerData } from '@/types'
+import type { MarkerType } from '@/types'
 import { resolveAssetUrl } from '@/config'
 
 const store = useMarkerStore()
@@ -423,6 +423,7 @@ function handleRouteClick(routeId: string) {
 function handleBackToRouteList() {
   store.clearRouteMarkerFilter()
   store.currentRouteId = null
+  store.focusMarkerIds = []
 }
 
 function handleDeleteRoute(routeId: string) {
@@ -472,6 +473,18 @@ function getSegmentTypeStats(markerIds: string[]): { type: MarkerType; count: nu
   return Object.entries(counts)
     .map(([type, count]) => ({ type: type as MarkerType, count }))
     .sort((a, b) => b.count - a.count)
+}
+
+function getSegmentTotalCounts(markerIds: string[]): number {
+  let total = 0
+  for (const id of markerIds) {
+    const m = store.getMarkerById(id)
+    if (!m || !m.counts) continue
+    for (const v of Object.values(m.counts)) {
+      total += v
+    }
+  }
+  return total
 }
 
 </script>
@@ -784,6 +797,10 @@ function getSegmentTypeStats(markerIds: string[]): { type: MarkerType; count: nu
                     :style="{ backgroundColor: ['#f59e0b','#3b82f6','#22c55e','#ef4444','#8b5cf6','#ec4899'][idx % 6] }"
                   >{{ idx + 1 }}</span>
                   <span class="text-sm font-medium text-slate-200 truncate flex-1">{{ segment.name }}</span>
+                  <span
+                    v-if="getSegmentTotalCounts(segment.markerIds) > 0"
+                    class="text-xs px-1.5 py-0.5 rounded-full bg-red-500/15 text-red-400 flex-shrink-0 font-mono"
+                  >{{ getSegmentTotalCounts(segment.markerIds) }}</span>
                   <button
                     v-if="store.isEditorMode"
                     @click.stop="openEditSegmentDialog(segment.id)"
@@ -1148,13 +1165,19 @@ function getSegmentTypeStats(markerIds: string[]): { type: MarkerType; count: nu
                 v-for="m in row"
                 :key="m.id"
                 @click="scrollToList(m.id)"
-                class="flex gap-3 p-2 rounded-xl cursor-pointer hover:bg-white/5 transition-colors border border-white/5 max-md:flex-shrink-0 max-md:overflow-hidden"
+                class="flex gap-3 p-2 rounded-xl cursor-pointer hover:bg-white/5 transition-colors border border-white/5 max-md:flex-shrink-0 max-md:overflow-hidden relative"
                 :style="isMobile ? { width: m.description ? 'var(--card-width)' : 'var(--card-width-narrow)', minWidth: m.description ? 'var(--card-width)' : 'var(--card-width-narrow)', height: 'var(--card-row-h)' } : {}"
                 :class="[
                   { 'bg-primary-500/10 border-primary-500/30': store.selectedMarkerId === m.id },
                   isMobile && !m.description ? 'flex-col items-center justify-center gap-1' : '',
                 ]"
               >
+                <!-- Count badge (absolute top-left, mobile only) -->
+                <span
+                  v-if="m.counts && Object.values(m.counts).some(v => v > 0)"
+                  class="md:hidden absolute top-1 left-1 text-[10px] px-1 py-0.5 rounded-full bg-red-500/20 text-red-400 font-mono leading-none z-10"
+                >{{ Object.values(m.counts).reduce((a: number, b: number) => a + b, 0) }}</span>
+
                 <!-- Image -->
                 <div v-if="m.image || (m.images && m.images.length > 0)" class="rounded-lg overflow-hidden flex-shrink-0 bg-surface-800"
                   :class="{ 'self-center': !isMobile || !!m.description }"
@@ -1190,7 +1213,7 @@ function getSegmentTypeStats(markerIds: string[]): { type: MarkerType; count: nu
                     >已标记</span>
                     <span
                       v-if="m.counts && Object.values(m.counts).some(v => v > 0)"
-                      class="text-xs px-1.5 py-0.5 rounded-full bg-red-500/15 text-red-400 flex-shrink-0 font-mono"
+                      class="max-md:hidden text-xs px-1.5 py-0.5 rounded-full bg-red-500/15 text-red-400 flex-shrink-0 font-mono"
                     >{{ Object.values(m.counts).reduce((a: number, b: number) => a + b, 0) }}</span>
                   </div>
                   <div

@@ -14,7 +14,9 @@ let map: L.Map | null = null
 let markerClusterGroup: L.MarkerClusterGroup | null = null
 let arrowLayerGroup: L.LayerGroup | null = null
 let tempHighlightLayer: L.LayerGroup | null = null
+let focusedHighlightLayer: L.LayerGroup | null = null
 let defaultZoom = 5
+let isFlying = false
 
 const hoveredMarker = ref<MarkerData | null>(null)
 const hoveredScreenPos = ref<{ x: number; y: number } | null>(null)
@@ -125,7 +127,7 @@ function drawArrowLine(from: MarkerData, to: MarkerData, color: string, isTemp: 
 
   const midLat = (from.lat + to.lat) / 2
   const midLng = (from.lng + to.lng) / 2
-  const angle = Math.atan2(to.lat - from.lat, to.lng - from.lng) * (180 / Math.PI)
+  const angle = -Math.atan2(to.lat - from.lat, to.lng - from.lng) * (180 / Math.PI)
 
   const arrowIcon = L.divIcon({
     className: 'route-arrow-head',
@@ -183,6 +185,27 @@ function updateTempHighlights() {
   }
 }
 
+function updateFocusedHighlights() {
+  if (!focusedHighlightLayer) return
+  focusedHighlightLayer.clearLayers()
+  const ids = store.focusMarkerIds
+  if (ids.length === 0) return
+  for (const id of ids) {
+    const m = store.getMarkerById(id)
+    if (!m) continue
+    const color = focusedSegmentColor.value ?? '#f59e0b'
+    const circle = L.circleMarker([m.lat, m.lng], {
+      radius: 22,
+      color,
+      fillColor: color,
+      fillOpacity: 0.2,
+      weight: 3,
+      interactive: false,
+    })
+    focusedHighlightLayer.addLayer(circle)
+  }
+}
+
 function buildMarkers() {
   if (!markerClusterGroup) return
   markerClusterGroup.clearLayers()
@@ -232,12 +255,14 @@ function flyToMarker(m: MarkerData) {
     targetLatLng = map.unproject(targetPixel, targetZoom)
   }
 
+  isFlying = true
   map.flyTo(targetLatLng, targetZoom, {
     duration: 0.6,
     easeLinearity: 0.25,
   })
 
   map.once('moveend', () => {
+    isFlying = false
     updateSelectedMarkerScreenPos(m)
   })
 }
@@ -277,6 +302,7 @@ watch(
 watch(
   () => store.focusMarkerIds,
   (ids) => {
+    updateFocusedHighlights()
     if (!map || ids.length === 0) return
     const positions: L.LatLngTuple[] = []
     for (const id of ids) {
@@ -290,7 +316,10 @@ watch(
       return
     }
     const bounds = L.latLngBounds(positions)
-    map.flyToBounds(bounds, { padding: [40, 40], duration: 0.6, easeLinearity: 0.25 })
+    const isMobile = window.innerWidth < 768
+    isFlying = true
+    map.flyToBounds(bounds, { padding: isMobile ? [80, 80] : [120, 120], duration: 0.6, easeLinearity: 0.25 })
+    map.once('moveend', () => { isFlying = false })
   }
 )
 
@@ -327,8 +356,8 @@ onMounted(async () => {
     zoom: 2,
     zoomDelta: 0.1,
     zoomSnap: 0,
-    zoomAnimation: false,
-    markerZoomAnimation: false,
+    zoomAnimation: true,
+    markerZoomAnimation: true,
     center: [cy, cx],
     zoomControl: false,
     attributionControl: false,
@@ -357,8 +386,10 @@ onMounted(async () => {
 
   arrowLayerGroup = L.layerGroup().addTo(map)
   tempHighlightLayer = L.layerGroup().addTo(map)
+  focusedHighlightLayer = L.layerGroup().addTo(map)
 
   map.on('moveend', () => {
+    if (isFlying) return
     if (store.selectedMarker) {
       updateSelectedMarkerScreenPos()
     }
@@ -449,9 +480,10 @@ defineExpose({ flyToMarker })
     <Transition name="hover-card">
       <div
         v-if="focusedSegment && focusedSegmentColor"
-        class="fixed z-30 left-1/2 flex items-center gap-2 px-3 py-1.5 rounded-lg bg-surface-900/90 backdrop-blur-xl border border-white/10 shadow-lg select-none"
+        class="fixed z-30 left-1/2 flex items-center gap-2 px-3 py-1.5 rounded-lg bg-surface-900/90 backdrop-blur-xl border border-white/10 shadow-lg select-none cursor-pointer hover:bg-surface-800/90 transition-colors"
         :class="isMobileSegmentNav ? 'top-3' : 'top-4'"
         :style="{ transform: 'translateX(-50%)' }"
+        @click="store.focusSegment(store.currentSegmentIndex)"
       >
         <span
           class="w-2.5 h-2.5 rounded-full flex-shrink-0"

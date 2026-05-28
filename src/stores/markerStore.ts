@@ -295,6 +295,7 @@ export const useMarkerStore = defineStore('markers', () => {
   function openRouteList() {
     showRouteView.value = true
     currentRouteId.value = null
+    focusMarkerIds.value = []
   }
 
   function openRouteDetail(routeId: string) {
@@ -314,6 +315,7 @@ export const useMarkerStore = defineStore('markers', () => {
     isAddingSegment.value = false
     segmentTempMarkerIds.value = []
     routeMarkerFilterIds.value = null
+    focusMarkerIds.value = []
   }
 
   function addRoute(name: string, image?: string) {
@@ -366,6 +368,7 @@ export const useMarkerStore = defineStore('markers', () => {
     saveRoutesToApi(routes.value)
     if (currentRouteId.value === routeId) {
       currentRouteId.value = null
+      focusMarkerIds.value = []
     }
   }
 
