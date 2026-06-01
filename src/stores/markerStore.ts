@@ -171,7 +171,6 @@ export const useMarkerStore = defineStore('markers', () => {
   }
 
   async function loadLatestMarkers() {
-    if (!EDITOR_ENABLED) return
     try {
       const res = await fetch('/api/markers')
       if (res.ok) {
@@ -195,7 +194,6 @@ export const useMarkerStore = defineStore('markers', () => {
   }
 
   async function saveMarkersToFile(list: MarkerData[]) {
-    if (!EDITOR_ENABLED) return
     try {
       await fetch('/api/markers', {
         method: 'POST',
@@ -267,14 +265,12 @@ export const useMarkerStore = defineStore('markers', () => {
   // ---- routes ----
   const routes = ref<RouteData[]>(routesRaw as RouteData[])
 
-  // Override with API data if available (dev server)
-  if (EDITOR_ENABLED) {
-    loadRoutesFromApi().then(data => {
-      if (data.length > 0 || routes.value.length === 0) {
-        routes.value = data
-      }
-    })
-  }
+  // Always try to load latest routes from API (dev server), fall back to built-in data
+  loadRoutesFromApi().then(data => {
+    if (data.length > 0 || routes.value.length === 0) {
+      routes.value = data
+    }
+  })
   const showRouteView = ref(false)
   const currentRouteId = ref<string | null>(null)
   const isAddingSegment = ref(false)

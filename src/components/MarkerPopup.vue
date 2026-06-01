@@ -63,8 +63,19 @@ const isMobileRouteMode = computed(() => {
   return window.innerWidth < 768 && store.showRouteView
 })
 
+const isDesktopRouteMode = computed(() => {
+  return window.innerWidth >= 768 && store.showRouteView
+})
+
 const cardStyle = computed(() => {
   if (isMobileRouteMode.value) return {}
+  if (isDesktopRouteMode.value) {
+    return {
+      right: '16px',
+      top: '50%',
+      transform: 'translateY(-50%)',
+    }
+  }
   const pos = store.selectedMarkerScreenPos
   if (!pos) return { display: 'none' }
   return {
@@ -298,7 +309,7 @@ watch(previewOpen, (open) => {
 
 <template>
   <Teleport to="body">
-    <Transition :name="isMobileRouteMode ? 'bottomsheet' : 'popup'">
+    <Transition :name="isMobileRouteMode ? 'bottomsheet' : isDesktopRouteMode ? 'slideright' : 'popup'">
       <div
         v-if="store.selectedMarker"
         class="fixed inset-0 z-30 pointer-events-none"
@@ -309,9 +320,9 @@ watch(previewOpen, (open) => {
           @click="store.selectMarker(null)"
         ></div>
 
-        <!-- Card - positioned above the marker on the map (normal) or bottom sheet (mobile route) -->
+        <!-- Card - positioned above marker (normal), right side (desktop route), or bottom sheet (mobile route) -->
         <div
-          v-if="store.selectedMarkerScreenPos || isMobileRouteMode"
+          v-if="store.selectedMarkerScreenPos || isMobileRouteMode || isDesktopRouteMode"
           class="absolute pointer-events-auto"
           :class="isMobileRouteMode ? 'bottom-0 left-0 right-0 flex justify-center' : ''"
           :style="cardStyle"
@@ -536,7 +547,7 @@ watch(previewOpen, (open) => {
         </div>
         <!-- Arrow pointing down to the marker (hidden in mobile route mode) -->
         <div
-          v-if="!isMobileRouteMode"
+          v-if="!isMobileRouteMode && !isDesktopRouteMode"
           class="absolute left-1/2 -bottom-1.5 w-3 h-3 bg-surface-800/95 border border-white/10 border-t-transparent border-l-transparent rotate-45 -translate-x-1/2"
         ></div>
       </div>
@@ -703,5 +714,27 @@ watch(previewOpen, (open) => {
 }
 .bottomsheet-leave-to > div:nth-child(2) {
   transform: translateY(100%);
+}
+
+/* Desktop route mode: slide in from right */
+.slideright-enter-active,
+.slideright-leave-active {
+  transition: opacity 0.2s ease;
+}
+.slideright-enter-active > div:nth-child(2),
+.slideright-leave-active > div:nth-child(2) {
+  transition: right 0.3s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.25s ease;
+}
+.slideright-enter-from,
+.slideright-leave-to {
+  opacity: 0;
+}
+.slideright-enter-from > div:nth-child(2) {
+  right: -320px !important;
+  opacity: 0;
+}
+.slideright-leave-to > div:nth-child(2) {
+  right: -320px !important;
+  opacity: 0;
 }
 </style>

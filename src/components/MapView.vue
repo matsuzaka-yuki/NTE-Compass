@@ -332,6 +332,8 @@ watch(
         const mobile = window.innerWidth < 768
         if (store.showRouteView && mobile) {
           updateSelectedMarkerScreenPos(m)
+        } else if (store.showRouteView && !mobile) {
+          // Desktop route mode: don't fly to marker, info shows on right side
         } else {
           flyToMarker(m)
         }

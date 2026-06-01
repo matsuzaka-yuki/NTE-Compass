@@ -1,8 +1,8 @@
 // 拉到本地后改为 true 即可开启编辑功能
-export const EDITOR_ENABLED = true
+export const EDITOR_ENABLED = false
 
 // jsDelivr CDN 加速（GitHub Pages 部署时使用，本地开发可关闭）
-export const JSDELIVR_CDN_ENABLED = false
+export const JSDELIVR_CDN_ENABLED = true
 const GITHUB_USER = 'Horizony14'
 const GITHUB_REPO = 'map_NTE'
 const GITHUB_BRANCH = 'main'
