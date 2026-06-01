@@ -22,6 +22,18 @@ export type MarkerType =
   | 'yxxl'
   | 'yxjy'
   | 'yxqd'
+  | 'mnzj'
+  | 'fzyh'
+  | 'gmz'
+  | 'cpjfdl'
+  | 'nns'
+  | 'zyzd'
+  | 'bbt'
+  | 'cmd'
+  | 'fsjfdl'
+  | 'fjz'
+  | 'wz'
+  | 'mrr'
 
 export interface MarkerData {
   id: string
@@ -103,6 +115,9 @@ export interface ItemData {
 
 export const ALL_ITEMS: ItemData[] = [
   { id: 'xy', name: '絮语', image: './images/objects/xy.png' },
+  { id: 'hw', name: '幻妄', image: './images/objects/hw.png' },
+  { id: 'sf', name: '数符', image: './images/objects/sf.png' },
+  { id: 'ly', name: '掠影', image: './images/objects/ly.png' },
 ]
 
 export function getItemById(id: string): ItemData | undefined {
@@ -135,6 +150,18 @@ export const ALL_MARKER_TYPES: MarkerType[] = [
   'yxxl',
   'yxjy',
   'yxqd',
+  'mnzj',
+  'fzyh',
+  'gmz',
+  'cpjfdl',
+  'nns',
+  'zyzd',
+  'bbt',
+  'cmd',
+  'fsjfdl',
+  'fjz',
+  'wz',
+  'mrr',
 ]
 
 export interface CategoryDef {
@@ -142,7 +169,13 @@ export interface CategoryDef {
   types: MarkerType[]
 }
 
-export const ENEMY_CLEARING_TYPES: MarkerType[] = ['pyz', 'msz', 'fdz', 'dyz', 'tcs', 'lmz', 'sxyx', 'sqn', 'kkj', 'yo']
+export const ENEMY_CLEARING_TYPES: MarkerType[] = ['pyz', 'msz', 'fdz', 'dyz', 'tcs', 'lmz', 'sxyx', 'sqn', 'kkj', 'yo', 'gmz', 'cpjfdl', 'nns', 'zyzd', 'bbt', 'cmd', 'fsjfdl', 'fjz', 'wz', 'mrr']
+
+/** 传送点中折叠为一组的子类型（异象巡礼/界域/追猎/魔女之家/粉爪总行） */
+export const TELEPORT_SUB_TYPES: MarkerType[] = ['yxxl', 'yxjy', 'yxqd', 'mnzj', 'fzyh']
+
+/** 传送点中直接展示的基础类型（电话亭/维特海默塔） */
+export const TELEPORT_BASIC_TYPES: MarkerType[] = ['phonebooth', 'tower']
 
 export function isEnemyClearingType(type: MarkerType): boolean {
   return (ENEMY_CLEARING_TYPES as MarkerType[]).includes(type)
@@ -163,11 +196,11 @@ export function getOverlayTypes(types: MarkerType[], selectedTypes: Set<MarkerTy
 }
 
 export const MARKER_CATEGORIES: CategoryDef[] = [
-  { label: '传送点', types: ['phonebooth', 'tower', 'yxxl', 'yxjy', 'yxqd'] },
+  { label: '传送点', types: ['phonebooth', 'tower', 'yxxl', 'yxjy', 'yxqd', 'mnzj', 'fzyh'] },
   { label: '收集品', types: ['oraclestone', 'gift21', 'package'] },
   { label: '任务', types: ['anomaly', 'sidequest'] },
   { label: '景点', types: ['checkin', 'pilgrimage'] },
-  { label: '敌影清剿', types: ['pyz', 'msz', 'fdz', 'dyz', 'tcs', 'lmz', 'sxyx', 'sqn', 'kkj', 'yo'] },
+  { label: '敌影清剿', types: ['pyz', 'msz', 'fdz', 'dyz', 'tcs', 'lmz', 'sxyx', 'sqn', 'kkj', 'yo', 'gmz', 'cpjfdl', 'nns', 'zyzd', 'bbt', 'cmd', 'fsjfdl', 'fjz', 'wz', 'mrr'] },
   { label: '其他', types: ['car'] },
 ]
 
@@ -342,5 +375,89 @@ export const MARKER_TYPE_CONFIG: Record<
     bgColor: '#fecaca',
     icon: 'M15 3H9v3H3v2h2v12h14V8h2V6h-6V3zm-4 2h2v2h-2V5zM7 8h10v12H7V8zm5 5l-4 4h8l-4-4z',
     iconUrl: './images/icons/yxqd.png',
+  },
+  mnzj: {
+    label: '魔女之家',
+    color: '#a855f7',
+    bgColor: '#f3e8ff',
+    icon: 'M12 2L4 7v2h2v11H4v2h16v-2h-2V9h2V7l-8-5zm-2 7h4v2h-4V9zm0 4h4v2h-4v-2zm0 4h4v2h-4v-2z',
+    iconUrl: './images/icons/mnzj.png',
+  },
+  fzyh: {
+    label: '粉爪总行',
+    color: '#fb7185',
+    bgColor: '#ffe4e6',
+    icon: 'M12 2L4 7v2h2v11H4v2h16v-2h-2V9h2V7l-8-5zm-2 7h4v2h-4V9zm0 4h4v2h-4v-2zm0 4h4v2h-4v-2z',
+    iconUrl: './images/icons/fzyh.png',
+  },
+  gmz: {
+    label: '诡面筝',
+    color: '#f43f5e',
+    bgColor: '#ffe4e6',
+    icon: 'M12 2l4 6-4 6-4-6 4-6zm0 4.5L10.5 9 12 11.25 13.5 9 12 6.5z',
+    iconUrl: './images/icons/gmz.png',
+  },
+  cpjfdl: {
+    label: '唱片机附电灵',
+    color: '#06b6d4',
+    bgColor: '#cffafe',
+    icon: 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z',
+    iconUrl: './images/icons/cpjfdl.png',
+  },
+  nns: {
+    label: '诺诺斯',
+    color: '#84cc16',
+    bgColor: '#ecfccb',
+    icon: 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z',
+    iconUrl: './images/icons/nns.png',
+  },
+  zyzd: {
+    label: '纸翼战队',
+    color: '#e879f9',
+    bgColor: '#f5d0fe',
+    icon: 'M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z',
+    iconUrl: './images/icons/zyzd.png',
+  },
+  bbt: {
+    label: '抱抱藤',
+    color: '#22d3ee',
+    bgColor: '#cffafe',
+    icon: 'M12 2L4 7v2h2v11H4v2h16v-2h-2V9h2V7l-8-5zm-2 7h4v2h-4V9zm0 4h4v2h-4v-2zm0 4h4v2h-4v-2z',
+    iconUrl: './images/icons/bbt.png',
+  },
+  cmd: {
+    label: '长明灯',
+    color: '#fbbf24',
+    bgColor: '#fffbeb',
+    icon: 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z',
+    iconUrl: './images/icons/cmd.png',
+  },
+  fsjfdl: {
+    label: '贩售机附电灵',
+    color: '#10b981',
+    bgColor: '#d1fae5',
+    icon: 'M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V6h16v12zM6 10h12v2H6v-2zm0 4h8v2H6v-2z',
+    iconUrl: './images/icons/fsjfdl.png',
+  },
+  fjz: {
+    label: '分解者',
+    color: '#ef4444',
+    bgColor: '#fee2e2',
+    icon: 'M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z',
+    iconUrl: './images/icons/fjz.png',
+  },
+  wz: {
+    label: '蚊子',
+    color: '#475569',
+    bgColor: '#f1f5f9',
+    icon: 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15h-2v-2h2v2zm0-4h-2V7h2v6z',
+    iconUrl: './images/icons/wz.png',
+  },
+  mrr: {
+    label: '棉绒绒',
+    color: '#f59e0b',
+    bgColor: '#fef3c7',
+    icon: 'M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z',
+    iconUrl: './images/icons/mrr.png',
   },
 }

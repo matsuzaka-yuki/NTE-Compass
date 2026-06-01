@@ -359,7 +359,7 @@ onMounted(async () => {
   map = L.map(mapContainer.value, {
     crs: L.CRS.Simple,
     minZoom: 2,
-    maxZoom: 14,
+    maxZoom: 16,
     zoom: 2,
     zoomDelta: 0.1,
     zoomSnap: 0,

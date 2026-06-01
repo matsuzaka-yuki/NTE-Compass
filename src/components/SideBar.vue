@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, nextTick, watch, onMounted, onUnmounted } from 'vue'
 import { useMarkerStore } from '@/stores/markerStore'
-import { MARKER_TYPE_CONFIG, MARKER_CATEGORIES, ENEMY_CLEARING_TYPES, ALL_ITEMS } from '@/types'
+import { MARKER_TYPE_CONFIG, MARKER_CATEGORIES, ENEMY_CLEARING_TYPES, TELEPORT_SUB_TYPES, TELEPORT_BASIC_TYPES, ALL_ITEMS } from '@/types'
 import type { MarkerType } from '@/types'
 import { resolveAssetUrl } from '@/config'
 
@@ -70,6 +70,11 @@ const enemyExpanded = ref(false)
 const enemyMobileView = ref(false)
 const enemyTriggerRef = ref<HTMLElement | HTMLElement[] | null>(null)
 
+// Teleport sub-group state (异象巡礼/界域/追猎/魔女之家/粉爪总行)
+const teleportSubExpanded = ref(false)
+const teleportSubMobileView = ref(false)
+const teleportSubTriggerRef = ref<HTMLElement | HTMLElement[] | null>(null)
+
 const categoryRows = computed(() => {
   if (!isMobile.value) return [MARKER_CATEGORIES]
   const mid = Math.ceil(MARKER_CATEGORIES.length / 2)
@@ -125,6 +130,56 @@ const enemyPopoverStyle = computed(() => {
   }
 })
 
+// Teleport sub-group computed
+const teleportSubActiveTypes = computed(() => TELEPORT_SUB_TYPES.filter(t => store.selectedTypes.has(t)))
+
+const teleportSubCombinedStats = computed(() => {
+  let found = 0
+  let total = 0
+  for (const item of teleportSubAllTypes.value) {
+    found += item.foundCount
+    total += item.totalCount
+  }
+  return { found, total }
+})
+
+const teleportSubAllTypes = computed(() => {
+  return TELEPORT_SUB_TYPES.map((type) => {
+    const stats = store.typeStats[type]
+    return {
+      type,
+      foundCount: stats.found,
+      totalCount: stats.total,
+      selected: store.selectedTypes.has(type),
+    }
+  })
+})
+
+const teleportSubPopoverStyle = computed(() => {
+  const raw = teleportSubTriggerRef.value
+  const el: HTMLElement | null = Array.isArray(raw) ? raw[0] ?? null : raw
+  if (!el) return { display: 'none' }
+  const rect = el.getBoundingClientRect()
+  return {
+    position: 'fixed' as const,
+    left: rect.left + 'px',
+    top: rect.bottom + 4 + 'px',
+    zIndex: 70,
+  }
+})
+
+function handleTeleportSubClick() {
+  if (isMobile.value) {
+    teleportSubMobileView.value = true
+  } else {
+    teleportSubExpanded.value = !teleportSubExpanded.value
+  }
+}
+
+function closeTeleportSubMobile() {
+  teleportSubMobileView.value = false
+}
+
 function handleEnemyClick() {
   if (isMobile.value) {
     enemyMobileView.value = true
@@ -140,6 +195,7 @@ function closeEnemyMobile() {
 function openCategoryList() {
   showCategoryList.value = true
   enemyExpanded.value = false
+  teleportSubExpanded.value = false
 }
 
 function closeCategoryList() {
@@ -260,6 +316,8 @@ function showDetail(type: MarkerType) {
   detailType.value = type
   enemyExpanded.value = false
   enemyMobileView.value = false
+  teleportSubExpanded.value = false
+  teleportSubMobileView.value = false
 }
 
 function backToList() {
@@ -267,6 +325,8 @@ function backToList() {
   showCategoryList.value = false
   enemyExpanded.value = false
   enemyMobileView.value = false
+  teleportSubExpanded.value = false
+  teleportSubMobileView.value = false
 }
 
 function scrollToList(id: string) {
@@ -574,7 +634,7 @@ function getSegmentTotalCounts(markerIds: string[]): number {
       </div>
 
       <!-- Fixed top section -->
-      <div v-if="!store.showRouteView" class="flex-shrink-0 space-y-3" :class="{ 'p-2': !isMobile, 'p-1': isMobile && detailType === null && !showCategoryList && !enemyMobileView }">
+      <div v-if="!store.showRouteView" class="flex-shrink-0 space-y-3" :class="{ 'p-2': !isMobile, 'p-1': isMobile && detailType === null && !showCategoryList && !enemyMobileView && !teleportSubMobileView }">
         <!-- Header -->
         <div class="flex items-center gap-2">
           <h1 v-if="!searchExpanded" class="text-lg font-bold tracking-wide text-primary-400 select-none whitespace-nowrap truncate max-md:hidden">
@@ -851,7 +911,7 @@ function getSegmentTotalCounts(markerIds: string[]): number {
 
       <!-- Scrollable area: main list -->
       <template v-else>
-      <div v-if="detailType === null && !showCategoryList && !enemyMobileView" class="flex-1 overflow-y-auto overflow-hidden px-4 pb-4 space-y-3 max-md:space-y-2" @click.self="enemyExpanded = false">
+      <div v-if="detailType === null && !showCategoryList && !enemyMobileView && !teleportSubMobileView" class="flex-1 overflow-y-auto overflow-hidden px-4 pb-4 space-y-3 max-md:space-y-2" @click.self="enemyExpanded = false; teleportSubExpanded = false">
         <!-- Type filters -->
         <div>
           <div class="flex items-center justify-between mb-2">
@@ -903,8 +963,51 @@ function getSegmentTotalCounts(markerIds: string[]): number {
                   class="text-xs font-medium transition-colors"
                   :class="[categoryAllSelected(cat.types) ? 'text-slate-200' : categoryAnySelected(cat.types) ? 'text-slate-400' : 'text-slate-600', isMobile ? 'w-auto text-left pt-0 text-[11px]' : 'w-12 flex-shrink-0 text-right pt-0.5']"
                 >{{ cat.label }}</button>
+                <!-- Teleport category: basic types inline + sub-group compact entry -->
+                <template v-if="cat.label === '传送点'">
+                  <div :class="isMobile ? 'flex flex-nowrap gap-1' : 'flex flex-wrap gap-1 flex-1'">
+                    <button
+                      v-for="type in TELEPORT_BASIC_TYPES"
+                      :key="type"
+                      @click="store.toggleType(type)"
+                      :class="['inline-flex items-center gap-1 px-2 py-0.5 text-xs rounded-full border transition-all', isMobile ? 'whitespace-nowrap shrink-0' : '', store.selectedTypes.has(type) ? 'border-current text-white' : 'border-white/10 text-slate-500 bg-transparent']"
+                      :style="store.selectedTypes.has(type) ? { backgroundColor: MARKER_TYPE_CONFIG[type].color + '33', borderColor: MARKER_TYPE_CONFIG[type].color + '66' } : {}"
+                    >
+                      <img
+                        :src="resolveAssetUrl(MARKER_TYPE_CONFIG[type].iconUrl)"
+                        :alt="MARKER_TYPE_CONFIG[type].label"
+                        class="w-3.5 h-3.5 rounded-full object-cover"
+                      />
+                      {{ MARKER_TYPE_CONFIG[type].label }}
+                    </button>
+                    <!-- Teleport sub-group compact entry -->
+                    <div
+                      ref="teleportSubTriggerRef"
+                      @click.stop="handleTeleportSubClick()"
+                      class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full border transition-all cursor-pointer select-none"
+                      :class="[teleportSubActiveTypes.length > 0 ? 'border-current text-white' : 'border-white/10 text-slate-500 bg-transparent', isMobile ? 'whitespace-nowrap shrink-0' : '']"
+                      :style="teleportSubActiveTypes.length > 0 ? { backgroundColor: '#a855f733', borderColor: '#a855f766' } : {}"
+                    >
+                      <span class="text-[10px] font-mono font-bold min-w-[14px] text-center">{{ teleportSubActiveTypes.length }}</span>
+                      <div class="flex items-center" style="margin-left: 1px;">
+                        <img
+                          v-for="(type, i) in teleportSubActiveTypes.slice(0, 6)"
+                          :key="type"
+                          :src="resolveAssetUrl(MARKER_TYPE_CONFIG[type].iconUrl)"
+                          :alt="MARKER_TYPE_CONFIG[type].label"
+                          class="w-3.5 h-3.5 rounded-full object-cover border border-surface-900"
+                          :style="{ marginLeft: i > 0 ? '-6px' : '0' }"
+                        />
+                        <span v-if="teleportSubActiveTypes.length > 6" class="text-[9px] text-slate-400 ml-0.5">...</span>
+                      </div>
+                      <svg class="w-3 h-3 text-slate-500 flex-shrink-0 transition-transform" :class="{ 'rotate-90': teleportSubExpanded && !isMobile }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                      </svg>
+                    </div>
+                  </div>
+                </template>
                 <!-- Regular category: show individual type buttons -->
-                <div v-if="cat.label !== '敌影清剿'" :class="isMobile ? 'flex flex-nowrap gap-1' : 'flex flex-wrap gap-1 flex-1'">
+                <div v-else-if="cat.label !== '敌影清剿'" :class="isMobile ? 'flex flex-nowrap gap-1' : 'flex flex-wrap gap-1 flex-1'">
                   <button
                     v-for="type in cat.types"
                     :key="type"
@@ -1041,6 +1144,60 @@ function getSegmentTotalCounts(markerIds: string[]): number {
           </div>
 
           <div v-if="enemyAllTypes.length === 0" class="flex items-center justify-center gap-2 text-slate-500 py-8">
+            <svg class="w-8 h-8 opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            <span class="text-xs">无匹配</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Teleport sub-group mobile view -->
+      <div
+        v-else-if="teleportSubMobileView && detailType === null"
+        class="flex-1 flex flex-col overflow-hidden max-md:rounded-t-2xl"
+      >
+        <!-- Header -->
+        <div class="flex-shrink-0 flex items-center gap-2.5 px-4 py-1.5 border-b border-white/10 bg-surface-800/80">
+          <button
+            @click="closeTeleportSubMobile()"
+            class="w-6 h-6 flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/10 rounded-md transition-colors flex-shrink-0"
+          >
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+          <span class="flex-1 text-sm leading-none font-medium text-slate-200 truncate">传送点 · 异象/特殊</span>
+          <span class="text-xs leading-none font-mono text-slate-500 flex-shrink-0">
+            {{ teleportSubCombinedStats.found }}/{{ teleportSubCombinedStats.total }}
+          </span>
+        </div>
+
+        <!-- Scrollable type list -->
+        <div class="flex-1 overflow-y-auto py-3 px-3">
+          <div class="flex flex-wrap gap-2">
+            <button
+              v-for="item in teleportSubAllTypes"
+              :key="item.type"
+              @click="store.toggleType(item.type)"
+              class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-full border transition-all"
+              :class="item.selected ? 'border-current text-white' : 'border-white/10 text-slate-500 bg-transparent'"
+              :style="item.selected ? { backgroundColor: MARKER_TYPE_CONFIG[item.type].color + '33', borderColor: MARKER_TYPE_CONFIG[item.type].color + '66' } : {}"
+            >
+              <img
+                :src="resolveAssetUrl(MARKER_TYPE_CONFIG[item.type].iconUrl)"
+                :alt="MARKER_TYPE_CONFIG[item.type].label"
+                class="w-4 h-4 rounded-full object-cover"
+              />
+              <span>{{ MARKER_TYPE_CONFIG[item.type].label }}</span>
+              <span
+                class="font-mono text-[10px]"
+                :class="item.foundCount === item.totalCount && item.totalCount > 0 ? 'text-green-400' : 'text-slate-500'"
+              >{{ item.foundCount }}/{{ item.totalCount }}</span>
+            </button>
+          </div>
+
+          <div v-if="teleportSubAllTypes.length === 0" class="flex items-center justify-center gap-2 text-slate-500 py-8">
             <svg class="w-8 h-8 opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
@@ -1283,6 +1440,38 @@ function getSegmentTotalCounts(markerIds: string[]): number {
       <div class="flex flex-wrap gap-1.5">
         <button
           v-for="type in ENEMY_CLEARING_TYPES"
+          :key="type"
+          @click="store.toggleType(type)"
+          :class="['inline-flex items-center gap-1 px-2 py-0.5 text-xs rounded-full border transition-all', store.selectedTypes.has(type) ? 'border-current text-white' : 'border-white/10 text-slate-500 bg-transparent']"
+          :style="store.selectedTypes.has(type) ? { backgroundColor: MARKER_TYPE_CONFIG[type].color + '33', borderColor: MARKER_TYPE_CONFIG[type].color + '66' } : {}"
+        >
+          <img
+            :src="resolveAssetUrl(MARKER_TYPE_CONFIG[type].iconUrl)"
+            :alt="MARKER_TYPE_CONFIG[type].label"
+            class="w-3.5 h-3.5 rounded-full object-cover"
+          />
+          {{ MARKER_TYPE_CONFIG[type].label }}
+        </button>
+      </div>
+    </div>
+  </Teleport>
+
+  <!-- Teleport sub-group popover (desktop) -->
+  <Teleport to="body">
+    <div
+      v-if="!isMobile && teleportSubExpanded"
+      class="fixed inset-0 z-[65]"
+      @click="teleportSubExpanded = false"
+    ></div>
+    <div
+      v-if="!isMobile && teleportSubExpanded"
+      :style="teleportSubPopoverStyle"
+      @click.stop
+      class="bg-surface-800/95 backdrop-blur-xl border border-white/10 rounded-xl shadow-2xl p-3 w-[320px]"
+    >
+      <div class="flex flex-wrap gap-1.5">
+        <button
+          v-for="type in TELEPORT_SUB_TYPES"
           :key="type"
           @click="store.toggleType(type)"
           :class="['inline-flex items-center gap-1 px-2 py-0.5 text-xs rounded-full border transition-all', store.selectedTypes.has(type) ? 'border-current text-white' : 'border-white/10 text-slate-500 bg-transparent']"
