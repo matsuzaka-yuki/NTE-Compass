@@ -35,6 +35,11 @@ export type MarkerType =
   | 'fjz'
   | 'wz'
   | 'mrr'
+  | 'wlcb'
+  | 'dht'
+  | 'htyf'
+  | 'yr'
+  | 'yd'
 
 export interface MarkerData {
   id: string
@@ -51,6 +56,7 @@ export interface MarkerData {
   counts?: Record<string, number>
   isUserCreated?: boolean
   panoramaImage?: string
+  audioFile?: string
 }
 
 /** Legacy single-type format for migration */
@@ -71,6 +77,7 @@ export interface LegacyMarkerData {
   counts?: Record<string, number>
   types?: MarkerType[]
   panoramaImage?: string
+  audioFile?: string
 }
 
 export function migrateMarker(raw: LegacyMarkerData): MarkerData {
@@ -95,6 +102,7 @@ export function migrateMarker(raw: LegacyMarkerData): MarkerData {
     counts,
     isUserCreated: raw.isUserCreated,
     panoramaImage: raw.panoramaImage,
+    audioFile: raw.audioFile,
   }
 }
 
@@ -167,6 +175,11 @@ export const ALL_MARKER_TYPES: MarkerType[] = [
   'fjz',
   'wz',
   'mrr',
+  'wlcb',
+  'dht',
+  'htyf',
+  'yr',
+  'yd',
 ]
 
 export interface CategoryDef {
@@ -174,7 +187,7 @@ export interface CategoryDef {
   types: MarkerType[]
 }
 
-export const ENEMY_CLEARING_TYPES: MarkerType[] = ['pyz', 'msz', 'fdz', 'dyz', 'tcs', 'lmz', 'sxyx', 'sqn', 'kkj', 'yo', 'gmz', 'cpjfdl', 'nns', 'zyzd', 'bbt', 'cmd', 'fsjfdl', 'fjz', 'wz', 'mrr']
+export const ENEMY_CLEARING_TYPES: MarkerType[] = ['pyz', 'msz', 'fdz', 'dyz', 'tcs', 'lmz', 'sxyx', 'sqn', 'kkj', 'yo', 'gmz', 'cpjfdl', 'nns', 'zyzd', 'bbt', 'cmd', 'fsjfdl', 'fjz', 'wz', 'mrr', 'wlcb', 'dht', 'htyf', 'yr', 'yd']
 
 /** 传送点中折叠为一组的子类型（异象巡礼/界域/追猎/魔女之家/粉爪总行） */
 export const TELEPORT_SUB_TYPES: MarkerType[] = ['yxxl', 'yxjy', 'yxqd', 'mnzj', 'fzyh']
@@ -205,7 +218,7 @@ export const MARKER_CATEGORIES: CategoryDef[] = [
   { label: '收集品', types: ['oraclestone', 'gift21', 'package'] },
   { label: '任务', types: ['anomaly', 'sidequest'] },
   { label: '景点', types: ['checkin', 'pilgrimage', 'qj'] },
-  { label: '敌影清剿', types: ['pyz', 'msz', 'fdz', 'dyz', 'tcs', 'lmz', 'sxyx', 'sqn', 'kkj', 'yo', 'gmz', 'cpjfdl', 'nns', 'zyzd', 'bbt', 'cmd', 'fsjfdl', 'fjz', 'wz', 'mrr'] },
+  { label: '敌影清剿', types: ['pyz', 'msz', 'fdz', 'dyz', 'tcs', 'lmz', 'sxyx', 'sqn', 'kkj', 'yo', 'gmz', 'cpjfdl', 'nns', 'zyzd', 'bbt', 'cmd', 'fsjfdl', 'fjz', 'wz', 'mrr', 'wlcb', 'dht', 'htyf', 'yr', 'yd'] },
   { label: '其他', types: ['car'] },
 ]
 
@@ -284,7 +297,7 @@ export const MARKER_TYPE_CONFIG: Record<
     iconUrl: './images/icons/pilgrimage.png',
   },
   qj: {
-    label: '全景',
+    label: '街景',
     color: '#06b6d4',
     bgColor: '#cffafe',
     icon: 'M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z',
@@ -471,5 +484,40 @@ export const MARKER_TYPE_CONFIG: Record<
     bgColor: '#fef3c7',
     icon: 'M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z',
     iconUrl: './images/icons/mrr.png',
+  },
+  wlcb: {
+    label: '瓦楞城堡',
+    color: '#d946ef',
+    bgColor: '#fae8ff',
+    icon: 'M12 2L4 7v2h2v11H4v2h16v-2h-2V9h2V7l-8-5zm-2 7h4v2h-4V9zm0 4h4v2h-4v-2zm0 4h4v2h-4v-2z',
+    iconUrl: './images/icons/wlcb.png',
+  },
+  dht: {
+    label: 'ReroRero电话亭',
+    color: '#0ea5e9',
+    bgColor: '#e0f7fe',
+    icon: 'M17 2H7C5.9 2 5 2.9 5 4v16c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-1 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V6h-2v3h-3l4 4 4-4h-3z',
+    iconUrl: './images/icons/dht.png',
+  },
+  htyf: {
+    label: '洄天鱼幡',
+    color: '#65a30d',
+    bgColor: '#f3fae3',
+    icon: 'M12 2l4 6-4 6-4-6 4-6zm0 4.5L10.5 9 12 11.25 13.5 9 12 6.5z',
+    iconUrl: './images/icons/htyf.png',
+  },
+  yr: {
+    label: '雨人',
+    color: '#64748b',
+    bgColor: '#f8fafc',
+    icon: 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z',
+    iconUrl: './images/icons/yr.png',
+  },
+  yd: {
+    label: '妖刀',
+    color: '#ea580c',
+    bgColor: '#fff3e0',
+    icon: 'M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6zM18 14h-3l-.4-2H7V6h5l.4 2H18v6z',
+    iconUrl: './images/icons/yd.png',
   },
 }

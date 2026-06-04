@@ -13,6 +13,7 @@ const name = ref('')
 const selectedTypes = ref<MarkerType[]>(['phonebooth'])
 const images = ref<string[]>([])
 const panoramaImage = ref<string>('')
+const audioFile = ref<string>('')
 const uploading = ref(false)
 const description = ref('')
 const refreshTime = ref('')
@@ -89,6 +90,32 @@ function addSelectedImages() {
   images.value = [...images.value, ...newPaths]
   selectedExisting.value = new Set()
   showImageBrowser.value = false
+}
+
+// ── Audio file selection ──
+const showAudioBrowser = ref(false)
+const audioFiles = ref<{ name: string; path: string }[]>([])
+const loadingAudio = ref(false)
+
+async function fetchAudioFiles() {
+  loadingAudio.value = true
+  try {
+    const res = await fetch('/api/audio')
+    const json = await res.json()
+    if (Array.isArray(json)) {
+      audioFiles.value = json
+    }
+  } catch { /* ignore */ }
+  loadingAudio.value = false
+}
+
+function selectAudioFile(audio: { name: string; path: string }) {
+  audioFile.value = audio.path
+  showAudioBrowser.value = false
+}
+
+function removeAudioFile() {
+  audioFile.value = ''
 }
 
 function handleFiles(e: Event) {
@@ -235,6 +262,7 @@ async function handleSave() {
       counts: buildCountsRecord(),
       images: paths.length > 0 ? paths : undefined,
       panoramaImage: panoramaPath,
+      audioFile: audioFile.value || undefined,
     })
     resetForm()
     return
@@ -261,6 +289,7 @@ async function handleSave() {
     counts: buildCountsRecord(),
     images: paths.length > 0 ? paths : undefined,
     panoramaImage: panoramaPath,
+    audioFile: audioFile.value || undefined,
   })
 
   resetForm()
@@ -315,6 +344,7 @@ function resetForm() {
   selectedItems.value = []
   counts.value = {}
   panoramaImage.value = ''
+  audioFile.value = ''
 }
 
 // Pre-fill form when editing a marker
@@ -329,6 +359,7 @@ watch(() => store.editingMarker, (m) => {
     counts.value = m.counts ? { ...m.counts } : {}
     images.value = m.images ? [...m.images] : []
     panoramaImage.value = m.panoramaImage || ''
+    audioFile.value = m.audioFile || ''
   }
 })
 
@@ -583,6 +614,63 @@ watch(() => store.pendingMarkerPos, (pos) => {
                 />
               </label>
               <p class="mt-1 text-xs text-slate-600">推荐上传 2:1 比例的等距柱状投影全景图</p>
+
+              <!-- Audio file selection (only when 全景 type selected) -->
+              <div class="mt-3">
+                <div class="flex items-center justify-between mb-1.5">
+                  <label class="text-xs font-medium text-slate-400">背景音乐</label>
+                  <span class="text-xs text-slate-500">可选，进入全景图自动播放</span>
+                </div>
+                <!-- Selected audio -->
+                <div v-if="audioFile" class="flex items-center gap-2 mb-2 px-3 py-2 rounded-lg border border-white/10 bg-surface-900/50">
+                  <svg class="w-4 h-4 text-cyan-400 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+                  </svg>
+                  <span class="text-xs text-slate-300 truncate flex-1">{{ audioFile.replace('audio/', '') }}</span>
+                  <button
+                    @click="removeAudioFile"
+                    class="w-5 h-5 flex items-center justify-center rounded-full bg-black/50 text-red-400 hover:text-red-300 transition-colors flex-shrink-0"
+                  >
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+                <!-- Select button -->
+                <button
+                  @click="showAudioBrowser = !showAudioBrowser; if (showAudioBrowser && audioFiles.length === 0) fetchAudioFiles()"
+                  class="flex items-center justify-center gap-1.5 w-full px-3 py-2 border border-dashed border-white/10 rounded-lg cursor-pointer hover:border-white/20 hover:bg-surface-900/50 transition-colors text-xs text-slate-400"
+                >
+                  <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+                  </svg>
+                  {{ audioFile ? '更换音乐' : '选择音乐' }}
+                </button>
+
+                <!-- Audio file list panel -->
+                <div v-if="showAudioBrowser" class="mt-2 p-3 rounded-lg border border-white/10 bg-surface-900/50 max-h-40 overflow-y-auto">
+                  <div v-if="loadingAudio" class="flex items-center justify-center py-4 text-xs text-slate-500">
+                    加载中...
+                  </div>
+                  <template v-else-if="audioFiles.length > 0">
+                    <button
+                      v-for="audio in audioFiles"
+                      :key="audio.path"
+                      @click="selectAudioFile(audio)"
+                      class="flex items-center gap-2 w-full px-3 py-2 rounded-lg text-left transition-all"
+                      :class="audioFile === audio.path ? 'bg-cyan-500/20 text-cyan-300' : 'text-slate-400 hover:bg-white/5 hover:text-slate-300'"
+                    >
+                      <svg class="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+                      </svg>
+                      <span class="text-xs truncate">{{ audio.name }}</span>
+                    </button>
+                  </template>
+                  <div v-else class="text-xs text-slate-500 text-center py-4">
+                    暂无音频文件（请将文件放入 public/audio/ 目录）
+                  </div>
+                </div>
+              </div>
             </div>
 
             <!-- Description -->

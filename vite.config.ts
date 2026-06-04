@@ -8,6 +8,7 @@ const MARKERS_FILE = fileURLToPath(new URL('./markers-data.json', import.meta.ur
 const SRC_MARKERS_FILE = fileURLToPath(new URL('./src/data/markers.json', import.meta.url))
 const ROUTES_FILE = fileURLToPath(new URL('./routes-data.json', import.meta.url))
 const UPLOADS_DIR = fileURLToPath(new URL('./public/images/uploads', import.meta.url))
+const AUDIO_DIR = fileURLToPath(new URL('./public/audio', import.meta.url))
 
 function markersApiPlugin() {
   return {
@@ -153,6 +154,42 @@ function markersApiPlugin() {
           } catch (e: any) {
             res.statusCode = 500
             res.end(JSON.stringify({ error: e.message || '读取图片列表失败' }))
+          }
+          return
+        }
+
+        res.statusCode = 405
+        res.end('Method Not Allowed')
+      })
+
+      // GET /api/audio — list all audio files in public/audio
+      server.middlewares.use('/api/audio', (req: any, res: any) => {
+        res.setHeader('Access-Control-Allow-Origin', '*')
+        res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS')
+        res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
+
+        if (req.method === 'OPTIONS') {
+          res.statusCode = 204
+          res.end()
+          return
+        }
+
+        if (req.method === 'GET') {
+          try {
+            fs.mkdirSync(AUDIO_DIR, { recursive: true })
+            const files = fs.readdirSync(AUDIO_DIR)
+            const audioFiles = files
+              .filter(f => /\.(mp3|wav|ogg|aac|m4a|flac|webm)$/i.test(f))
+              .map(f => ({
+                name: f,
+                path: `audio/${f}`,
+              }))
+              .sort((a, b) => a.name.localeCompare(b.name))
+            res.setHeader('Content-Type', 'application/json')
+            res.end(JSON.stringify(audioFiles))
+          } catch (e: any) {
+            res.statusCode = 500
+            res.end(JSON.stringify({ error: e.message || '读取音频列表失败' }))
           }
           return
         }

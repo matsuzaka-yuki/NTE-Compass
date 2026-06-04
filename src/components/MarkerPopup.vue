@@ -25,6 +25,7 @@ const allImages = computed(() => {
 })
 
 // ── Panorama ──
+const panoramaRef = ref<InstanceType<typeof PanoramaViewer> | null>(null)
 const showPanorama = ref(false)
 const panoramaUrl = computed(() => {
   const m = store.selectedMarker
@@ -33,6 +34,17 @@ const panoramaUrl = computed(() => {
   return p.startsWith('data:') ? p : resolveAssetUrl('./' + p)
 })
 const hasPanorama = computed(() => !!panoramaUrl.value)
+const panoramaAudio = computed(() => {
+  const m = store.selectedMarker
+  return m?.audioFile || ''
+})
+
+function openPanorama() {
+  showPanorama.value = true
+  // call playAudio() synchronously within the click event
+  // so the browser allows autoplay (must be in user-gesture context)
+  panoramaRef.value?.playAudio()
+}
 
 const itemImages = computed(() => {
   const m = store.selectedMarker
@@ -470,7 +482,7 @@ watch(previewOpen, (open) => {
             <!-- Panorama button -->
             <button
               v-if="hasPanorama"
-              @click="showPanorama = true"
+              @click="openPanorama"
               class="w-full mt-1 py-2 rounded-lg text-xs font-medium transition-all flex items-center justify-center gap-1.5 bg-cyan-500/15 text-cyan-300 border border-cyan-500/30 hover:bg-cyan-500/25"
             >
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -580,9 +592,11 @@ watch(previewOpen, (open) => {
 
   <!-- Panorama viewer -->
   <PanoramaViewer
+    ref="panoramaRef"
     :src="panoramaUrl"
     :visible="showPanorama"
     :name="store.selectedMarker?.name"
+    :audio="panoramaAudio"
     @close="showPanorama = false"
   />
 

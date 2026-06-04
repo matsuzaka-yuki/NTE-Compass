@@ -465,6 +465,7 @@
     ]
   },
   {
+    "id": "user_1778923104975_13",
     "name": "言叶之庭",
     "types": [
       "pilgrimage",
@@ -477,7 +478,7 @@
       "images/uploads/pilgrimage_44.webp"
     ],
     "panoramaImage": "images/uploads/qj_5.jpeg",
-    "id": "user_1778923104975_13"
+    "audioFile": "audio/绿墙坡雨天.mp3"
   },
   {
     "id": "user_1778923755975_14",
@@ -3759,17 +3760,19 @@
     ],
     "lat": 0.45943663142848135,
     "lng": 0.4434131786154472,
-    "panoramaImage": "images/uploads/qj_2.jpeg"
+    "panoramaImage": "images/uploads/qj_2.jpeg",
+    "audioFile": "audio/桥间地白天1.mp3"
   },
   {
-    "id": "user_1780495376960_1",
     "name": "小帕的故事",
     "types": [
       "qj"
     ],
     "lat": 0.6882634508704412,
     "lng": 0.4440035009283135,
-    "panoramaImage": "images/uploads/qj_3.jpeg"
+    "panoramaImage": "images/uploads/qj_3.jpeg",
+    "audioFile": "audio/粉玉.mp3",
+    "id": "user_1780495376960_1"
   },
   {
     "id": "user_1780498249516_2",
@@ -3779,6 +3782,7 @@
     ],
     "lat": 0.6378615521885338,
     "lng": 0.550908577142974,
-    "panoramaImage": "images/uploads/qj_4.jpeg"
+    "panoramaImage": "images/uploads/qj_4.jpeg",
+    "audioFile": "audio/诺提克桥夜晚.mp3"
   }
 ]
