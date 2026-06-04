@@ -465,17 +465,19 @@
     ]
   },
   {
-    "id": "user_1778923104975_13",
     "name": "言叶之庭",
     "types": [
-      "pilgrimage"
+      "pilgrimage",
+      "qj"
     ],
     "lat": 0.5156957737688974,
     "lng": 0.37079439378575013,
     "images": [
       "images/uploads/pilgrimage_43.webp",
       "images/uploads/pilgrimage_44.webp"
-    ]
+    ],
+    "panoramaImage": "images/uploads/qj_5.jpeg",
+    "id": "user_1778923104975_13"
   },
   {
     "id": "user_1778923755975_14",
@@ -3478,6 +3480,7 @@
     }
   },
   {
+    "id": "user_1780281288263_19",
     "name": "纸翼战队",
     "types": [
       "zyzd"
@@ -3485,17 +3488,16 @@
     "lat": 0.6173692483096139,
     "lng": 0.40699792113973643,
     "description": "触摸出现，注意跟随",
+    "images": [
+      "images/uploads/zyzd_9.webp"
+    ],
     "refreshTime": "每日刷新",
     "relatedItems": [
       "hw"
     ],
     "counts": {
       "zyzd": 1
-    },
-    "images": [
-      "images/uploads/zyzd_9.webp"
-    ],
-    "id": "user_1780281288263_19"
+    }
   },
   {
     "id": "user_1780281478830_20",
@@ -3613,6 +3615,7 @@
     }
   },
   {
+    "id": "user_1780283001647_1",
     "name": "唱片机附电灵和棉绒绒",
     "types": [
       "cpjfdl",
@@ -3621,6 +3624,9 @@
     "lat": 0.40974238742214325,
     "lng": 0.3523247524201091,
     "description": "肌肉，就是力量！",
+    "images": [
+      "images/uploads/cpjfdl_11.webp"
+    ],
     "refreshTime": "每日刷新",
     "relatedItems": [
       "hw",
@@ -3629,13 +3635,10 @@
     "counts": {
       "cpjfdl": 1,
       "mrr": 2
-    },
-    "images": [
-      "images/uploads/cpjfdl_11.webp"
-    ],
-    "id": "user_1780283001647_1"
+    }
   },
   {
+    "id": "user_1780283172468_2",
     "name": "纸翼战队",
     "types": [
       "zyzd"
@@ -3643,19 +3646,19 @@
     "lat": 0.3504696907089188,
     "lng": 0.36169135397237845,
     "description": "触摸出现，注意追踪",
+    "images": [
+      "images/uploads/zyzd_12.webp"
+    ],
     "refreshTime": "每日刷新",
     "relatedItems": [
       "hw"
     ],
     "counts": {
       "zyzd": 1
-    },
-    "images": [
-      "images/uploads/zyzd_12.webp"
-    ],
-    "id": "user_1780283172468_2"
+    }
   },
   {
+    "id": "user_1780283344755_3",
     "name": "纸翼战队",
     "types": [
       "zyzd"
@@ -3663,38 +3666,38 @@
     "lat": 0.4167236358605875,
     "lng": 0.27310383329562665,
     "description": "触摸出现，注意追踪",
+    "images": [
+      "images/uploads/zyzd_13.webp"
+    ],
     "refreshTime": "每日刷新",
     "relatedItems": [
       "hw"
     ],
     "counts": {
       "zyzd": 1
-    },
-    "images": [
-      "images/uploads/zyzd_13.webp"
-    ],
-    "id": "user_1780283344755_3"
+    }
   },
   {
+    "id": "user_1780283609374_4",
     "name": "唱片机附电灵",
     "types": [
       "cpjfdl"
     ],
     "lat": 0.45813932963694126,
     "lng": 0.3460702345006233,
+    "images": [
+      "images/uploads/cpjfdl_12.webp"
+    ],
     "refreshTime": "每日刷新",
     "relatedItems": [
       "hw"
     ],
     "counts": {
       "cpjfdl": 3
-    },
-    "images": [
-      "images/uploads/cpjfdl_12.webp"
-    ],
-    "id": "user_1780283609374_4"
+    }
   },
   {
+    "id": "user_1780283761138_5",
     "name": "蚊子",
     "types": [
       "wz"
@@ -3707,10 +3710,10 @@
     ],
     "counts": {
       "wz": 1
-    },
-    "id": "user_1780283761138_5"
+    }
   },
   {
+    "id": "user_1780283893012_6",
     "name": "蚊子",
     "types": [
       "wz"
@@ -3718,18 +3721,18 @@
     "lat": 0.4042530782612163,
     "lng": 0.34258487603672444,
     "description": "短袖男子旁",
+    "images": [
+      "images/uploads/wz_3.webp"
+    ],
     "relatedItems": [
       "hw"
     ],
     "counts": {
       "wz": 2
-    },
-    "images": [
-      "images/uploads/wz_3.webp"
-    ],
-    "id": "user_1780283893012_6"
+    }
   },
   {
+    "id": "user_1780285648631_18",
     "name": "抱抱藤",
     "types": [
       "bbt"
@@ -3737,16 +3740,45 @@
     "lat": 0.43387200334313836,
     "lng": 0.31287757253509646,
     "description": "一楼屋内，建议隔墙打",
+    "images": [
+      "images/uploads/bbt_17.webp"
+    ],
     "refreshTime": "每日刷新",
     "relatedItems": [
       "hw"
     ],
     "counts": {
       "bbt": 1
-    },
-    "images": [
-      "images/uploads/bbt_17.webp"
+    }
+  },
+  {
+    "id": "user_1780490162253_1",
+    "name": "梦开始的地方",
+    "types": [
+      "qj"
     ],
-    "id": "user_1780285648631_18"
+    "lat": 0.45943663142848135,
+    "lng": 0.4434131786154472,
+    "panoramaImage": "images/uploads/qj_2.jpeg"
+  },
+  {
+    "id": "user_1780495376960_1",
+    "name": "小帕的故事",
+    "types": [
+      "qj"
+    ],
+    "lat": 0.6882634508704412,
+    "lng": 0.4440035009283135,
+    "panoramaImage": "images/uploads/qj_3.jpeg"
+  },
+  {
+    "id": "user_1780498249516_2",
+    "name": "道顿崛与心斋桥",
+    "types": [
+      "qj"
+    ],
+    "lat": 0.6378615521885338,
+    "lng": 0.550908577142974,
+    "panoramaImage": "images/uploads/qj_4.jpeg"
   }
 ]

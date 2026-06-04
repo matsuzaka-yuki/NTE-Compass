@@ -8,6 +8,7 @@ export type MarkerType =
   | 'anomaly'
   | 'sidequest'
   | 'pilgrimage'
+  | 'qj'
   | 'car'
   | 'pyz'
   | 'msz'
@@ -49,6 +50,7 @@ export interface MarkerData {
   relatedItems?: string[]
   counts?: Record<string, number>
   isUserCreated?: boolean
+  panoramaImage?: string
 }
 
 /** Legacy single-type format for migration */
@@ -68,6 +70,7 @@ export interface LegacyMarkerData {
   isUserCreated?: boolean
   counts?: Record<string, number>
   types?: MarkerType[]
+  panoramaImage?: string
 }
 
 export function migrateMarker(raw: LegacyMarkerData): MarkerData {
@@ -91,6 +94,7 @@ export function migrateMarker(raw: LegacyMarkerData): MarkerData {
     relatedItems: raw.relatedItems,
     counts,
     isUserCreated: raw.isUserCreated,
+    panoramaImage: raw.panoramaImage,
   }
 }
 
@@ -136,6 +140,7 @@ export const ALL_MARKER_TYPES: MarkerType[] = [
   'anomaly',
   'sidequest',
   'pilgrimage',
+  'qj',
   'car',
   'pyz',
   'msz',
@@ -199,7 +204,7 @@ export const MARKER_CATEGORIES: CategoryDef[] = [
   { label: '传送点', types: ['phonebooth', 'tower', 'yxxl', 'yxjy', 'yxqd', 'mnzj', 'fzyh'] },
   { label: '收集品', types: ['oraclestone', 'gift21', 'package'] },
   { label: '任务', types: ['anomaly', 'sidequest'] },
-  { label: '景点', types: ['checkin', 'pilgrimage'] },
+  { label: '景点', types: ['checkin', 'pilgrimage', 'qj'] },
   { label: '敌影清剿', types: ['pyz', 'msz', 'fdz', 'dyz', 'tcs', 'lmz', 'sxyx', 'sqn', 'kkj', 'yo', 'gmz', 'cpjfdl', 'nns', 'zyzd', 'bbt', 'cmd', 'fsjfdl', 'fjz', 'wz', 'mrr'] },
   { label: '其他', types: ['car'] },
 ]
@@ -277,6 +282,13 @@ export const MARKER_TYPE_CONFIG: Record<
     bgColor: '#e0e7ff',
     icon: 'M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6zM18 14h-3l-.4-2H7V6h5l.4 2H18v6z',
     iconUrl: './images/icons/pilgrimage.png',
+  },
+  qj: {
+    label: '全景',
+    color: '#06b6d4',
+    bgColor: '#cffafe',
+    icon: 'M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z',
+    iconUrl: './images/icons/qj.png',
   },
   car: {
     label: '车辆',

@@ -12,6 +12,7 @@ const markerTypes = Object.keys(MARKER_TYPE_CONFIG) as MarkerType[]
 const name = ref('')
 const selectedTypes = ref<MarkerType[]>(['phonebooth'])
 const images = ref<string[]>([])
+const panoramaImage = ref<string>('')
 const uploading = ref(false)
 const description = ref('')
 const refreshTime = ref('')
@@ -123,6 +124,44 @@ function removeImage(index: number) {
   images.value = images.value.filter((_, i) => i !== index)
 }
 
+// ── Panorama image ──
+function handlePanoramaFile(e: Event) {
+  const input = e.target as HTMLInputElement
+  const file = input.files?.[0]
+  if (!file) return
+
+  const reader = new FileReader()
+  reader.onload = () => {
+    panoramaImage.value = reader.result as string
+  }
+  reader.readAsDataURL(file)
+  input.value = ''
+}
+
+function removePanorama() {
+  panoramaImage.value = ''
+}
+
+async function uploadPanoramaIfNeeded(): Promise<string | undefined> {
+  const img = panoramaImage.value
+  if (!img) return undefined
+  if (!img.startsWith('data:')) return img
+  try {
+    const ext = img.match(/^data:image\/(\w+);/)?.[1] || 'png'
+    const res = await fetch('/api/upload-image', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ data: img, type: 'qj', ext }),
+    })
+    const json = await res.json()
+    if (json.ok && json.path) {
+      uploadedPaths.value.set(img, json.path)
+      return json.path
+    }
+  } catch { /* skip */ }
+  return undefined
+}
+
 // ---- drag reorder ----
 const dragIndex = ref<number | null>(null)
 const dragOverIndex = ref<number | null>(null)
@@ -178,7 +217,10 @@ async function handleSave() {
 
   if (isEditing.value) {
     uploading.value = true
-    const paths = await uploadNewImages()
+    const [paths, panoramaPath] = await Promise.all([
+      uploadNewImages(),
+      uploadPanoramaIfNeeded(),
+    ])
     uploading.value = false
 
     store.updateMarker(store.editingMarker!.id, {
@@ -192,6 +234,7 @@ async function handleSave() {
       relatedItems: selectedItems.value.length > 0 ? selectedItems.value : undefined,
       counts: buildCountsRecord(),
       images: paths.length > 0 ? paths : undefined,
+      panoramaImage: panoramaPath,
     })
     resetForm()
     return
@@ -200,7 +243,10 @@ async function handleSave() {
   if (!store.pendingMarkerPos) return
 
   uploading.value = true
-  const paths = await uploadNewImages()
+  const [paths, panoramaPath] = await Promise.all([
+    uploadNewImages(),
+    uploadPanoramaIfNeeded(),
+  ])
   uploading.value = false
 
   store.addMarker({
@@ -214,6 +260,7 @@ async function handleSave() {
     relatedItems: selectedItems.value.length > 0 ? selectedItems.value : undefined,
     counts: buildCountsRecord(),
     images: paths.length > 0 ? paths : undefined,
+    panoramaImage: panoramaPath,
   })
 
   resetForm()
@@ -267,6 +314,7 @@ function resetForm() {
   relatedQuest.value = ''
   selectedItems.value = []
   counts.value = {}
+  panoramaImage.value = ''
 }
 
 // Pre-fill form when editing a marker
@@ -280,6 +328,7 @@ watch(() => store.editingMarker, (m) => {
     selectedItems.value = m.relatedItems ? [...m.relatedItems] : []
     counts.value = m.counts ? { ...m.counts } : {}
     images.value = m.images ? [...m.images] : []
+    panoramaImage.value = m.panoramaImage || ''
   }
 })
 
@@ -492,6 +541,48 @@ watch(() => store.pendingMarkerPos, (pos) => {
                   </div>
                 </div>
               </div>
+            </div>
+
+            <!-- Panorama image upload (only when 全景 type selected) -->
+            <div v-if="selectedTypes.includes('qj')">
+              <div class="flex items-center justify-between mb-1.5">
+                <label class="text-xs font-medium text-slate-400">全景图片</label>
+                <span class="text-xs text-slate-500">可选，360°全景图</span>
+              </div>
+              <!-- Panorama preview -->
+              <div v-if="panoramaImage" class="relative group w-full aspect-video rounded-lg overflow-hidden border border-white/10 mb-2">
+                <img
+                  :src="panoramaImage.startsWith('data:') ? panoramaImage : resolveAssetUrl('./' + panoramaImage)"
+                  class="w-full h-full object-cover"
+                />
+                <button
+                  @click="removePanorama"
+                  class="absolute top-1.5 right-1.5 w-6 h-6 flex items-center justify-center rounded-full bg-black/70 text-red-400 hover:text-red-300 transition-colors opacity-0 group-hover:opacity-100"
+                >
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+                <div class="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-black/60 to-transparent pointer-events-none flex items-end pb-2 px-3">
+                  <span class="text-xs text-white/70">全景图</span>
+                </div>
+              </div>
+              <!-- Upload button -->
+              <label
+                class="flex items-center justify-center gap-2 px-3 py-2.5 border border-dashed border-white/10 rounded-lg cursor-pointer hover:border-white/20 hover:bg-surface-900/50 transition-colors text-xs text-slate-400"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                {{ panoramaImage ? '替换全景图' : '上传全景图' }}
+                <input
+                  type="file"
+                  accept="image/*"
+                  class="hidden"
+                  @change="handlePanoramaFile"
+                />
+              </label>
+              <p class="mt-1 text-xs text-slate-600">推荐上传 2:1 比例的等距柱状投影全景图</p>
             </div>
 
             <!-- Description -->

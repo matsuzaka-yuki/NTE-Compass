@@ -12,13 +12,17 @@
   "dependencies": {
     "leaflet": "^1.9.4",
     "leaflet.markercluster": "^1.5.3",
+    "pannellum": "^2.5.7",
     "pinia": "^2.1.7",
+    "three": "^0.184.0",
     "vue": "^3.4.21"
   },
   "devDependencies": {
     "@resvg/resvg-js": "^2.6.2",
     "@types/leaflet": "^1.9.8",
     "@types/leaflet.markercluster": "^1.5.4",
+    "@types/pannellum": "^2.5.0",
+    "@types/three": "^0.184.1",
     "@vitejs/plugin-vue": "^5.0.4",
     "autoprefixer": "^10.4.19",
     "postcss": "^8.4.38",

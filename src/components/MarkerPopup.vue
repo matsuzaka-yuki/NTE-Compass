@@ -3,6 +3,7 @@ import { computed, ref, watch } from 'vue'
 import { useMarkerStore } from '@/stores/markerStore'
 import { MARKER_TYPE_CONFIG, getItemById } from '@/types'
 import { resolveAssetUrl } from '@/config'
+import PanoramaViewer from './PanoramaViewer.vue'
 
 const store = useMarkerStore()
 
@@ -22,6 +23,16 @@ const allImages = computed(() => {
   if (m.images) list.push(...m.images.map((p) => p.startsWith('data:') ? p : resolveAssetUrl('./' + p)))
   return list
 })
+
+// ── Panorama ──
+const showPanorama = ref(false)
+const panoramaUrl = computed(() => {
+  const m = store.selectedMarker
+  if (!m || !m.panoramaImage) return ''
+  const p = m.panoramaImage
+  return p.startsWith('data:') ? p : resolveAssetUrl('./' + p)
+})
+const hasPanorama = computed(() => !!panoramaUrl.value)
 
 const itemImages = computed(() => {
   const m = store.selectedMarker
@@ -456,6 +467,18 @@ watch(previewOpen, (open) => {
               关联任务：{{ store.selectedMarker.relatedQuest }}
             </div>
 
+            <!-- Panorama button -->
+            <button
+              v-if="hasPanorama"
+              @click="showPanorama = true"
+              class="w-full mt-1 py-2 rounded-lg text-xs font-medium transition-all flex items-center justify-center gap-1.5 bg-cyan-500/15 text-cyan-300 border border-cyan-500/30 hover:bg-cyan-500/25"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              查看全景图
+            </button>
+
             <!-- Action buttons (editor mode) -->
             <template v-if="store.isEditorMode">
               <button
@@ -554,6 +577,14 @@ watch(previewOpen, (open) => {
       </div>
     </Transition>
   </Teleport>
+
+  <!-- Panorama viewer -->
+  <PanoramaViewer
+    :src="panoramaUrl"
+    :visible="showPanorama"
+    :name="store.selectedMarker?.name"
+    @close="showPanorama = false"
+  />
 
   <!-- Image preview overlay (gallery + zoom/pan) -->
   <Teleport to="body">
