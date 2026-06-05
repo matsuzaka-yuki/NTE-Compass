@@ -41,6 +41,18 @@ export type MarkerType =
   | 'yr'
   | 'yd'
 
+/** 全景图之间的连接（热点） */
+export interface PanoramaLink {
+  /** 目标标记的 ID */
+  targetMarkerId: string
+  /** 热点在全景图中的水平角度 (0-360) */
+  yaw: number
+  /** 热点在全景图中的垂直角度 (-90 ~ 90) */
+  pitch: number
+  /** 热点标签文字 */
+  label?: string
+}
+
 export interface MarkerData {
   id: string
   name: string
@@ -57,6 +69,8 @@ export interface MarkerData {
   isUserCreated?: boolean
   panoramaImage?: string
   audioFile?: string
+  /** 全景图之间的连接热点 */
+  panoramaLinks?: PanoramaLink[]
 }
 
 /** Legacy single-type format for migration */
@@ -78,6 +92,7 @@ export interface LegacyMarkerData {
   types?: MarkerType[]
   panoramaImage?: string
   audioFile?: string
+  panoramaLinks?: PanoramaLink[]
 }
 
 export function migrateMarker(raw: LegacyMarkerData): MarkerData {
@@ -103,6 +118,7 @@ export function migrateMarker(raw: LegacyMarkerData): MarkerData {
     isUserCreated: raw.isUserCreated,
     panoramaImage: raw.panoramaImage,
     audioFile: raw.audioFile,
+    panoramaLinks: raw.panoramaLinks,
   }
 }
 

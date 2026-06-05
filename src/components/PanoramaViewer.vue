@@ -3,16 +3,21 @@ import { ref, watch, onUnmounted, nextTick, computed } from 'vue'
 import 'pannellum'
 import 'pannellum/build/pannellum.css'
 import { resolveAssetUrl } from '@/config'
+import type { PanoramaLink } from '@/types'
 
 const props = defineProps<{
   src: string
   visible: boolean
   name?: string
   audio?: string
+  /** 全景图之间的连接热点 */
+  links?: PanoramaLink[]
 }>()
 
 const emit = defineEmits<{
   close: []
+  /** 点击热点导航到另一个全景图 */
+  navigate: [targetMarkerId: string]
 }>()
 
 const viewerContainer = ref<HTMLDivElement | null>(null)
@@ -150,6 +155,34 @@ function initViewer() {
   destroyViewer()
 
   nextTick(() => {
+    // Build hotspot configs from panoramaLinks
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const hotSpots: any[] | undefined = (props.links && props.links.length > 0)
+      ? props.links.map((link: PanoramaLink) => ({
+          pitch: link.pitch,
+          yaw: link.yaw,
+          type: 'info' as const,
+          text: link.label || '前往',
+          cssClass: 'pano-nav-arrow',
+          // Render custom arrow content directly into the hotspot div
+          createTooltipFunc: (hotSpotDiv: HTMLElement) => {
+            hotSpotDiv.classList.add('pano-nav-arrow')
+            hotSpotDiv.innerHTML = `
+              <div class="pano-arrow-icon">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="12" y1="4" x2="12" y2="20" />
+                  <polyline points="6 10 12 4 18 10" />
+                </svg>
+              </div>
+              <div class="pano-arrow-label">${link.label || '前往'}</div>
+            `
+          },
+          clickHandlerFunc: () => {
+            emit('navigate', link.targetMarkerId)
+          },
+        }))
+      : undefined
+
     viewer = pannellum.viewer(viewerContainer.value!, {
       type: 'equirectangular',
       panorama: props.src,
@@ -165,6 +198,7 @@ function initViewer() {
       minHfov: isMobile ? 10 : 30,
       maxHfov: isMobile ? 90 : 120,
       hotSpotDebug: false,
+      ...(hotSpots ? { hotSpots } : {}),
     })
     if (shakeEnabled.value) startShake()
   })
@@ -190,6 +224,19 @@ watch(() => props.visible, (v) => {
     stopShake()
     destroyViewer()
     stopAudio()
+  }
+})
+
+// When src changes while viewer is visible, re-init to show the new panorama
+watch(() => props.src, (newSrc, oldSrc) => {
+  if (newSrc && newSrc !== oldSrc && props.visible) {
+    stopShake()
+    destroyViewer()
+    stopAudio()
+    playAudio()
+    nextTick(() => {
+      initViewer()
+    })
   }
 })
 
@@ -302,5 +349,60 @@ onUnmounted(() => {
 /* Fix Pannellum control bar z-index so our overlay sits on top */
 :deep(.pnlm-container) {
   height: 100% !important;
+}
+</style>
+
+<!-- Non-scoped: hotspot arrow styles for dynamically-created Pannellum elements -->
+<style>
+/* ── Panorama navigation arrow hotspot ── */
+.pnlm-hotspot-base.pano-nav-arrow {
+  /* Override pannellum inline styles */
+  width: auto !important;
+  height: auto !important;
+  background: none !important;
+  border: none !important;
+  border-radius: 0 !important;
+  cursor: pointer !important;
+}
+
+.pano-arrow-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  margin: 0 auto;
+  border-radius: 50%;
+  background: rgba(6, 182, 212, 0.75);
+  box-shadow: 0 0 16px rgba(6, 182, 212, 0.6), 0 4px 12px rgba(0, 0, 0, 0.4);
+  transition: all 0.2s ease;
+}
+
+.pano-arrow-label {
+  margin-top: 4px;
+  padding: 2px 10px;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 500;
+  text-align: center;
+  white-space: nowrap;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+  pointer-events: none;
+}
+
+/* Hover effects */
+.pnlm-hotspot-base.pano-nav-arrow:hover .pano-arrow-icon {
+  background: rgba(6, 182, 212, 1);
+  box-shadow: 0 0 24px rgba(6, 182, 212, 0.9), 0 6px 16px rgba(0, 0, 0, 0.5);
+}
+
+.pnlm-hotspot-base.pano-nav-arrow:hover .pano-arrow-label {
+  background: rgba(0, 0, 0, 0.85);
+  border-color: rgba(6, 182, 212, 0.5);
 }
 </style>

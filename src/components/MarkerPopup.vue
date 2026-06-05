@@ -38,12 +38,24 @@ const panoramaAudio = computed(() => {
   const m = store.selectedMarker
   return m?.audioFile || ''
 })
+const panoramaLinks = computed(() => {
+  const m = store.selectedMarker
+  return m?.panoramaLinks || []
+})
 
 function openPanorama() {
   showPanorama.value = true
   // call playAudio() synchronously within the click event
   // so the browser allows autoplay (must be in user-gesture context)
   panoramaRef.value?.playAudio()
+}
+
+/** Navigate from one panorama to another via hotspot click */
+function navigatePanorama(targetMarkerId: string) {
+  const target = store.getMarkerById(targetMarkerId)
+  if (target) {
+    store.selectMarker(target.id)
+  }
 }
 
 const itemImages = computed(() => {
@@ -597,7 +609,9 @@ watch(previewOpen, (open) => {
     :visible="showPanorama"
     :name="store.selectedMarker?.name"
     :audio="panoramaAudio"
+    :links="panoramaLinks"
     @close="showPanorama = false"
+    @navigate="navigatePanorama"
   />
 
   <!-- Image preview overlay (gallery + zoom/pan) -->

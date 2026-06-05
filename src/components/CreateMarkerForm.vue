@@ -263,6 +263,7 @@ async function handleSave() {
       images: paths.length > 0 ? paths : undefined,
       panoramaImage: panoramaPath,
       audioFile: audioFile.value || undefined,
+      panoramaLinks: store.editingMarker!.panoramaLinks,
     })
     resetForm()
     return

@@ -478,7 +478,21 @@
       "images/uploads/pilgrimage_44.webp"
     ],
     "panoramaImage": "images/uploads/qj_5.jpeg",
-    "audioFile": "audio/绿墙坡雨天.mp3"
+    "audioFile": "audio/绿墙坡雨天.mp3",
+    "panoramaLinks": [
+      {
+        "targetMarkerId": "user_1780626733510_1",
+        "yaw": 170,
+        "pitch": -20,
+        "label": "去往绿墙坡湖东"
+      },
+      {
+        "targetMarkerId": "user_1780665850988_2",
+        "yaw": 0,
+        "pitch": -20,
+        "label": "去往绿墙坡湖西南"
+      }
+    ]
   },
   {
     "id": "user_1778923755975_14",
@@ -3764,6 +3778,7 @@
     "audioFile": "audio/桥间地白天1.mp3"
   },
   {
+    "id": "user_1780495376960_1",
     "name": "小帕的故事",
     "types": [
       "qj"
@@ -3771,8 +3786,7 @@
     "lat": 0.6882634508704412,
     "lng": 0.4440035009283135,
     "panoramaImage": "images/uploads/qj_3.jpeg",
-    "audioFile": "audio/粉玉.mp3",
-    "id": "user_1780495376960_1"
+    "audioFile": "audio/粉玉.mp3"
   },
   {
     "id": "user_1780498249516_2",
@@ -3784,5 +3798,130 @@
     "lng": 0.550908577142974,
     "panoramaImage": "images/uploads/qj_4.jpeg",
     "audioFile": "audio/诺提克桥夜晚.mp3"
+  },
+  {
+    "id": "user_1780626733510_1",
+    "name": "绿墙坡湖东",
+    "types": [
+      "qj"
+    ],
+    "lat": 0.522465654964079,
+    "lng": 0.369716680499419,
+    "panoramaImage": "images/uploads/qj_6.jpeg",
+    "audioFile": "audio/绿墙坡雨天.mp3",
+    "panoramaLinks": [
+      {
+        "targetMarkerId": "user_1778923104975_13",
+        "yaw": 330,
+        "pitch": -10,
+        "label": "去往言叶之庭"
+      },
+      {
+        "targetMarkerId": "user_1780628913053_2",
+        "yaw": 190,
+        "pitch": -15,
+        "label": "去往绿墙坡湖东北"
+      }
+    ]
+  },
+  {
+    "id": "user_1780628828087_1",
+    "name": "绿墙坡湖北",
+    "types": [
+      "qj"
+    ],
+    "lat": 0.5257096236338646,
+    "lng": 0.36780786382906594,
+    "panoramaImage": "images/uploads/qj_7.jpeg",
+    "audioFile": "audio/绿墙坡雨天.mp3",
+    "panoramaLinks": [
+      {
+        "targetMarkerId": "user_1780628913053_2",
+        "yaw": 270,
+        "pitch": -10,
+        "label": "去往绿墙坡湖东北"
+      },
+      {
+        "targetMarkerId": "user_1780665805817_1",
+        "yaw": 115,
+        "pitch": -15,
+        "label": "去往绿墙坡湖西北"
+      }
+    ]
+  },
+  {
+    "id": "user_1780628913053_2",
+    "name": "绿墙坡湖东北",
+    "types": [
+      "qj"
+    ],
+    "lat": 0.527427912562204,
+    "lng": 0.37298381114983353,
+    "panoramaImage": "images/uploads/qj_8.jpeg",
+    "audioFile": "audio/绿墙坡雨天.mp3",
+    "panoramaLinks": [
+      {
+        "targetMarkerId": "user_1780626733510_1",
+        "yaw": 295,
+        "pitch": -15,
+        "label": "去往绿墙坡湖东"
+      },
+      {
+        "targetMarkerId": "user_1780628828087_1",
+        "yaw": 75,
+        "pitch": -15,
+        "label": "去往绿墙坡湖北"
+      }
+    ]
+  },
+  {
+    "name": "绿墙坡湖西北",
+    "types": [
+      "qj"
+    ],
+    "lat": 0.523416273188207,
+    "lng": 0.3599858229174143,
+    "panoramaImage": "images/uploads/qj_9.jpeg",
+    "audioFile": "audio/绿墙坡雨天.mp3",
+    "id": "user_1780665805817_1",
+    "panoramaLinks": [
+      {
+        "targetMarkerId": "user_1780628828087_1",
+        "yaw": 300,
+        "pitch": -20,
+        "label": "去往绿墙坡湖北"
+      },
+      {
+        "targetMarkerId": "user_1780665850988_2",
+        "yaw": 35,
+        "pitch": -20,
+        "label": "去往绿墙坡湖西南"
+      }
+    ]
+  },
+  {
+    "name": "绿墙坡湖西南",
+    "types": [
+      "qj"
+    ],
+    "lat": 0.5172399257906082,
+    "lng": 0.36456997528339086,
+    "panoramaImage": "images/uploads/qj_10.jpeg",
+    "audioFile": "audio/绿墙坡雨天.mp3",
+    "id": "user_1780665850988_2",
+    "panoramaLinks": [
+      {
+        "targetMarkerId": "user_1780665805817_1",
+        "yaw": 270,
+        "pitch": -10,
+        "label": "去往绿墙坡湖西北"
+      },
+      {
+        "targetMarkerId": "user_1778923104975_13",
+        "yaw": 110,
+        "pitch": -10,
+        "label": "去往言叶之庭"
+      }
+    ]
   }
 ]
