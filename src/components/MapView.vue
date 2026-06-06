@@ -166,43 +166,49 @@ function buildRouteArrows() {
   }
 }
 
+function createHighlightIcon(color: string): L.DivIcon {
+  const size = 44
+  const r = 20
+  const w = 3
+  return L.divIcon({
+    className: 'highlight-circle',
+    html: `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" style="display:block"><circle cx="${size/2}" cy="${size/2}" r="${r}" fill="${color}" fill-opacity="0.2" stroke="${color}" stroke-width="${w}" stroke-opacity="0.9"/></svg>`,
+    iconSize: [size, size],
+    iconAnchor: [size / 2, size / 2],
+  })
+}
+
 function updateTempHighlights() {
   if (!tempHighlightLayer) return
   tempHighlightLayer.clearLayers()
   if (!store.isAddingSegment) return
+  const icon = createHighlightIcon('#f59e0b')
   for (const id of store.segmentTempMarkerIds) {
     const m = store.getMarkerById(id)
     if (!m) continue
-    const circle = L.circleMarker([m.lat, m.lng], {
-      radius: 22,
-      color: '#f59e0b',
-      fillColor: '#f59e0b',
-      fillOpacity: 0.2,
-      weight: 3,
-      interactive: false,
-    })
-    tempHighlightLayer.addLayer(circle)
+    const marker = L.marker([m.lat, m.lng], { icon, interactive: false })
+    tempHighlightLayer.addLayer(marker)
   }
 }
+
+const focusedHighlightIcons = new Map<string, L.DivIcon>()
 
 function updateFocusedHighlights() {
   if (!focusedHighlightLayer) return
   focusedHighlightLayer.clearLayers()
   const ids = store.focusMarkerIds
   if (ids.length === 0) return
+  const color = focusedSegmentColor.value ?? '#f59e0b'
+  let icon = focusedHighlightIcons.get(color)
+  if (!icon) {
+    icon = createHighlightIcon(color)
+    focusedHighlightIcons.set(color, icon)
+  }
   for (const id of ids) {
     const m = store.getMarkerById(id)
     if (!m) continue
-    const color = focusedSegmentColor.value ?? '#f59e0b'
-    const circle = L.circleMarker([m.lat, m.lng], {
-      radius: 22,
-      color,
-      fillColor: color,
-      fillOpacity: 0.2,
-      weight: 3,
-      interactive: false,
-    })
-    focusedHighlightLayer.addLayer(circle)
+    const marker = L.marker([m.lat, m.lng], { icon, interactive: false })
+    focusedHighlightLayer.addLayer(marker)
   }
 }
 
@@ -391,11 +397,12 @@ onMounted(async () => {
     disableClusteringAtZoom: 8,
   })
 
+  tempHighlightLayer = L.layerGroup().addTo(map)
+  focusedHighlightLayer = L.layerGroup().addTo(map)
+
   map.addLayer(markerClusterGroup)
 
   arrowLayerGroup = L.layerGroup().addTo(map)
-  tempHighlightLayer = L.layerGroup().addTo(map)
-  focusedHighlightLayer = L.layerGroup().addTo(map)
 
   map.on('moveend', () => {
     if (isFlying) return
@@ -557,4 +564,8 @@ defineExpose({ flyToMarker })
   opacity: 0;
 }
 
+.highlight-circle {
+  background: transparent !important;
+  border: none !important;
+}
 </style>
