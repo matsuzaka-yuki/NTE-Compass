@@ -17,6 +17,7 @@ let tempHighlightLayer: L.LayerGroup | null = null
 let focusedHighlightLayer: L.LayerGroup | null = null
 let defaultZoom = 5
 let isFlying = false
+let moveendRaf = 0
 
 const hoveredMarker = ref<MarkerData | null>(null)
 const hoveredScreenPos = ref<{ x: number; y: number } | null>(null)
@@ -232,6 +233,7 @@ function buildMarkers() {
   if (!markerClusterGroup) return
   markerClusterGroup.clearLayers()
 
+  const markers: L.Marker[] = []
   for (const m of store.filteredMarkers) {
     const found = store.isFound(m.id)
     const icon = createMarkerIcon(m, found)
@@ -255,8 +257,9 @@ function buildMarkers() {
         hoveredScreenPos.value = null
       })
     }
-    markerClusterGroup!.addLayer(marker)
+    markers.push(marker)
   }
+  markerClusterGroup.addLayers(markers)
 }
 
 function flyToMarker(m: MarkerData) {
@@ -399,7 +402,7 @@ onMounted(async () => {
     minZoom: 2,
     maxZoom: 16,
     zoom: 2,
-    zoomDelta: 0.1,
+    zoomDelta: 0.5,
     zoomSnap: 0,
     zoomAnimation: true,
     markerZoomAnimation: true,
@@ -436,13 +439,16 @@ onMounted(async () => {
 
   map.on('moveend', () => {
     if (isFlying) return
-    if (store.selectedMarker) {
-      updateSelectedMarkerScreenPos()
-    }
-    if (hoveredMarker.value && map) {
-      const point = map.latLngToContainerPoint([hoveredMarker.value.lat, hoveredMarker.value.lng])
-      hoveredScreenPos.value = { x: point.x, y: point.y }
-    }
+    cancelAnimationFrame(moveendRaf)
+    moveendRaf = requestAnimationFrame(() => {
+      if (store.selectedMarker) {
+        updateSelectedMarkerScreenPos()
+      }
+      if (hoveredMarker.value && map) {
+        const point = map.latLngToContainerPoint([hoveredMarker.value.lat, hoveredMarker.value.lng])
+        hoveredScreenPos.value = { x: point.x, y: point.y }
+      }
+    })
   })
 
   map.on('click', (e) => {
@@ -578,8 +584,11 @@ defineExpose({ flyToMarker })
 .map-container {
   width: 100%;
   height: 100%;
+  contain: layout style paint;
 }
-.map-container :deep(.leaflet-map-pane) {
+.map-container :deep(.leaflet-map-pane),
+.map-container :deep(.leaflet-marker-pane),
+.map-container :deep(.leaflet-overlay-pane) {
   will-change: transform;
 }
 </style>
