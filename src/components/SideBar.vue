@@ -588,6 +588,51 @@ function getSegmentTotalCounts(markerIds: string[]): number {
         </svg>
       </button>
 
+      <!-- Mobile farming button: above close button when sidebar open (mobile only) -->
+      <div
+        v-if="store.currentRoute && store.currentSegmentIndex >= 0 && !store.isAddingSegment && !store.farmingMode"
+        class="absolute left-2 z-30 md:hidden"
+        style="top: -5.5rem;"
+      >
+        <button
+          @click="store.startFarmingMode()"
+          class="w-9 h-9 rounded-lg bg-amber-500/20 backdrop-blur-md border border-amber-500/40 shadow-lg flex items-center justify-center text-amber-400 hover:text-amber-300 hover:bg-amber-500/30 hover:border-amber-400/60 transition-all"
+          title="开刷"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Mobile farming mode: up/down buttons above close button (mobile only) -->
+      <div
+        v-if="store.currentRoute && store.currentSegmentIndex >= 0 && !store.isAddingSegment && store.farmingMode && !store.sidebarOpen"
+        class="absolute left-2 z-30 flex flex-col gap-1.5 md:hidden"
+        style="top: -8.125rem;"
+      >
+        <button
+          @click="store.farmingPrevPair()"
+          :disabled="!store.farmingCanGoPrev"
+          class="w-9 h-9 rounded-lg bg-amber-500/20 backdrop-blur-md border border-amber-500/40 shadow-lg flex items-center justify-center text-amber-400 hover:text-amber-300 hover:bg-amber-500/30 hover:border-amber-400/60 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+          title="上一组"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M18 15l-6-6-6 6" />
+          </svg>
+        </button>
+        <button
+          @click="store.farmingNextPair()"
+          :disabled="!store.farmingCanGoNext"
+          class="w-9 h-9 rounded-lg bg-amber-500/20 backdrop-blur-md border border-amber-500/40 shadow-lg flex items-center justify-center text-amber-400 hover:text-amber-300 hover:bg-amber-500/30 hover:border-amber-400/60 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+          title="下一组"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 9l6 6 6-6" />
+          </svg>
+        </button>
+      </div>
+
       <!-- Mobile search button (collapsed) -->
       <button
         v-if="!searchExpanded"

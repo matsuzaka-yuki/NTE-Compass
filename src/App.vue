@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useMarkerStore } from './stores/markerStore'
 import MapView from './components/MapView.vue'
 import SideBar from './components/SideBar.vue'
@@ -29,6 +29,61 @@ async function handleToggleEditorMode() {
 
 onMounted(() => {
   store.loadLatestMarkers()
+})
+
+// ---- Farming button visibility & positioning ----
+const isMobile = ref(window.innerWidth < 768)
+
+const showFarmingButton = computed(() => {
+  return store.currentRoute && store.currentSegmentIndex >= 0 && !store.isAddingSegment
+})
+
+const farmingButtonClass = computed(() => {
+  if (!showFarmingButton.value) return { display: 'none' }
+  const mobile = isMobile.value
+  const sidebarOpen = store.sidebarOpen
+
+  if (mobile) {
+    if (sidebarOpen) {
+      // Mobile sidebar open: handled in SideBar.vue, hide App.vue button
+      return { display: 'none' }
+    }
+    // Mobile sidebar closed: above the open button (bottom-6 left-6)
+    return {
+      position: 'fixed' as const,
+      bottom: '84px',  // bottom-6 (24px) + button 36px + gap 24px
+      left: '24px',
+      zIndex: 40,      // above popup backdrop (z-30)
+    }
+  }
+
+  // Desktop
+  if (sidebarOpen) {
+    return {
+      position: 'fixed' as const,
+      top: '64px',    // below close button at top-4 (16px + 36px + 12px gap)
+      left: '350px',  // same as sidebar toggle when open
+      zIndex: 40,     // above popup backdrop (z-30)
+    }
+  }
+  return {
+    position: 'fixed' as const,
+    top: '64px',    // below hamburger at top-4
+    left: '16px',
+    zIndex: 40,     // above popup backdrop (z-30)
+  }
+})
+
+function handleFarmingButtonClick() {
+  if (store.farmingMode) {
+    store.stopFarmingMode()
+  } else {
+    store.startFarmingMode()
+  }
+}
+
+window.addEventListener('resize', () => {
+  isMobile.value = window.innerWidth < 768
 })
 </script>
 
@@ -86,6 +141,51 @@ onMounted(() => {
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
       </svg>
     </button>
+
+    <!-- Farming button (开刷) / up-down controls -->
+    <div
+      v-if="showFarmingButton && !store.farmingMode"
+      :style="farmingButtonClass"
+      class="fixed z-30"
+    >
+      <button
+        @click="handleFarmingButtonClick()"
+        class="w-9 h-9 rounded-lg bg-amber-500/20 backdrop-blur-md border border-amber-500/40 shadow-lg flex items-center justify-center text-amber-400 hover:text-amber-300 hover:bg-amber-500/30 hover:border-amber-400/60 transition-all"
+        title="开刷"
+      >
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Farming mode: up/down pair navigation -->
+    <div
+      v-if="showFarmingButton && store.farmingMode"
+      :style="farmingButtonClass"
+      class="fixed z-30 flex flex-col gap-1.5"
+    >
+      <button
+        @click="store.farmingPrevPair()"
+        :disabled="!store.farmingCanGoPrev"
+        class="w-9 h-9 rounded-lg bg-amber-500/20 backdrop-blur-md border border-amber-500/40 shadow-lg flex items-center justify-center text-amber-400 hover:text-amber-300 hover:bg-amber-500/30 hover:border-amber-400/60 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+        title="上一组"
+      >
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M18 15l-6-6-6 6" />
+        </svg>
+      </button>
+      <button
+        @click="store.farmingNextPair()"
+        :disabled="!store.farmingCanGoNext"
+        class="w-9 h-9 rounded-lg bg-amber-500/20 backdrop-blur-md border border-amber-500/40 shadow-lg flex items-center justify-center text-amber-400 hover:text-amber-300 hover:bg-amber-500/30 hover:border-amber-400/60 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+        title="下一组"
+      >
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 9l6 6 6-6" />
+        </svg>
+      </button>
+    </div>
 
     <!-- Sidebar (overlay) -->
     <SideBar />

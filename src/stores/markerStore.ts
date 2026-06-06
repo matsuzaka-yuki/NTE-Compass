@@ -309,6 +309,7 @@ export const useMarkerStore = defineStore('markers', () => {
     segmentTempMarkerIds.value = []
     routeMarkerFilterIds.value = null
     focusMarkerIds.value = []
+    stopFarmingMode()
   }
 
   function addRoute(name: string, image?: string) {
@@ -370,6 +371,7 @@ export const useMarkerStore = defineStore('markers', () => {
     if (!route) return
     if (index < 0 || index >= route.segments.length) return
     currentSegmentIndex.value = index
+    stopFarmingMode()
     requestFocusMarkers(route.segments[index].markerIds)
   }
 
@@ -459,6 +461,67 @@ export const useMarkerStore = defineStore('markers', () => {
     routeMarkerFilterIds.value = null
   }
 
+  // ---- farming mode (刷取模式) ----
+  const farmingMode = ref(false)
+  const farmingPairIndex = ref(0)
+  const farmingHighlightId = ref<string | null>(null)
+
+  const farmingCanGoPrev = computed(() => {
+    return farmingMode.value && farmingPairIndex.value > 0
+  })
+
+  const farmingCanGoNext = computed(() => {
+    if (!farmingMode.value || !currentRoute.value || currentSegmentIndex.value < 0) return false
+    const seg = currentRoute.value.segments[currentSegmentIndex.value]
+    if (!seg) return false
+    return farmingPairIndex.value < seg.markerIds.length - 2
+  })
+
+  function startFarmingMode() {
+    if (!currentRoute.value || currentSegmentIndex.value < 0) return
+    const seg = currentRoute.value.segments[currentSegmentIndex.value]
+    if (seg.markerIds.length < 2) return
+    farmingMode.value = true
+    farmingPairIndex.value = 0
+    farmingHighlightId.value = seg.markerIds[1]
+    // Only close sidebar on mobile; keep it open on desktop
+    if (window.innerWidth < 768) {
+      sidebarOpen.value = false
+    }
+    // Focus on first two markers of the segment
+    requestFocusMarkers([seg.markerIds[0], seg.markerIds[1]])
+    // Select the second marker to show its popup card in route-mode position
+    selectMarker(seg.markerIds[1])
+  }
+
+  function stopFarmingMode() {
+    farmingMode.value = false
+    farmingPairIndex.value = 0
+    farmingHighlightId.value = null
+  }
+
+  function farmingNextPair() {
+    if (!farmingCanGoNext.value) return
+    farmingPairIndex.value++
+    const i = farmingPairIndex.value
+    if (!currentRoute.value || currentSegmentIndex.value < 0) return
+    const seg = currentRoute.value.segments[currentSegmentIndex.value]
+    farmingHighlightId.value = seg.markerIds[i + 1]
+    requestFocusMarkers([seg.markerIds[i], seg.markerIds[i + 1]])
+    selectMarker(seg.markerIds[i + 1])
+  }
+
+  function farmingPrevPair() {
+    if (!farmingCanGoPrev.value) return
+    farmingPairIndex.value--
+    const i = farmingPairIndex.value
+    if (!currentRoute.value || currentSegmentIndex.value < 0) return
+    const seg = currentRoute.value.segments[currentSegmentIndex.value]
+    farmingHighlightId.value = seg.markerIds[i + 1]
+    requestFocusMarkers([seg.markerIds[i], seg.markerIds[i + 1]])
+    selectMarker(seg.markerIds[i + 1])
+  }
+
   return {
     // state
     isEditorMode,
@@ -528,5 +591,15 @@ export const useMarkerStore = defineStore('markers', () => {
     routeMarkerFilterIds,
     setRouteMarkerFilter,
     clearRouteMarkerFilter,
+    // farming mode
+    farmingMode,
+    farmingPairIndex,
+    farmingHighlightId,
+    farmingCanGoPrev,
+    farmingCanGoNext,
+    startFarmingMode,
+    stopFarmingMode,
+    farmingNextPair,
+    farmingPrevPair,
   }
 })

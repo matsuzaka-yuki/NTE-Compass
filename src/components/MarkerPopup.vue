@@ -103,7 +103,12 @@ const isDesktopRouteMode = computed(() => {
 })
 
 const cardStyle = computed(() => {
-  if (isMobileRouteMode.value) return {}
+  if (isMobileRouteMode.value) {
+    return {
+      right: '12px',
+      bottom: '16px',
+    }
+  }
   if (isDesktopRouteMode.value) {
     return {
       right: '16px',
@@ -355,29 +360,29 @@ watch(previewOpen, (open) => {
           @click="store.selectMarker(null)"
         ></div>
 
-        <!-- Card - positioned above marker (normal), right side (desktop route), or bottom sheet (mobile route) -->
+        <!-- Card - positioned above marker (normal), right side (desktop route), or bottom-right corner (mobile route) -->
         <div
           v-if="store.selectedMarkerScreenPos || isMobileRouteMode || isDesktopRouteMode"
           class="absolute pointer-events-auto"
-          :class="isMobileRouteMode ? 'bottom-0 left-0 right-0 flex justify-center' : ''"
           :style="cardStyle"
         >
           <!-- Card body: rounded + overflow clipped -->
           <div
-            class="relative max-h-[80vh] bg-surface-800/95 backdrop-blur-xl border border-white/10 shadow-2xl overflow-hidden"
-            :class="isMobileRouteMode ? 'w-full max-w-lg rounded-t-2xl border-b-0' : 'w-[280px] max-w-[92vw] rounded-2xl'"
+            class="relative bg-surface-800/95 backdrop-blur-xl border border-white/10 shadow-2xl overflow-hidden"
+            :class="isMobileRouteMode ? 'w-[220px] max-w-[80vw] max-h-[65vh] rounded-2xl' : 'w-[280px] max-w-[92vw] max-h-[80vh] rounded-2xl'"
           >
             <!-- Close button -->
             <button
               @click="store.selectMarker(null)"
-              class="absolute top-3 right-3 z-10 w-7 h-7 flex items-center justify-center rounded-full bg-surface-700/80 hover:bg-surface-600 text-slate-400 hover:text-white transition-colors"
+              class="absolute z-10 flex items-center justify-center rounded-full bg-surface-700/80 hover:bg-surface-600 text-slate-400 hover:text-white transition-colors"
+              :class="isMobileRouteMode ? 'top-2 right-2 w-5 h-5' : 'top-3 right-3 w-7 h-7'"
             >
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg :class="isMobileRouteMode ? 'w-3 h-3' : 'w-4 h-4'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
 
-            <div class="max-h-[80vh] overflow-y-auto">
+            <div :class="isMobileRouteMode ? 'max-h-[65vh] overflow-y-auto' : 'max-h-[80vh] overflow-y-auto'">
               <!-- Image gallery -->
               <div
                 v-if="allImages.length > 0"
@@ -395,28 +400,28 @@ watch(previewOpen, (open) => {
                 @error="($event.target as HTMLImageElement).style.display = 'none'"
               />
               <!-- Frosted glass fade overlay -->
-              <div class="absolute inset-x-0 bottom-0 h-16 pointer-events-none frosted-fade"></div>
+              <div :class="isMobileRouteMode ? 'absolute inset-x-0 bottom-0 h-10 pointer-events-none frosted-fade' : 'absolute inset-x-0 bottom-0 h-16 pointer-events-none frosted-fade'"></div>
               <!-- Icon + Name overlay at bottom-left -->
-              <div class="absolute bottom-2 left-3 flex items-center gap-2">
+              <div :class="isMobileRouteMode ? 'absolute bottom-1.5 left-2 flex items-center gap-1.5' : 'absolute bottom-2 left-3 flex items-center gap-2'">
                 <img
                   v-if="popupPrimaryType"
                   :src="resolveAssetUrl(MARKER_TYPE_CONFIG[popupPrimaryType].iconUrl)"
                   :alt="MARKER_TYPE_CONFIG[popupPrimaryType].label"
-                  class="w-5 h-5 rounded-full object-cover flex-shrink-0"
+                  :class="isMobileRouteMode ? 'w-4 h-4 rounded-full object-cover flex-shrink-0' : 'w-5 h-5 rounded-full object-cover flex-shrink-0'"
                 />
-                <h3 class="text-base font-bold text-white truncate">{{ store.selectedMarker.name }}</h3>
+                <h3 :class="isMobileRouteMode ? 'text-sm font-bold text-white truncate' : 'text-base font-bold text-white truncate'">{{ store.selectedMarker.name }}</h3>
               </div>
             </div>
             <div
               v-else
               ref="galleryRef"
-              class="flex gap-1.5 p-2 overflow-x-auto no-scrollbar"
+              :class="isMobileRouteMode ? 'flex gap-1 p-1.5 overflow-x-auto no-scrollbar' : 'flex gap-1.5 p-2 overflow-x-auto no-scrollbar'"
               @wheel="onGalleryWheel"
             >
               <div
                 v-for="(img, idx) in allImages"
                 :key="idx"
-                class="flex-shrink-0 w-24 aspect-video rounded-lg overflow-hidden border border-white/5 cursor-pointer hover:border-white/20 transition-colors"
+                :class="isMobileRouteMode ? 'flex-shrink-0 w-16 aspect-video rounded-md overflow-hidden border border-white/5 cursor-pointer hover:border-white/20 transition-colors' : 'flex-shrink-0 w-24 aspect-video rounded-lg overflow-hidden border border-white/5 cursor-pointer hover:border-white/20 transition-colors'"
                 @click="openPreviewAt(idx)"
               >
                 <img
@@ -430,22 +435,22 @@ watch(previewOpen, (open) => {
           </div>
 
           <!-- Content -->
-          <div class="p-3 space-y-2">
+          <div :class="isMobileRouteMode ? 'p-2 space-y-1.5' : 'p-3 space-y-2'">
             <!-- Name (hidden when single-image overlay shows it) -->
-            <div v-if="allImages.length !== 1" class="flex items-center gap-2">
+            <div v-if="allImages.length !== 1" :class="isMobileRouteMode ? 'flex items-center gap-1.5' : 'flex items-center gap-2'">
               <img
                 v-if="popupPrimaryType"
                 :src="resolveAssetUrl(MARKER_TYPE_CONFIG[popupPrimaryType].iconUrl)"
                 :alt="MARKER_TYPE_CONFIG[popupPrimaryType].label"
-                class="w-5 h-5 rounded-full object-cover flex-shrink-0"
+                :class="isMobileRouteMode ? 'w-4 h-4 rounded-full object-cover flex-shrink-0' : 'w-5 h-5 rounded-full object-cover flex-shrink-0'"
               />
-              <h3 class="text-base font-bold text-white truncate">{{ store.selectedMarker.name }}</h3>
+              <h3 :class="isMobileRouteMode ? 'text-sm font-bold text-white truncate' : 'text-base font-bold text-white truncate'">{{ store.selectedMarker.name }}</h3>
             </div>
 
 <!-- Description -->
             <p
               v-if="store.selectedMarker.description"
-              class="text-xs text-slate-300 leading-relaxed max-h-[136px] overflow-y-auto"
+              :class="isMobileRouteMode ? 'text-[10px] text-slate-300 leading-relaxed max-h-[80px] overflow-y-auto' : 'text-xs text-slate-300 leading-relaxed max-h-[136px] overflow-y-auto'"
             >
               {{ store.selectedMarker.description }}
             </p>
@@ -453,10 +458,10 @@ watch(previewOpen, (open) => {
             <!-- Refresh time -->
             <div
               v-if="store.selectedMarker.refreshTime"
-              class="flex items-center gap-1.5 text-xs"
+              :class="isMobileRouteMode ? 'flex items-center gap-1 text-[10px]' : 'flex items-center gap-1.5 text-xs'"
               :style="popupPrimaryType ? { color: MARKER_TYPE_CONFIG[popupPrimaryType].color } : {}"
             >
-              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg :class="isMobileRouteMode ? 'w-3 h-3' : 'w-3.5 h-3.5'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
               {{ store.selectedMarker.refreshTime }}
@@ -465,18 +470,18 @@ watch(previewOpen, (open) => {
             <!-- Related items -->
             <div
               v-if="relatedItems.length > 0"
-              class="flex flex-wrap gap-1.5"
+              :class="isMobileRouteMode ? 'flex flex-wrap gap-1' : 'flex flex-wrap gap-1.5'"
             >
               <div
                 v-for="item in relatedItems"
                 :key="item.id"
-                class="flex items-center gap-1 px-2 py-1 rounded-lg bg-white/5 border border-white/10 text-xs text-slate-300"
+                :class="isMobileRouteMode ? 'flex items-center gap-0.5 px-1.5 py-0.5 rounded-md bg-white/5 border border-white/10 text-[10px] text-slate-300' : 'flex items-center gap-1 px-2 py-1 rounded-lg bg-white/5 border border-white/10 text-xs text-slate-300'"
               >
                 <img
                   v-if="item.image"
                   :src="resolveAssetUrl('./' + item.image)"
                   :alt="item.name"
-                  class="w-4 h-4 rounded object-cover cursor-pointer hover:opacity-80 transition-opacity"
+                  :class="isMobileRouteMode ? 'w-3 h-3 rounded object-cover cursor-pointer hover:opacity-80 transition-opacity' : 'w-4 h-4 rounded object-cover cursor-pointer hover:opacity-80 transition-opacity'"
                   @click.stop="openItemPreview(resolveAssetUrl('./' + item.image!))"
                 />
                 {{ item.name }}
@@ -486,7 +491,7 @@ watch(previewOpen, (open) => {
             <!-- Related quest -->
             <div
               v-if="store.selectedMarker.relatedQuest"
-              class="text-xs text-orange-400 bg-orange-400/10 rounded-lg px-3 py-1.5"
+              :class="isMobileRouteMode ? 'text-[10px] text-orange-400 bg-orange-400/10 rounded-lg px-2 py-1' : 'text-xs text-orange-400 bg-orange-400/10 rounded-lg px-3 py-1.5'"
             >
               关联任务：{{ store.selectedMarker.relatedQuest }}
             </div>
@@ -495,9 +500,9 @@ watch(previewOpen, (open) => {
             <button
               v-if="hasPanorama"
               @click="openPanorama"
-              class="w-full mt-1 py-2 rounded-lg text-xs font-medium transition-all flex items-center justify-center gap-1.5 bg-cyan-500/15 text-cyan-300 border border-cyan-500/30 hover:bg-cyan-500/25"
+              :class="isMobileRouteMode ? 'w-full mt-0.5 py-1.5 rounded-lg text-[10px] font-medium transition-all flex items-center justify-center gap-1 bg-cyan-500/15 text-cyan-300 border border-cyan-500/30 hover:bg-cyan-500/25' : 'w-full mt-1 py-2 rounded-lg text-xs font-medium transition-all flex items-center justify-center gap-1.5 bg-cyan-500/15 text-cyan-300 border border-cyan-500/30 hover:bg-cyan-500/25'"
             >
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg :class="isMobileRouteMode ? 'w-3.5 h-3.5' : 'w-4 h-4'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
               查看全景图
@@ -507,18 +512,18 @@ watch(previewOpen, (open) => {
             <template v-if="store.isEditorMode">
               <button
                 @click="store.startEditMarker(store.selectedMarker!.id)"
-                class="w-full mt-1 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center justify-center gap-1.5 bg-primary-600/20 text-primary-300 border border-primary-500/30 hover:bg-primary-600/30"
+                :class="isMobileRouteMode ? 'w-full mt-0.5 py-1 rounded-lg text-[10px] font-medium transition-all flex items-center justify-center gap-1 bg-primary-600/20 text-primary-300 border border-primary-500/30 hover:bg-primary-600/30' : 'w-full mt-1 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center justify-center gap-1.5 bg-primary-600/20 text-primary-300 border border-primary-500/30 hover:bg-primary-600/30'"
               >
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg :class="isMobileRouteMode ? 'w-3.5 h-3.5' : 'w-4 h-4'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                 </svg>
                 编辑标记
               </button>
               <button
                 @click="store.deleteMarker(store.selectedMarker!.id)"
-                class="w-full mt-1.5 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center justify-center gap-1.5 bg-red-500/15 text-red-400 border border-red-500/25 hover:bg-red-500/25"
+                :class="isMobileRouteMode ? 'w-full mt-1 py-1 rounded-lg text-[10px] font-medium transition-all flex items-center justify-center gap-1 bg-red-500/15 text-red-400 border border-red-500/25 hover:bg-red-500/25' : 'w-full mt-1.5 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center justify-center gap-1.5 bg-red-500/15 text-red-400 border border-red-500/25 hover:bg-red-500/25'"
               >
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg :class="isMobileRouteMode ? 'w-3.5 h-3.5' : 'w-4 h-4'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                 </svg>
                 删除此标记
@@ -526,11 +531,11 @@ watch(previewOpen, (open) => {
             </template>
 
             <!-- Bottom bar (viewer mode): type badges + found button -->
-            <div v-else class="flex items-center gap-2 mt-1 min-w-0">
+            <div v-else :class="isMobileRouteMode ? 'flex items-center gap-1.5 mt-0.5 min-w-0' : 'flex items-center gap-2 mt-1 min-w-0'">
               <!-- Single type: compact label + stats -->
               <template v-if="store.selectedMarker.types.length === 1 && popupPrimaryType">
                 <span
-                  class="relative inline-flex items-center px-1.5 py-0.5 text-xs font-medium rounded-full flex-shrink-0"
+                  :class="isMobileRouteMode ? 'relative inline-flex items-center px-1 py-0.5 text-[10px] font-medium rounded-full flex-shrink-0' : 'relative inline-flex items-center px-1.5 py-0.5 text-xs font-medium rounded-full flex-shrink-0'"
                   :style="{
                     backgroundColor: MARKER_TYPE_CONFIG[popupPrimaryType].bgColor,
                     color: MARKER_TYPE_CONFIG[popupPrimaryType].color,
@@ -539,23 +544,23 @@ watch(previewOpen, (open) => {
                   {{ MARKER_TYPE_CONFIG[popupPrimaryType].label }}
                   <span
                     v-if="store.selectedMarker.counts?.[popupPrimaryType]"
-                    class="absolute -top-1 -right-1 inline-flex items-center justify-center w-3.5 h-3.5 rounded-full bg-red-500 text-white text-[9px] font-bold leading-none"
+                    :class="isMobileRouteMode ? 'absolute -top-1 -right-1 inline-flex items-center justify-center w-3 h-3 rounded-full bg-red-500 text-white text-[8px] font-bold leading-none' : 'absolute -top-1 -right-1 inline-flex items-center justify-center w-3.5 h-3.5 rounded-full bg-red-500 text-white text-[9px] font-bold leading-none'"
                   >{{ store.selectedMarker.counts[popupPrimaryType] }}</span>
                 </span>
-                <span v-if="popupTypeStats" class="text-xs text-slate-500 font-mono flex-shrink-0">
+                <span v-if="popupTypeStats" :class="isMobileRouteMode ? 'text-[10px] text-slate-500 font-mono flex-shrink-0' : 'text-xs text-slate-500 font-mono flex-shrink-0'">
                   {{ popupTypeStats.found }}/{{ popupTypeStats.total }}
                 </span>
               </template>
               <!-- Multi-type: scrollable badges -->
               <div
                 v-else
-                class="flex gap-1 overflow-x-auto no-scrollbar min-w-0 flex-1 py-1.5"
+                :class="isMobileRouteMode ? 'flex gap-0.5 overflow-x-auto no-scrollbar min-w-0 flex-1 py-1' : 'flex gap-1 overflow-x-auto no-scrollbar min-w-0 flex-1 py-1.5'"
                 @wheel.prevent="($event.currentTarget as HTMLElement).scrollLeft += $event.deltaY"
               >
                 <span
                   v-for="t in store.selectedMarker.types"
                   :key="t"
-                  class="relative inline-flex items-center gap-1 px-1.5 py-0.5 text-xs rounded-full border flex-shrink-0"
+                  :class="isMobileRouteMode ? 'relative inline-flex items-center gap-0.5 px-1 py-0.5 text-[10px] rounded-full border flex-shrink-0' : 'relative inline-flex items-center gap-1 px-1.5 py-0.5 text-xs rounded-full border flex-shrink-0'"
                   :style="{
                     backgroundColor: MARKER_TYPE_CONFIG[t].bgColor,
                     color: MARKER_TYPE_CONFIG[t].color,
@@ -565,25 +570,26 @@ watch(previewOpen, (open) => {
                   <img
                     :src="resolveAssetUrl(MARKER_TYPE_CONFIG[t].iconUrl)"
                     :alt="MARKER_TYPE_CONFIG[t].label"
-                    class="w-3 h-3 rounded-full object-cover"
+                    :class="isMobileRouteMode ? 'w-2.5 h-2.5 rounded-full object-cover' : 'w-3 h-3 rounded-full object-cover'"
                   />
                   {{ MARKER_TYPE_CONFIG[t].label }}
                   <span
                     v-if="store.selectedMarker.counts?.[t]"
-                    class="absolute -top-1 -right-1 inline-flex items-center justify-center w-3.5 h-3.5 rounded-full bg-red-500 text-white text-[9px] font-bold leading-none"
+                    :class="isMobileRouteMode ? 'absolute -top-1 -right-1 inline-flex items-center justify-center w-3 h-3 rounded-full bg-red-500 text-white text-[8px] font-bold leading-none' : 'absolute -top-1 -right-1 inline-flex items-center justify-center w-3.5 h-3.5 rounded-full bg-red-500 text-white text-[9px] font-bold leading-none'"
                   >{{ store.selectedMarker.counts[t] }}</span>
                 </span>
               </div>
               <button
                 @click="store.toggleFound(store.selectedMarker!.id)"
-                class="ml-auto py-1 px-2.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1 flex-shrink-0"
-                :class="
+                :class="[
+                  isMobileRouteMode ? 'ml-auto py-0.5 px-1.5 rounded-md text-[10px]' : 'ml-auto py-1 px-2.5 rounded-lg text-xs',
+                  'font-medium transition-all flex items-center gap-1 flex-shrink-0',
                   store.isFound(store.selectedMarker!.id)
                     ? 'bg-green-500/20 text-green-400 border border-green-500/30 hover:bg-green-500/30'
-                    : 'bg-primary-600/20 text-primary-300 border border-primary-500/30 hover:bg-primary-600/30'
-                "
+                    : 'bg-primary-600/20 text-primary-300 border border-primary-500/30 hover:bg-primary-600/30',
+                ]"
               >
-                <svg v-if="store.isFound(store.selectedMarker!.id)" class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                <svg v-if="store.isFound(store.selectedMarker!.id)" :class="isMobileRouteMode ? 'w-3 h-3' : 'w-3.5 h-3.5'" fill="currentColor" viewBox="0 0 20 20">
                   <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
                 </svg>
                 {{ store.isFound(store.selectedMarker!.id) ? '已找到' : '标记找到' }}
@@ -755,24 +761,26 @@ watch(previewOpen, (open) => {
   opacity: 0;
 }
 
-/* Bottom sheet slide-up transition */
+/* Bottom sheet slide-up transition (mobile route: bottom-right corner) */
 .bottomsheet-enter-active,
 .bottomsheet-leave-active {
   transition: opacity 0.25s ease;
 }
 .bottomsheet-enter-active > div:nth-child(2),
 .bottomsheet-leave-active > div:nth-child(2) {
-  transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+  transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.25s ease;
 }
 .bottomsheet-enter-from,
 .bottomsheet-leave-to {
   opacity: 0;
 }
 .bottomsheet-enter-from > div:nth-child(2) {
-  transform: translateY(100%);
+  transform: translateX(20px) translateY(20px);
+  opacity: 0;
 }
 .bottomsheet-leave-to > div:nth-child(2) {
-  transform: translateY(100%);
+  transform: translateX(20px) translateY(20px);
+  opacity: 0;
 }
 
 /* Desktop route mode: slide in from right */

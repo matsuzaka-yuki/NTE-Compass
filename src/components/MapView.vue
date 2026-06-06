@@ -150,6 +150,17 @@ function buildRouteArrows() {
     return
   }
 
+  // In farming mode, only show the arrow between the two currently focused markers
+  if (store.farmingMode && store.focusMarkerIds.length === 2) {
+    const color = focusedSegmentColor.value ?? '#f59e0b'
+    const from = store.getMarkerById(store.focusMarkerIds[0])
+    const to = store.getMarkerById(store.focusMarkerIds[1])
+    if (from && to) {
+      drawArrowLine(from, to, color, false)
+    }
+    return
+  }
+
   if (store.currentRoute) {
     let colorIdx = 0
     for (const segment of store.currentRoute.segments) {
@@ -196,7 +207,12 @@ const focusedHighlightIcons = new Map<string, L.DivIcon>()
 function updateFocusedHighlights() {
   if (!focusedHighlightLayer) return
   focusedHighlightLayer.clearLayers()
-  const ids = store.focusMarkerIds
+
+  // In farming mode, only highlight the second marker of the current pair
+  const ids = store.farmingMode && store.farmingHighlightId
+    ? [store.farmingHighlightId]
+    : store.focusMarkerIds
+
   if (ids.length === 0) return
   const color = focusedSegmentColor.value ?? '#f59e0b'
   let icon = focusedHighlightIcons.get(color)
@@ -306,9 +322,17 @@ watch(
 )
 
 watch(
+  () => store.farmingMode,
+  () => {
+    nextTick(() => buildRouteArrows())
+  }
+)
+
+watch(
   () => store.focusMarkerIds,
   (ids) => {
     updateFocusedHighlights()
+    if (store.farmingMode) buildRouteArrows()
     if (!map || ids.length === 0) return
     const positions: L.LatLngTuple[] = []
     for (const id of ids) {
@@ -324,7 +348,13 @@ watch(
     const bounds = L.latLngBounds(positions)
     const isMobile = window.innerWidth < 768
     isFlying = true
-    map.flyToBounds(bounds, { padding: isMobile ? [80, 80] : [120, 120], duration: 0.6, easeLinearity: 0.25 })
+    map.flyToBounds(bounds, {
+      duration: 0.6,
+      easeLinearity: 0.25,
+      ...(isMobile
+        ? { paddingTopLeft: [100, 80] as const, paddingBottomRight: [100, 400] as const }
+        : { paddingTopLeft: [400, 120] as const, paddingBottomRight: [400, 120] as const }),
+    })
     map.once('moveend', () => { isFlying = false })
   }
 )
