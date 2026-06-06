@@ -9,6 +9,16 @@ const store = useMarkerStore()
 
 const galleryRef = ref<HTMLElement | null>(null)
 
+// ── Image loading state ──
+const markerImageKey = computed(() => store.selectedMarkerId ?? '__none__')
+const imagesReady = ref(false)
+watch(() => store.selectedMarkerId, () => {
+  imagesReady.value = false
+  // Close preview overlay when switching markers to avoid showing wrong image
+  previewIndex.value = -1
+  previewDirectUrl.value = null
+})
+
 function onGalleryWheel(e: WheelEvent) {
   if (!galleryRef.value) return
   e.preventDefault()
@@ -386,52 +396,82 @@ watch(previewOpen, (open) => {
               <!-- Image gallery -->
               <div
                 v-if="allImages.length > 0"
+                :key="markerImageKey"
                 class="w-full bg-surface-900 overflow-hidden rounded-t-2xl"
               >
-            <div
-              v-if="allImages.length === 1"
-              class="w-full aspect-video cursor-pointer relative"
-              @click="openPreviewAt(0)"
-            >
-              <img
-                :src="allImages[0]"
-                :alt="store.selectedMarker!.name"
-                class="w-full h-full object-cover"
-                @error="($event.target as HTMLImageElement).style.display = 'none'"
-              />
-              <!-- Frosted glass fade overlay -->
-              <div :class="isMobileRouteMode ? 'absolute inset-x-0 bottom-0 h-10 pointer-events-none frosted-fade' : 'absolute inset-x-0 bottom-0 h-16 pointer-events-none frosted-fade'"></div>
-              <!-- Icon + Name overlay at bottom-left -->
-              <div :class="isMobileRouteMode ? 'absolute bottom-1.5 left-2 flex items-center gap-1.5' : 'absolute bottom-2 left-3 flex items-center gap-2'">
-                <img
-                  v-if="popupPrimaryType"
-                  :src="resolveAssetUrl(MARKER_TYPE_CONFIG[popupPrimaryType].iconUrl)"
-                  :alt="MARKER_TYPE_CONFIG[popupPrimaryType].label"
-                  :class="isMobileRouteMode ? 'w-4 h-4 rounded-full object-cover flex-shrink-0' : 'w-5 h-5 rounded-full object-cover flex-shrink-0'"
-                />
-                <h3 :class="isMobileRouteMode ? 'text-sm font-bold text-white truncate' : 'text-base font-bold text-white truncate'">{{ store.selectedMarker.name }}</h3>
-              </div>
-            </div>
-            <div
-              v-else
-              ref="galleryRef"
-              :class="isMobileRouteMode ? 'flex gap-1 p-1.5 overflow-x-auto no-scrollbar' : 'flex gap-1.5 p-2 overflow-x-auto no-scrollbar'"
-              @wheel="onGalleryWheel"
-            >
+            <!-- Single image -->
+            <template v-if="allImages.length === 1">
+              <!-- Loading skeleton -->
               <div
-                v-for="(img, idx) in allImages"
-                :key="idx"
-                :class="isMobileRouteMode ? 'flex-shrink-0 w-16 aspect-video rounded-md overflow-hidden border border-white/5 cursor-pointer hover:border-white/20 transition-colors' : 'flex-shrink-0 w-24 aspect-video rounded-lg overflow-hidden border border-white/5 cursor-pointer hover:border-white/20 transition-colors'"
-                @click="openPreviewAt(idx)"
+                v-if="!imagesReady"
+                class="w-full aspect-video bg-surface-800 animate-pulse flex items-center justify-center"
+              >
+                <svg class="w-8 h-8 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3.75 21h16.5A2.25 2.25 0 0022.5 18.75V5.25A2.25 2.25 0 0020.25 3H3.75A2.25 2.25 0 001.5 5.25v13.5A2.25 2.25 0 003.75 21z" />
+                </svg>
+              </div>
+              <div
+                v-show="imagesReady"
+                class="w-full aspect-video cursor-pointer relative"
+                @click="openPreviewAt(0)"
               >
                 <img
-                  :src="img"
-                  :alt="`${store.selectedMarker!.name} - ${idx + 1}`"
+                  :src="allImages[0]"
+                  :alt="store.selectedMarker!.name"
                   class="w-full h-full object-cover"
+                  @load="imagesReady = true"
                   @error="($event.target as HTMLImageElement).style.display = 'none'"
                 />
+                <!-- Frosted glass fade overlay -->
+                <div :class="isMobileRouteMode ? 'absolute inset-x-0 bottom-0 h-10 pointer-events-none frosted-fade' : 'absolute inset-x-0 bottom-0 h-16 pointer-events-none frosted-fade'"></div>
+                <!-- Icon + Name overlay at bottom-left -->
+                <div :class="isMobileRouteMode ? 'absolute bottom-1.5 left-2 flex items-center gap-1.5' : 'absolute bottom-2 left-3 flex items-center gap-2'">
+                  <img
+                    v-if="popupPrimaryType"
+                    :src="resolveAssetUrl(MARKER_TYPE_CONFIG[popupPrimaryType].iconUrl)"
+                    :alt="MARKER_TYPE_CONFIG[popupPrimaryType].label"
+                    :class="isMobileRouteMode ? 'w-4 h-4 rounded-full object-cover flex-shrink-0' : 'w-5 h-5 rounded-full object-cover flex-shrink-0'"
+                  />
+                  <h3 :class="isMobileRouteMode ? 'text-sm font-bold text-white truncate' : 'text-base font-bold text-white truncate'">{{ store.selectedMarker.name }}</h3>
+                </div>
               </div>
-            </div>
+            </template>
+
+            <!-- Multi-image gallery -->
+            <template v-else>
+              <!-- Loading skeleton -->
+              <div
+                v-if="!imagesReady"
+                :class="isMobileRouteMode ? 'flex gap-1 p-1.5' : 'flex gap-1.5 p-2'"
+              >
+                <div
+                  v-for="i in Math.min(allImages.length, 6)"
+                  :key="'skeleton-'+i"
+                  :class="isMobileRouteMode ? 'flex-shrink-0 w-16 aspect-video rounded-md bg-surface-800 animate-pulse' : 'flex-shrink-0 w-24 aspect-video rounded-lg bg-surface-800 animate-pulse'"
+                ></div>
+              </div>
+              <div
+                v-show="imagesReady"
+                ref="galleryRef"
+                :class="isMobileRouteMode ? 'flex gap-1 p-1.5 overflow-x-auto no-scrollbar' : 'flex gap-1.5 p-2 overflow-x-auto no-scrollbar'"
+                @wheel="onGalleryWheel"
+              >
+                <div
+                  v-for="(img, idx) in allImages"
+                  :key="idx"
+                  :class="isMobileRouteMode ? 'flex-shrink-0 w-16 aspect-video rounded-md overflow-hidden border border-white/5 cursor-pointer hover:border-white/20 transition-colors' : 'flex-shrink-0 w-24 aspect-video rounded-lg overflow-hidden border border-white/5 cursor-pointer hover:border-white/20 transition-colors'"
+                  @click="openPreviewAt(idx)"
+                >
+                  <img
+                    :src="img"
+                    :alt="`${store.selectedMarker!.name} - ${idx + 1}`"
+                    class="w-full h-full object-cover"
+                    @load="imagesReady = true"
+                    @error="($event.target as HTMLImageElement).style.display = 'none'"
+                  />
+                </div>
+              </div>
+            </template>
           </div>
 
           <!-- Content -->
@@ -668,6 +708,7 @@ watch(previewOpen, (open) => {
 
         <!-- Image -->
         <img
+          :key="previewSrc"
           :src="previewSrc"
           :style="imageStyle"
           class="max-w-[90vw] max-h-[90vh] object-contain rounded-lg shadow-2xl"

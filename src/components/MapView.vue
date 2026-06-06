@@ -503,6 +503,7 @@ defineExpose({ flyToMarker })
         >
           <div class="rounded-lg overflow-hidden border border-white/15 shadow-xl bg-surface-800/90 backdrop-blur-sm">
             <img
+              :key="hoverPreviewImg"
               :src="hoverPreviewImg"
               class="w-24 aspect-video object-cover"
               @error="($event.target as HTMLImageElement).style.display = 'none'"
