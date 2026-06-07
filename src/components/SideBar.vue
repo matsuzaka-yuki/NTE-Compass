@@ -283,13 +283,25 @@ async function handleResetProgress() {
 }
 
 const flatVisibleTypes = computed(() => {
-  const result: { type: MarkerType; foundCount: number; totalCount: number }[] = []
+  const result: { type: MarkerType; foundCount: number; totalCount: number; monsterSum?: number }[] = []
   for (const cat of MARKER_CATEGORIES) {
     for (const type of cat.types) {
       if (!store.selectedTypes.has(type)) continue
       const stats = store.typeStats[type]
       if (stats.total > 0) {
-        result.push({ type, foundCount: stats.found, totalCount: stats.total })
+        const item: { type: MarkerType; foundCount: number; totalCount: number; monsterSum?: number } = {
+          type, foundCount: stats.found, totalCount: stats.total
+        }
+        if (ENEMY_CLEARING_TYPES.includes(type)) {
+          let sum = 0
+          for (const m of store.markers) {
+            if (m.types.includes(type) && m.counts) {
+              sum += m.counts[type] || 0
+            }
+          }
+          if (sum > 0) item.monsterSum = sum
+        }
+        result.push(item)
       }
     }
   }
@@ -1124,6 +1136,10 @@ function getSegmentTotalCounts(markerIds: string[]): number {
               >
                 {{ item.foundCount }}/{{ item.totalCount }}
               </span>
+              <span
+                v-if="item.monsterSum"
+                class="text-xs px-1.5 py-0.5 rounded-full bg-red-500/15 text-red-400 flex-shrink-0 font-mono"
+              >{{ item.monsterSum }}</span>
               <svg
                 class="w-3.5 h-3.5 text-slate-500 flex-shrink-0 max-md:hidden"
                 fill="currentColor"

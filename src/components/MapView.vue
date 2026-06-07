@@ -31,7 +31,7 @@ const hoverPreviewImg = computed(() => {
   return null
 })
 
-const mapImgPath = resolveAssetUrl('./map-base.png')
+const mapImgPath = resolveAssetUrl('./map-base.webp')
 
 function computeBounds(imgW: number, imgH: number): L.LatLngBoundsLiteral {
   const ratio = imgW / imgH
