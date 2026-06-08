@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, nextTick, watch, onMounted, onUnmounted } from 'vue'
 import { useMarkerStore } from '@/stores/markerStore'
-import { MARKER_TYPE_CONFIG, MARKER_CATEGORIES, ENEMY_CLEARING_TYPES, TELEPORT_SUB_TYPES, TELEPORT_BASIC_TYPES, ALL_ITEMS } from '@/types'
+import { MARKER_TYPE_CONFIG, MARKER_CATEGORIES, ENEMY_CLEARING_TYPES, TELEPORT_SUB_TYPES, TELEPORT_BASIC_TYPES, ALL_ITEMS, ALL_MARKER_TYPES, getIconUrl } from '@/types'
 import type { MarkerType } from '@/types'
 import { resolveAssetUrl } from '@/config'
 
@@ -349,6 +349,16 @@ function scrollToList(id: string) {
 const routeImageOptions = computed(() => {
   const images: { url: string; label: string }[] = []
   const seen = new Set<string>()
+
+  // 从 public/images/icons/ 目录读取图标
+  for (const type of ALL_MARKER_TYPES) {
+    const cfg = MARKER_TYPE_CONFIG[type]
+    const url = getIconUrl(type)
+    if (!seen.has(url)) {
+      seen.add(url)
+      images.push({ url, label: cfg.label })
+    }
+  }
 
   for (const item of ALL_ITEMS) {
     if (item.image && !seen.has(item.image)) {
