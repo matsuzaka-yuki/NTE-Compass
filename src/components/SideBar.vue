@@ -1132,7 +1132,7 @@ function getSegmentTotalCounts(markerIds: string[]): number {
           <template v-for="item in flatVisibleTypes" :key="item.type">
             <div
               @click="showDetail(item.type)"
-              class="flex items-center gap-3 px-4 py-2.5 cursor-pointer hover:bg-white/5 transition-colors border-b border-white/5 select-none -mx-4 max-md:flex-shrink-0 max-md:flex-col max-md:gap-1 max-md:px-2 max-md:py-1.5 max-md:mx-0 max-md:rounded-lg max-md:bg-white/5 max-md:border-b-0 max-md:min-w-[60px] max-md:text-center max-md:hover:bg-white/10"
+              class="flex items-center gap-3 px-4 py-2.5 cursor-pointer hover:bg-white/5 transition-colors border-b border-white/5 select-none -mx-4 max-md:flex-shrink-0 max-md:flex-col max-md:gap-1 max-md:px-2 max-md:py-1.5 max-md:mx-0 max-md:rounded-lg max-md:bg-white/5 max-md:border-b-0 max-md:min-w-[60px] max-md:text-center max-md:hover:bg-white/10 max-md:relative"
             >
               <img
                 :src="resolveAssetUrl(MARKER_TYPE_CONFIG[item.type].iconUrl)"
@@ -1148,7 +1148,7 @@ function getSegmentTotalCounts(markerIds: string[]): number {
               </span>
               <span
                 v-if="item.monsterSum"
-                class="text-xs px-1.5 py-0.5 rounded-full bg-red-500/15 text-red-400 flex-shrink-0 font-mono"
+                class="text-xs px-1.5 py-0.5 rounded-full bg-red-500/15 text-red-400 flex-shrink-0 font-mono max-md:absolute max-md:top-0 max-md:right-0 max-md:text-[10px] max-md:px-1 max-md:py-px max-md:z-10"
               >{{ item.monsterSum }}</span>
               <svg
                 class="w-3.5 h-3.5 text-slate-500 flex-shrink-0 max-md:hidden"
