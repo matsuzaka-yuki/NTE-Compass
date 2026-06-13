@@ -4,9 +4,8 @@ import { fileURLToPath, URL } from 'node:url'
 import fs from 'node:fs'
 import path from 'node:path'
 
-const MARKERS_FILE = fileURLToPath(new URL('./markers-data.json', import.meta.url))
-const SRC_MARKERS_FILE = fileURLToPath(new URL('./src/data/markers.json', import.meta.url))
-const ROUTES_FILE = fileURLToPath(new URL('./routes-data.json', import.meta.url))
+const MARKERS_FILE = fileURLToPath(new URL('./src/data/markers.json', import.meta.url))
+const ROUTES_FILE = fileURLToPath(new URL('./src/data/routes.json', import.meta.url))
 const UPLOADS_DIR = fileURLToPath(new URL('./public/images/uploads', import.meta.url))
 const AUDIO_DIR = fileURLToPath(new URL('./public/audio', import.meta.url))
 
@@ -28,9 +27,7 @@ function markersApiPlugin() {
 
         if (req.method === 'GET') {
           try {
-            // Read from external file (outside src/watch scope), fallback to src
-            const filePath = fs.existsSync(MARKERS_FILE) ? MARKERS_FILE : SRC_MARKERS_FILE
-            const data = fs.readFileSync(filePath, 'utf-8')
+            const data = fs.readFileSync(MARKERS_FILE, 'utf-8')
             res.setHeader('Content-Type', 'application/json')
             res.end(data)
           } catch {

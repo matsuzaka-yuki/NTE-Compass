@@ -458,7 +458,7 @@ function confirmEditSegment() {
 const dragIdx = ref<number | null>(null)
 
 function onDragStart(idx: number, e: DragEvent) {
-  if (!store.isEditorMode) return
+  if (!store.isAnyEditMode) return
   dragIdx.value = idx
   if (e.dataTransfer) {
     e.dataTransfer.effectAllowed = 'move'
@@ -772,7 +772,7 @@ function getSegmentTotalCounts(markerIds: string[]): number {
             </button>
             <span class="flex-1 text-sm leading-none font-medium text-slate-200 truncate">路线</span>
             <button
-              v-if="store.isEditorMode"
+              v-if="store.isAnyEditMode"
               @click="openCreateRouteDialog()"
               class="w-6 h-6 flex items-center justify-center text-slate-400 hover:text-primary-400 hover:bg-white/10 rounded-md transition-colors flex-shrink-0"
               title="创建路线"
@@ -804,7 +804,7 @@ function getSegmentTotalCounts(markerIds: string[]): number {
                   <div class="text-xs text-slate-500">{{ route.segments.length }} 个路段</div>
                 </div>
                 <button
-                  v-if="store.isEditorMode"
+                  v-if="store.isAnyEditMode"
                   @click.stop="handleDeleteRoute(route.id)"
                   class="w-6 h-6 flex items-center justify-center text-slate-500 hover:text-red-400 rounded transition-colors flex-shrink-0"
                 >
@@ -823,7 +823,7 @@ function getSegmentTotalCounts(markerIds: string[]): number {
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
               </svg>
               <span class="text-xs">暂无路线</span>
-              <span v-if="store.isEditorMode" class="text-xs text-slate-600">点击右上角 + 创建路线</span>
+              <span v-if="store.isAnyEditMode" class="text-xs text-slate-600">点击右上角 + 创建路线</span>
             </div>
           </div>
         </div>
@@ -844,7 +844,7 @@ function getSegmentTotalCounts(markerIds: string[]): number {
             </div>
             <span class="flex-1 text-sm leading-none font-medium text-slate-200 truncate">{{ store.currentRoute?.name ?? '' }}</span>
             <button
-              v-if="store.isEditorMode"
+              v-if="store.isAnyEditMode"
               @click="openEditRouteDialog()"
               class="w-6 h-6 flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/10 rounded-md transition-colors flex-shrink-0"
               title="编辑路线"
@@ -865,7 +865,7 @@ function getSegmentTotalCounts(markerIds: string[]): number {
               </svg>
             </button>
             <button
-              v-if="store.isEditorMode && !store.isAddingSegment"
+              v-if="store.isAnyEditMode && !store.isAddingSegment"
               @click="handleAddSegmentClick()"
               class="w-6 h-6 flex items-center justify-center text-slate-400 hover:text-primary-400 hover:bg-white/10 rounded-md transition-colors flex-shrink-0"
               title="添加路段"
@@ -901,7 +901,7 @@ function getSegmentTotalCounts(markerIds: string[]): number {
                 v-for="(segment, idx) in store.currentRoute.segments"
                 :key="segment.id"
                 @click="store.focusSegment(idx)"
-                :draggable="store.isEditorMode"
+                :draggable="store.isAnyEditMode"
                 @dragstart="onDragStart(idx, $event)"
                 @dragend="onDragEnd($event)"
                 @dragover="onDragOver(idx, $event)"
@@ -910,7 +910,7 @@ function getSegmentTotalCounts(markerIds: string[]): number {
               >
                 <div class="flex items-center gap-2 mb-2">
                   <button
-                    v-if="store.isEditorMode"
+                    v-if="store.isAnyEditMode"
                     class="w-4 h-4 flex items-center justify-center text-slate-600 hover:text-slate-400 cursor-grab active:cursor-grabbing flex-shrink-0"
                     title="拖动排序"
                     @click.stop
@@ -929,7 +929,7 @@ function getSegmentTotalCounts(markerIds: string[]): number {
                     class="text-xs px-1.5 py-0.5 rounded-full bg-red-500/15 text-red-400 flex-shrink-0 font-mono"
                   >{{ getSegmentTotalCounts(segment.markerIds) }}</span>
                   <button
-                    v-if="store.isEditorMode"
+                    v-if="store.isAnyEditMode"
                     @click.stop="openEditSegmentDialog(segment.id)"
                     class="w-5 h-5 flex items-center justify-center text-slate-500 hover:text-white rounded transition-colors flex-shrink-0"
                   >
@@ -938,7 +938,7 @@ function getSegmentTotalCounts(markerIds: string[]): number {
                     </svg>
                   </button>
                   <button
-                    v-if="store.isEditorMode"
+                    v-if="store.isAnyEditMode"
                     @click.stop="handleDeleteSegment(segment.id)"
                     class="w-5 h-5 flex items-center justify-center text-slate-500 hover:text-red-400 rounded transition-colors flex-shrink-0"
                   >
@@ -970,7 +970,7 @@ function getSegmentTotalCounts(markerIds: string[]): number {
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 10V3L4 14h7v7l9-11h-7z" />
               </svg>
               <span class="text-xs">暂无路段</span>
-              <span v-if="store.isEditorMode" class="text-xs text-slate-600">点击右上角 + 添加路段</span>
+              <span v-if="store.isAnyEditMode" class="text-xs text-slate-600">点击右上角 + 添加路段</span>
             </div>
           </div>
         </div>

@@ -244,13 +244,19 @@ function buildCountsRecord(): Record<string, number> | undefined {
 async function handleSave() {
   if (!name.value.trim()) return
 
+  // In offline edit mode, skip uploads and use data URLs directly
+  const isOffline = store.isOfflineEditMode
+
   if (isEditing.value) {
-    uploading.value = true
-    const [paths, panoramaPath] = await Promise.all([
-      uploadNewImages(),
-      uploadPanoramaIfNeeded(),
-    ])
-    uploading.value = false
+    if (!isOffline) {
+      uploading.value = true
+    }
+    const [paths, panoramaPath] = isOffline
+      ? [images.value, panoramaImage.value || undefined]
+      : await Promise.all([uploadNewImages(), uploadPanoramaIfNeeded()])
+    if (!isOffline) {
+      uploading.value = false
+    }
 
     store.updateMarker(store.editingMarker!.id, {
       name: name.value.trim(),
@@ -275,12 +281,15 @@ async function handleSave() {
 
   if (!store.pendingMarkerPos) return
 
-  uploading.value = true
-  const [paths, panoramaPath] = await Promise.all([
-    uploadNewImages(),
-    uploadPanoramaIfNeeded(),
-  ])
-  uploading.value = false
+  if (!isOffline) {
+    uploading.value = true
+  }
+  const [paths, panoramaPath] = isOffline
+    ? [images.value, panoramaImage.value || undefined]
+    : await Promise.all([uploadNewImages(), uploadPanoramaIfNeeded()])
+  if (!isOffline) {
+    uploading.value = false
+  }
 
   store.addMarker({
     name: name.value.trim(),
@@ -515,8 +524,8 @@ watch(() => store.pendingMarkerPos, (pos) => {
               </div>
             </div>
 
-            <!-- Image upload -->
-            <div>
+            <!-- Image upload (hidden in offline edit mode) -->
+            <div v-if="!store.isOfflineEditMode">
               <div class="flex items-center justify-between mb-1.5">
                 <label class="text-xs font-medium text-slate-400">现场图片</label>
                 <span class="text-xs text-slate-500">可选，可传多张</span>
@@ -627,8 +636,8 @@ watch(() => store.pendingMarkerPos, (pos) => {
               </div>
             </div>
 
-            <!-- Panorama image upload (only when 全景 type selected) -->
-            <div v-if="selectedTypes.includes('qj')">
+            <!-- Panorama image upload (only when 全景 type selected, hidden in offline edit mode) -->
+            <div v-if="selectedTypes.includes('qj') && !store.isOfflineEditMode">
               <div class="flex items-center justify-between mb-1.5">
                 <label class="text-xs font-medium text-slate-400">全景图片</label>
                 <span class="text-xs text-slate-500">可选，360°全景图</span>

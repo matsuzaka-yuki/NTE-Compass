@@ -7,6 +7,8 @@ import routesRaw from '@/data/routes.json'
 import { EDITOR_ENABLED } from '@/config'
 
 const STORAGE_KEY = 'isekai-map-found'
+const OFFLINE_MARKERS_KEY = 'isekai-map-offline-markers'
+const OFFLINE_ROUTES_KEY = 'isekai-map-offline-routes'
 
 function loadFound(): Set<string> {
   try {
@@ -18,6 +20,30 @@ function loadFound(): Set<string> {
 
 function saveFound(set: Set<string>) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify([...set]))
+}
+
+function loadOfflineMarkers(): MarkerData[] {
+  try {
+    const raw = localStorage.getItem(OFFLINE_MARKERS_KEY)
+    if (raw) return JSON.parse(raw)
+  } catch { /* ignore */ }
+  return []
+}
+
+function saveOfflineMarkers(list: MarkerData[]) {
+  localStorage.setItem(OFFLINE_MARKERS_KEY, JSON.stringify(list))
+}
+
+function loadOfflineRoutes(): RouteData[] {
+  try {
+    const raw = localStorage.getItem(OFFLINE_ROUTES_KEY)
+    if (raw) return JSON.parse(raw)
+  } catch { /* ignore */ }
+  return []
+}
+
+function saveOfflineRoutes(list: RouteData[]) {
+  localStorage.setItem(OFFLINE_ROUTES_KEY, JSON.stringify(list))
 }
 
 async function loadRoutesFromApi(): Promise<RouteData[]> {
@@ -46,12 +72,25 @@ function generateId(): string {
   return `user_${Date.now()}_${nextId++}`
 }
 
+function getBuiltinMarkers(): MarkerData[] {
+  return (markersRaw as LegacyMarkerData[]).map(migrateMarker)
+}
+
+function getBuiltinRoutes(): RouteData[] {
+  return routesRaw as RouteData[]
+}
+
 export const useMarkerStore = defineStore('markers', () => {
   // ---- editor mode ----
   const isEditorMode = ref(false)
-  const editableMarkers = ref<MarkerData[]>(
-    (markersRaw as LegacyMarkerData[]).map(migrateMarker)
-  )
+  const isOfflineEditMode = ref(false)
+  const isAnyEditMode = computed(() => isEditorMode.value || isOfflineEditMode.value)
+
+  // ---- data initialization (for EDITOR_ENABLED=false) ----
+  const needsDataSourceChoice = ref(false)
+  const dataInitialized = ref(false)
+
+  const editableMarkers = ref<MarkerData[]>(getBuiltinMarkers())
 
   const markers = computed(() => editableMarkers.value)
 
@@ -180,20 +219,225 @@ export const useMarkerStore = defineStore('markers', () => {
     } catch { /* keep current if API unavailable */ }
   }
 
+  function isLocalStorageIdenticalToBuiltin(): boolean {
+    const builtinMarkers = getBuiltinMarkers()
+    const builtinRoutes = getBuiltinRoutes()
+    const storedMarkers = loadOfflineMarkers()
+    const storedRoutes = loadOfflineRoutes()
+    return (
+      JSON.stringify(builtinMarkers) === JSON.stringify(storedMarkers) &&
+      JSON.stringify(builtinRoutes) === JSON.stringify(storedRoutes)
+    )
+  }
+
+  // ---- data initialization ----
+  function initData() {
+    if (EDITOR_ENABLED) {
+      // Load from built-in JSON (already set as default), then try API for latest
+      dataInitialized.value = true
+      loadLatestMarkers()
+      loadRoutesFromApi().then(data => {
+        if (data.length > 0) routes.value = data
+      })
+      return
+    }
+
+    // EDITOR_ENABLED = false: check localStorage
+    const storedMarkers = loadOfflineMarkers()
+    const storedRoutes = loadOfflineRoutes()
+
+    if (storedMarkers.length > 0 || storedRoutes.length > 0) {
+      // If localStorage data is identical to built-in JSON, skip the choice dialog
+      if (isLocalStorageIdenticalToBuiltin()) {
+        editableMarkers.value = storedMarkers
+        routes.value = storedRoutes
+        dataInitialized.value = true
+      } else {
+        // Has different localStorage data: ask user which to use
+        needsDataSourceChoice.value = true
+      }
+    } else {
+      // No localStorage data: seed from built-in JSON
+      seedFromBuiltin()
+      dataInitialized.value = true
+    }
+  }
+
+  function seedFromBuiltin() {
+    const builtinMarkers = getBuiltinMarkers()
+    const builtinRoutes = getBuiltinRoutes()
+    editableMarkers.value = builtinMarkers
+    routes.value = builtinRoutes
+    saveOfflineMarkers(builtinMarkers)
+    saveOfflineRoutes(builtinRoutes)
+  }
+
+  function chooseDataSource(choice: 'builtin' | 'localstorage') {
+    if (choice === 'builtin') {
+      // Use built-in data, overwrite localStorage
+      seedFromBuiltin()
+    } else {
+      // Use localStorage data
+      const storedMarkers = loadOfflineMarkers()
+      const storedRoutes = loadOfflineRoutes()
+      if (storedMarkers.length > 0) {
+        editableMarkers.value = storedMarkers
+      }
+      if (storedRoutes.length > 0) {
+        routes.value = storedRoutes
+      }
+      // Ensure localStorage is up to date
+      saveOfflineMarkers(editableMarkers.value)
+      saveOfflineRoutes(routes.value)
+    }
+    needsDataSourceChoice.value = false
+    dataInitialized.value = true
+  }
+
   // ---- editor mode toggle ----
   async function toggleEditorMode() {
     if (!EDITOR_ENABLED) return
     if (isEditorMode.value) {
       isEditorMode.value = false
     } else {
+      // If offline mode is active, exit it first
+      if (isOfflineEditMode.value) {
+        isOfflineEditMode.value = false
+      }
       await loadLatestMarkers()
       const latestRoutes = await loadRoutesFromApi()
-      routes.value = latestRoutes
+      if (latestRoutes.length > 0) routes.value = latestRoutes
       isEditorMode.value = true
     }
   }
 
+  // ---- offline edit mode toggle ----
+  function toggleOfflineEditMode() {
+    if (isOfflineEditMode.value) {
+      // Exiting offline mode
+      isOfflineEditMode.value = false
+      if (EDITOR_ENABLED) {
+        // Restore from built-in data, then try API
+        editableMarkers.value = getBuiltinMarkers()
+        routes.value = getBuiltinRoutes()
+        loadLatestMarkers()
+        loadRoutesFromApi().then(data => {
+          if (data.length > 0) routes.value = data
+        })
+      } else {
+        // EDITOR_ENABLED = false: reload from localStorage (may have been modified)
+        const markers = loadOfflineMarkers()
+        const routeData = loadOfflineRoutes()
+        if (markers.length > 0) editableMarkers.value = markers
+        if (routeData.length > 0) routes.value = routeData
+      }
+    } else {
+      // Entering offline mode
+      if (EDITOR_ENABLED) {
+        // Switch to localStorage-based editing
+        const builtinMarkers = getBuiltinMarkers()
+        const builtinRoutes = getBuiltinRoutes()
+
+        const offlineMarkers = loadOfflineMarkers()
+        if (offlineMarkers.length > 0) {
+          editableMarkers.value = offlineMarkers
+        } else {
+          editableMarkers.value = builtinMarkers
+          saveOfflineMarkers(builtinMarkers)
+        }
+
+        const offlineRoutes = loadOfflineRoutes()
+        if (offlineRoutes.length > 0) {
+          routes.value = offlineRoutes
+        } else {
+          routes.value = builtinRoutes
+          saveOfflineRoutes(builtinRoutes)
+        }
+      }
+      // When EDITOR_ENABLED = false: data is already in localStorage, no switch needed
+
+      isOfflineEditMode.value = true
+      isEditorMode.value = false
+    }
+  }
+
+  // ---- unified route persistence ----
+  function persistRouteData() {
+    if (!EDITOR_ENABLED || isOfflineEditMode.value) {
+      saveOfflineRoutes(routes.value)
+    }
+    if (EDITOR_ENABLED) {
+      saveRoutesToApi(routes.value)
+    }
+  }
+
+  // ---- data export/import ----
+  function exportData() {
+    const data = {
+      version: 1,
+      exportedAt: new Date().toISOString(),
+      markers: editableMarkers.value,
+      routes: routes.value,
+    }
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `map-data-${new Date().toISOString().slice(0, 10)}.json`
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
+  }
+
+  function importData(jsonString: string): { markers: number; routes: number } | { error: string } {
+    try {
+      const data = JSON.parse(jsonString)
+      if (!data.markers || !Array.isArray(data.markers)) {
+        return { error: '无效的数据格式：缺少 markers 字段' }
+      }
+      if (!data.routes || !Array.isArray(data.routes)) {
+        return { error: '无效的数据格式：缺少 routes 字段' }
+      }
+      const importedMarkers = (data.markers as LegacyMarkerData[]).map(migrateMarker)
+      const importedRoutes = data.routes as RouteData[]
+
+      // When EDITOR_ENABLED=false, everything targets localStorage
+      // When EDITOR_ENABLED=true, offline mode targets localStorage, normal mode merges into API
+      const targetLocalStorage = !EDITOR_ENABLED || isOfflineEditMode.value
+
+      if (targetLocalStorage) {
+        // Replace current data with imported data
+        editableMarkers.value = importedMarkers
+        routes.value = importedRoutes
+        saveOfflineMarkers(importedMarkers)
+        saveOfflineRoutes(importedRoutes)
+      } else {
+        // Editor mode with API: merge into current data
+        const existingIds = new Set(editableMarkers.value.map(m => m.id))
+        const newMarkers = importedMarkers.filter(m => !existingIds.has(m.id))
+        editableMarkers.value = [...editableMarkers.value, ...newMarkers]
+        saveMarkersToFile(editableMarkers.value)
+
+        const existingRouteIds = new Set(routes.value.map(r => r.id))
+        const newRoutes = importedRoutes.filter(r => !existingRouteIds.has(r.id))
+        routes.value = [...routes.value, ...newRoutes]
+        persistRouteData()
+      }
+
+      return { markers: importedMarkers.length, routes: importedRoutes.length }
+    } catch {
+      return { error: 'JSON 解析失败，请检查文件格式' }
+    }
+  }
+
   async function saveMarkersToFile(list: MarkerData[]) {
+    // When EDITOR_ENABLED=false, always save to localStorage
+    // When EDITOR_ENABLED=true, save to API (or localStorage if in offline mode)
+    if (!EDITOR_ENABLED || isOfflineEditMode.value) {
+      saveOfflineMarkers(list)
+      if (!EDITOR_ENABLED) return
+    }
     try {
       await fetch('/api/markers', {
         method: 'POST',
@@ -203,7 +447,7 @@ export const useMarkerStore = defineStore('markers', () => {
     } catch { /* silently fail for now */ }
   }
 
-  // ---- marker CRUD (editor mode) ----
+  // ---- marker CRUD ----
   function addMarker(data: Omit<MarkerData, 'id'>) {
     const id = generateId()
     const newMarker: MarkerData = { ...data, id }
@@ -229,7 +473,6 @@ export const useMarkerStore = defineStore('markers', () => {
     }
   }
 
-  // ---- edit marker (editor mode) ----
   function startEditMarker(id: string) {
     editingMarkerId.value = id
     selectedMarkerId.value = null
@@ -251,7 +494,6 @@ export const useMarkerStore = defineStore('markers', () => {
     editingMarkerId.value = null
   }
 
-  // ---- map click ----
   function openCreateMarker(lat: number, lng: number) {
     editingMarkerId.value = null
     pendingMarkerPos.value = { lat, lng }
@@ -263,14 +505,8 @@ export const useMarkerStore = defineStore('markers', () => {
   }
 
   // ---- routes ----
-  const routes = ref<RouteData[]>(routesRaw as RouteData[])
+  const routes = ref<RouteData[]>(getBuiltinRoutes())
 
-  // Always try to load latest routes from API (dev server), fall back to built-in data
-  loadRoutesFromApi().then(data => {
-    if (data.length > 0 || routes.value.length === 0) {
-      routes.value = data
-    }
-  })
   const showRouteView = ref(false)
   const currentRouteId = ref<string | null>(null)
   const isAddingSegment = ref(false)
@@ -316,7 +552,7 @@ export const useMarkerStore = defineStore('markers', () => {
     const id = generateId()
     const route: RouteData = { id, name, image, segments: [] }
     routes.value = [...routes.value, route]
-    saveRoutesToApi(routes.value)
+    persistRouteData()
     currentRouteId.value = id
     return route
   }
@@ -326,7 +562,7 @@ export const useMarkerStore = defineStore('markers', () => {
     if (idx === -1) return
     const updated = { ...routes.value[idx], ...data }
     routes.value = [...routes.value.slice(0, idx), updated, ...routes.value.slice(idx + 1)]
-    saveRoutesToApi(routes.value)
+    persistRouteData()
   }
 
   function updateSegment(segmentId: string, data: Partial<Pick<RouteSegment, 'name'>>) {
@@ -339,7 +575,7 @@ export const useMarkerStore = defineStore('markers', () => {
     )
     const updated = { ...route, segments: updatedSegments }
     routes.value = [...routes.value.slice(0, routeIdx), updated, ...routes.value.slice(routeIdx + 1)]
-    saveRoutesToApi(routes.value)
+    persistRouteData()
   }
 
   function reorderSegments(fromIdx: number, toIdx: number) {
@@ -354,12 +590,12 @@ export const useMarkerStore = defineStore('markers', () => {
     segments.splice(toIdx, 0, moved)
     const updated = { ...route, segments }
     routes.value = [...routes.value.slice(0, routeIdx), updated, ...routes.value.slice(routeIdx + 1)]
-    saveRoutesToApi(routes.value)
+    persistRouteData()
   }
 
   function deleteRoute(routeId: string) {
     routes.value = routes.value.filter(r => r.id !== routeId)
-    saveRoutesToApi(routes.value)
+    persistRouteData()
     if (currentRouteId.value === routeId) {
       currentRouteId.value = null
       focusMarkerIds.value = []
@@ -426,7 +662,7 @@ export const useMarkerStore = defineStore('markers', () => {
     const idx = routes.value.findIndex(r => r.id === currentRouteId.value)
     if (idx === -1) return
     routes.value = [...routes.value.slice(0, idx), updated, ...routes.value.slice(idx + 1)]
-    saveRoutesToApi(routes.value)
+    persistRouteData()
     isAddingSegment.value = false
     segmentTempMarkerIds.value = []
   }
@@ -439,7 +675,7 @@ export const useMarkerStore = defineStore('markers', () => {
     const idx = routes.value.findIndex(r => r.id === currentRouteId.value)
     if (idx === -1) return
     routes.value = [...routes.value.slice(0, idx), updated, ...routes.value.slice(idx + 1)]
-    saveRoutesToApi(routes.value)
+    persistRouteData()
   }
 
   function getMarkerById(id: string): MarkerData | undefined {
@@ -466,7 +702,7 @@ export const useMarkerStore = defineStore('markers', () => {
   const showMarkerWeather = ref(true)
   const showMarkerCount = ref(true)
 
-  // ---- farming mode (刷取模式) ----
+  // ---- farming mode ----
   const farmingMode = ref(false)
   const farmingPairIndex = ref(0)
   const farmingHighlightId = ref<string | null>(null)
@@ -489,13 +725,10 @@ export const useMarkerStore = defineStore('markers', () => {
     farmingMode.value = true
     farmingPairIndex.value = 0
     farmingHighlightId.value = seg.markerIds[1]
-    // Only close sidebar on mobile; keep it open on desktop
     if (window.innerWidth < 768) {
       sidebarOpen.value = false
     }
-    // Focus on first two markers of the segment
     requestFocusMarkers([seg.markerIds[0], seg.markerIds[1]])
-    // Select the second marker to show its popup card in route-mode position
     selectMarker(seg.markerIds[1])
   }
 
@@ -530,6 +763,10 @@ export const useMarkerStore = defineStore('markers', () => {
   return {
     // state
     isEditorMode,
+    isOfflineEditMode,
+    isAnyEditMode,
+    needsDataSourceChoice,
+    dataInitialized,
     markers,
     foundIds,
     searchQuery,
@@ -553,7 +790,12 @@ export const useMarkerStore = defineStore('markers', () => {
     deselectAllTypes,
     selectMarker,
     toggleSidebar,
+    initData,
+    chooseDataSource,
     toggleEditorMode,
+    toggleOfflineEditMode,
+    exportData,
+    importData,
     loadLatestMarkers,
     addMarker,
     deleteMarker,

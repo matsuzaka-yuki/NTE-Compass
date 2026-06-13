@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useMarkerStore } from './stores/markerStore'
 import MapView from './components/MapView.vue'
 import SideBar from './components/SideBar.vue'
@@ -28,7 +28,13 @@ async function handleToggleEditorMode() {
 }
 
 onMounted(() => {
-  store.loadLatestMarkers()
+  store.initData()
+})
+
+watch(() => store.isOfflineEditMode, (val, oldVal) => {
+  if (oldVal !== undefined) {
+    showToast(val ? '自定义编辑模式已开启' : '自定义编辑模式已关闭')
+  }
 })
 
 // ---- Farming button visibility & positioning ----
@@ -198,6 +204,33 @@ window.addEventListener('resize', () => {
 
     <!-- Create marker form -->
     <CreateMarkerForm />
+
+    <!-- Data source choice dialog (only when EDITOR_ENABLED=false and localStorage has data) -->
+    <Teleport to="body">
+      <Transition name="confirm">
+        <div
+          v-if="store.needsDataSourceChoice"
+          class="fixed inset-0 z-[200] flex items-center justify-center"
+        >
+          <div class="absolute inset-0 bg-black/70"></div>
+          <div class="relative bg-surface-800 border border-white/10 rounded-2xl shadow-2xl p-6 w-[360px] max-w-[92vw]">
+            <h3 class="text-base font-medium text-slate-200 text-center mb-2">检测到浏览器存储的数据</h3>
+            <p class="text-sm text-slate-400 text-center mb-5">发现之前保存的标点和路线数据，请选择要使用的数据源：</p>
+            <div class="flex gap-3">
+              <button
+                @click="store.chooseDataSource('builtin')"
+                class="flex-1 py-2.5 text-sm font-medium rounded-xl bg-surface-700 text-slate-300 hover:bg-surface-600 transition-colors"
+              >使用默认数据</button>
+              <button
+                @click="store.chooseDataSource('localstorage')"
+                class="flex-1 py-2.5 text-sm font-medium rounded-xl bg-primary-600 text-white hover:bg-primary-500 transition-colors"
+              >使用浏览器数据</button>
+            </div>
+            <p class="text-xs text-slate-600 text-center mt-3">选择默认数据将覆盖浏览器存储</p>
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
   </div>
 </template>
 

@@ -491,7 +491,7 @@ onMounted(async () => {
     }
     if (store.selectedMarkerId) {
       store.selectMarker(null)
-    } else if (store.isEditorMode) {
+    } else if (store.isAnyEditMode) {
       store.openCreateMarker(e.latlng.lat, e.latlng.lng)
     }
   })

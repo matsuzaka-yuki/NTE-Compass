@@ -584,7 +584,7 @@ watch(previewOpen, (open) => {
             </button>
 
             <!-- Action buttons (editor mode) -->
-            <template v-if="store.isEditorMode">
+            <template v-if="store.isAnyEditMode">
               <button
                 @click="store.startEditMarker(store.selectedMarker!.id)"
                 :class="isMobileRouteMode ? 'w-full mt-0.5 py-1 rounded-lg text-[10px] font-medium transition-all flex items-center justify-center gap-1 bg-primary-600/20 text-primary-300 border border-primary-500/30 hover:bg-primary-600/30' : 'w-full mt-1 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center justify-center gap-1.5 bg-primary-600/20 text-primary-300 border border-primary-500/30 hover:bg-primary-600/30'"
