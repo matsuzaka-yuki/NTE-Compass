@@ -461,6 +461,11 @@ export const useMarkerStore = defineStore('markers', () => {
     routeMarkerFilterIds.value = null
   }
 
+  // ---- display settings ----
+  const showMarkerTime = ref(true)
+  const showMarkerWeather = ref(true)
+  const showMarkerCount = ref(true)
+
   // ---- farming mode (刷取模式) ----
   const farmingMode = ref(false)
   const farmingPairIndex = ref(0)
@@ -591,6 +596,10 @@ export const useMarkerStore = defineStore('markers', () => {
     routeMarkerFilterIds,
     setRouteMarkerFilter,
     clearRouteMarkerFilter,
+    // display settings
+    showMarkerTime,
+    showMarkerWeather,
+    showMarkerCount,
     // farming mode
     farmingMode,
     farmingPairIndex,

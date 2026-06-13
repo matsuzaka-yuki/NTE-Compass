@@ -100,7 +100,7 @@ function createMarkerIcon(m: MarkerData, found: boolean): L.DivIcon {
 
   // ── Time badge (bottom-left, lower) ──
   let timeBadgeHtml = ''
-  if (m.time) {
+  if (m.time && store.showMarkerTime) {
     const timeColors: Record<string, string> = { day: '#fbbf24', night: '#6366f1' }
     const tc = timeColors[m.time]
     if (m.time === 'day') {
@@ -112,12 +112,12 @@ function createMarkerIcon(m: MarkerData, found: boolean): L.DivIcon {
 
   // ── Weather badge (bottom-left, above time if both present) ──
   let weatherBadgeHtml = ''
-  if (m.weather) {
+  if (m.weather && store.showMarkerWeather) {
     const weatherColors: Record<string, string> = { sunny: '#f59e0b', rainy: '#3b82f6', snowy: '#06b6d4' }
     const weatherLabels: Record<string, string> = { sunny: '晴天', rainy: '雨天', snowy: '雪天' }
     const wc = weatherColors[m.weather]
     const wl = weatherLabels[m.weather]
-    const wb = m.time ? '14px' : '1px'  // above time if both, otherwise at corner
+    const wb = (m.time && store.showMarkerTime) ? '14px' : '1px'  // above time if both shown, otherwise at corner
     if (m.weather === 'sunny') {
       weatherBadgeHtml = `<div style="position:absolute;bottom:${wb};left:2px;width:13px;height:13px;border-radius:50%;background:${wc};box-shadow:0 1px 3px rgba(0,0,0,0.45);display:flex;align-items:center;justify-content:center" title="${wl}"><svg width="11" height="11" viewBox="0 0 13 13"><circle cx="6.5" cy="6.5" r="2.5" fill="white"/><line x1="6.5" y1="1.5" x2="6.5" y2="3" stroke="white" stroke-width="1.2" stroke-linecap="round"/><line x1="6.5" y1="10" x2="6.5" y2="11.5" stroke="white" stroke-width="1.2" stroke-linecap="round"/><line x1="1.5" y1="6.5" x2="3" y2="6.5" stroke="white" stroke-width="1.2" stroke-linecap="round"/><line x1="10" y1="6.5" x2="11.5" y2="6.5" stroke="white" stroke-width="1.2" stroke-linecap="round"/></svg></div>`
     } else if (m.weather === 'rainy') {
@@ -136,7 +136,7 @@ function createMarkerIcon(m: MarkerData, found: boolean): L.DivIcon {
         <img src="${imgSrc}" style="width:${size}px;height:${size}px;border-radius:50%;object-fit:cover;object-position:center;box-shadow:0 2px 6px rgba(0,0,0,0.45)" />
         ${overlaysHtml}
         ${found ? `<svg width="${size}" height="${size}" viewBox="0 0 36 36" style="position:absolute;top:0;left:0;pointer-events:none"><circle cx="31" cy="7" r="4.5" fill="#22c55e" stroke="white" stroke-width="1.5"/><path d="M28.5 7 l2 2 l4-4" stroke="white" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>` : ''}
-        ${displayCount > 0 ? `<svg width="${size}" height="${size}" viewBox="0 0 36 36" style="position:absolute;top:0;left:0;pointer-events:none"><circle cx="30" cy="30" r="6" fill="#f0441c"/><text x="30" y="32.5" text-anchor="middle" fill="white" font-size="9" font-weight="bold">${displayCount}</text></svg>` : ''}
+        ${displayCount > 0 && store.showMarkerCount ? `<svg width="${size}" height="${size}" viewBox="0 0 36 36" style="position:absolute;top:0;left:0;pointer-events:none"><circle cx="30" cy="30" r="6" fill="#f0441c"/><text x="30" y="32.5" text-anchor="middle" fill="white" font-size="9" font-weight="bold">${displayCount}</text></svg>` : ''}
         ${timeBadgeHtml}
         ${weatherBadgeHtml}
       </div>`,
@@ -332,7 +332,7 @@ function updateSelectedMarkerScreenPos(m?: MarkerData) {
 }
 
 watch(
-  () => [store.filteredMarkers, store.foundIds, store.segmentTempMarkerIds] as const,
+  () => [store.filteredMarkers, store.foundIds, store.segmentTempMarkerIds, store.showMarkerTime, store.showMarkerWeather, store.showMarkerCount] as const,
   () => {
     buildMarkers()
     nextTick(() => buildRouteArrows())

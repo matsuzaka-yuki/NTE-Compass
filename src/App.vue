@@ -4,7 +4,7 @@ import { useMarkerStore } from './stores/markerStore'
 import MapView from './components/MapView.vue'
 import SideBar from './components/SideBar.vue'
 import MarkerPopup from './components/MarkerPopup.vue'
-import LegendPanel from './components/LegendPanel.vue'
+import SettingsPanel from './components/SettingsPanel.vue'
 import CreateMarkerForm from './components/CreateMarkerForm.vue'
 import { EDITOR_ENABLED } from './config'
 
@@ -193,8 +193,8 @@ window.addEventListener('resize', () => {
     <!-- Popup -->
     <MarkerPopup />
 
-    <!-- Legend -->
-    <LegendPanel />
+    <!-- Settings -->
+    <SettingsPanel />
 
     <!-- Create marker form -->
     <CreateMarkerForm />
