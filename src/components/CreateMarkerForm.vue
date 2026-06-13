@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ref, watch, computed } from 'vue'
 import { useMarkerStore } from '@/stores/markerStore'
-import { MARKER_TYPE_CONFIG, ALL_ITEMS, isEnemyClearingType } from '@/types'
-import type { MarkerType } from '@/types'
+import { MARKER_TYPE_CONFIG, ALL_ITEMS, isEnemyClearingType, TIME_OPTIONS, WEATHER_OPTIONS } from '@/types'
+import type { MarkerType, TimeOfDay, Weather } from '@/types'
 import { resolveAssetUrl } from '@/config'
 
 const store = useMarkerStore()
@@ -20,6 +20,8 @@ const refreshTime = ref('')
 const relatedQuest = ref('')
 const selectedItems = ref<string[]>([])
 const counts = ref<Record<string, number>>({})
+const time = ref<TimeOfDay | undefined>(undefined)
+const weather = ref<Weather | undefined>(undefined)
 
 const isEditing = computed(() => !!store.editingMarker)
 
@@ -264,6 +266,8 @@ async function handleSave() {
       panoramaImage: panoramaPath,
       audioFile: audioFile.value || undefined,
       panoramaLinks: store.editingMarker!.panoramaLinks,
+      time: time.value,
+      weather: weather.value,
     })
     resetForm()
     return
@@ -291,6 +295,8 @@ async function handleSave() {
     images: paths.length > 0 ? paths : undefined,
     panoramaImage: panoramaPath,
     audioFile: audioFile.value || undefined,
+    time: time.value,
+    weather: weather.value,
   })
 
   resetForm()
@@ -346,6 +352,8 @@ function resetForm() {
   counts.value = {}
   panoramaImage.value = ''
   audioFile.value = ''
+  time.value = undefined
+  weather.value = undefined
 }
 
 // Pre-fill form when editing a marker
@@ -361,6 +369,8 @@ watch(() => store.editingMarker, (m) => {
     images.value = m.images ? [...m.images] : []
     panoramaImage.value = m.panoramaImage || ''
     audioFile.value = m.audioFile || ''
+    time.value = m.time
+    weather.value = m.weather
   }
 })
 
@@ -459,6 +469,48 @@ watch(() => store.pendingMarkerPos, (pos) => {
                   <span class="text-xs" :style="{ color: selectedTypes.includes(type) ? MARKER_TYPE_CONFIG[type].color : '#94a3b8' }">
                     {{ MARKER_TYPE_CONFIG[type].label }}
                   </span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Time selector -->
+            <div>
+              <label class="block text-xs font-medium text-slate-400 mb-1.5">时间 <span class="text-slate-500">(可选)</span></label>
+              <div class="grid grid-cols-2 gap-2">
+                <button
+                  v-for="opt in TIME_OPTIONS"
+                  :key="opt.value"
+                  @click="time = time === opt.value ? undefined : opt.value"
+                  class="flex items-center justify-center gap-2 p-2.5 rounded-lg border transition-all text-sm"
+                  :class="time === opt.value
+                    ? 'border-amber-400/60 bg-amber-400/10 text-amber-200'
+                    : 'border-white/10 hover:border-white/20 bg-surface-900/50 text-slate-400'"
+                >
+                  <span class="text-lg">{{ opt.icon }}</span>
+                  <span>{{ opt.label }}</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Weather selector -->
+            <div>
+              <label class="block text-xs font-medium text-slate-400 mb-1.5">天气 <span class="text-slate-500">(可选)</span></label>
+              <div class="grid grid-cols-3 gap-2">
+                <button
+                  v-for="opt in WEATHER_OPTIONS"
+                  :key="opt.value"
+                  @click="weather = weather === opt.value ? undefined : opt.value"
+                  class="flex items-center justify-center gap-1.5 p-2.5 rounded-lg border transition-all text-sm"
+                  :class="weather === opt.value
+                    ? opt.value === 'sunny'
+                      ? 'border-amber-400/60 bg-amber-400/10 text-amber-200'
+                      : opt.value === 'rainy'
+                      ? 'border-blue-400/60 bg-blue-400/10 text-blue-200'
+                      : 'border-cyan-300/60 bg-cyan-300/10 text-cyan-200'
+                    : 'border-white/10 hover:border-white/20 bg-surface-900/50 text-slate-400'"
+                >
+                  <span class="text-lg">{{ opt.icon }}</span>
+                  <span>{{ opt.label }}</span>
                 </button>
               </div>
             </div>

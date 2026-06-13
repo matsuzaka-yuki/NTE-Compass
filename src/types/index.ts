@@ -53,6 +53,20 @@ export interface PanoramaLink {
   label?: string
 }
 
+export type TimeOfDay = 'day' | 'night'
+export type Weather = 'sunny' | 'rainy' | 'snowy'
+
+export const TIME_OPTIONS: { value: TimeOfDay; label: string; icon: string }[] = [
+  { value: 'day', label: '白天', icon: '☀️' },
+  { value: 'night', label: '夜晚', icon: '🌙' },
+]
+
+export const WEATHER_OPTIONS: { value: Weather; label: string; icon: string }[] = [
+  { value: 'sunny', label: '晴天', icon: '☀️' },
+  { value: 'rainy', label: '雨天', icon: '🌧️' },
+  { value: 'snowy', label: '雪天', icon: '❄️' },
+]
+
 export interface MarkerData {
   id: string
   name: string
@@ -71,6 +85,10 @@ export interface MarkerData {
   audioFile?: string
   /** 全景图之间的连接热点 */
   panoramaLinks?: PanoramaLink[]
+  /** 时间：白天/夜晚 */
+  time?: TimeOfDay
+  /** 天气：晴天/雨天/雪天 */
+  weather?: Weather
 }
 
 /** Legacy single-type format for migration */
@@ -93,6 +111,8 @@ export interface LegacyMarkerData {
   panoramaImage?: string
   audioFile?: string
   panoramaLinks?: PanoramaLink[]
+  time?: TimeOfDay
+  weather?: Weather
 }
 
 export function migrateMarker(raw: LegacyMarkerData): MarkerData {
@@ -119,6 +139,8 @@ export function migrateMarker(raw: LegacyMarkerData): MarkerData {
     panoramaImage: raw.panoramaImage,
     audioFile: raw.audioFile,
     panoramaLinks: raw.panoramaLinks,
+    time: raw.time,
+    weather: raw.weather,
   }
 }
 

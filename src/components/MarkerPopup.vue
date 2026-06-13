@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { useMarkerStore } from '@/stores/markerStore'
-import { MARKER_TYPE_CONFIG, getItemById } from '@/types'
+import { MARKER_TYPE_CONFIG, getItemById, TIME_OPTIONS, WEATHER_OPTIONS } from '@/types'
 import { resolveAssetUrl } from '@/config'
 import PanoramaViewer from './PanoramaViewer.vue'
 
@@ -151,6 +151,18 @@ const relatedItems = computed(() => {
   const m = store.selectedMarker
   if (!m || !m.relatedItems || m.relatedItems.length === 0) return []
   return m.relatedItems.map((id) => getItemById(id)).filter(Boolean) as { id: string; name: string; image?: string }[]
+})
+
+const timeInfo = computed(() => {
+  const t = store.selectedMarker?.time
+  if (!t) return null
+  return TIME_OPTIONS.find(o => o.value === t) ?? null
+})
+
+const weatherInfo = computed(() => {
+  const w = store.selectedMarker?.weather
+  if (!w) return null
+  return WEATHER_OPTIONS.find(o => o.value === w) ?? null
 })
 
 const hasMultipleImages = computed(() => allImages.value.length > 1)
@@ -494,6 +506,29 @@ watch(previewOpen, (open) => {
             >
               {{ store.selectedMarker.description }}
             </p>
+
+            <!-- Time & Weather -->
+            <div
+              v-if="timeInfo || weatherInfo"
+              :class="isMobileRouteMode ? 'flex items-center gap-2' : 'flex items-center gap-3'"
+            >
+              <span
+                v-if="timeInfo"
+                :class="isMobileRouteMode ? 'inline-flex items-center gap-1 text-[10px] text-slate-300' : 'inline-flex items-center gap-1 text-xs text-slate-300'"
+                :title="'时间：' + timeInfo.label"
+              >
+                <span class="text-sm">{{ timeInfo.icon }}</span>
+                {{ timeInfo.label }}
+              </span>
+              <span
+                v-if="weatherInfo"
+                :class="isMobileRouteMode ? 'inline-flex items-center gap-1 text-[10px] text-slate-300' : 'inline-flex items-center gap-1 text-xs text-slate-300'"
+                :title="'天气：' + weatherInfo.label"
+              >
+                <span class="text-sm">{{ weatherInfo.icon }}</span>
+                {{ weatherInfo.label }}
+              </span>
+            </div>
 
             <!-- Refresh time -->
             <div

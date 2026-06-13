@@ -98,6 +98,35 @@ function createMarkerIcon(m: MarkerData, found: boolean): L.DivIcon {
     ? overlayTypes.length * overlayIconSize + (overlayTypes.length - 1) * overlayGap
     : 0
 
+  // ── Time badge (bottom-left, lower) ──
+  let timeBadgeHtml = ''
+  if (m.time) {
+    const timeColors: Record<string, string> = { day: '#fbbf24', night: '#6366f1' }
+    const tc = timeColors[m.time]
+    if (m.time === 'day') {
+      timeBadgeHtml = `<div style="position:absolute;bottom:1px;left:2px;width:13px;height:13px;border-radius:50%;background:${tc};box-shadow:0 1px 3px rgba(0,0,0,0.45);display:flex;align-items:center;justify-content:center" title="白天"><svg width="11" height="11" viewBox="0 0 13 13"><line x1="2.5" y1="9.5" x2="10.5" y2="9.5" stroke="white" stroke-width="1.5" stroke-linecap="round"/><path d="M3.5 9.5 A3 3.5 0 0 1 9.5 9.5" fill="white"/></svg></div>`
+    } else {
+      timeBadgeHtml = `<div style="position:absolute;bottom:1px;left:2px;width:13px;height:13px;border-radius:50%;background:${tc};box-shadow:0 1px 3px rgba(0,0,0,0.45);display:flex;align-items:center;justify-content:center" title="夜晚"><svg width="11" height="11" viewBox="0 0 11 11"><circle cx="5.5" cy="5.5" r="4.2" fill="white"/><circle cx="7.5" cy="4" r="3.2" fill="${tc}"/></svg></div>`
+    }
+  }
+
+  // ── Weather badge (bottom-left, above time if both present) ──
+  let weatherBadgeHtml = ''
+  if (m.weather) {
+    const weatherColors: Record<string, string> = { sunny: '#f59e0b', rainy: '#3b82f6', snowy: '#06b6d4' }
+    const weatherLabels: Record<string, string> = { sunny: '晴天', rainy: '雨天', snowy: '雪天' }
+    const wc = weatherColors[m.weather]
+    const wl = weatherLabels[m.weather]
+    const wb = m.time ? '14px' : '1px'  // above time if both, otherwise at corner
+    if (m.weather === 'sunny') {
+      weatherBadgeHtml = `<div style="position:absolute;bottom:${wb};left:2px;width:13px;height:13px;border-radius:50%;background:${wc};box-shadow:0 1px 3px rgba(0,0,0,0.45);display:flex;align-items:center;justify-content:center" title="${wl}"><svg width="11" height="11" viewBox="0 0 13 13"><circle cx="6.5" cy="6.5" r="2.5" fill="white"/><line x1="6.5" y1="1.5" x2="6.5" y2="3" stroke="white" stroke-width="1.2" stroke-linecap="round"/><line x1="6.5" y1="10" x2="6.5" y2="11.5" stroke="white" stroke-width="1.2" stroke-linecap="round"/><line x1="1.5" y1="6.5" x2="3" y2="6.5" stroke="white" stroke-width="1.2" stroke-linecap="round"/><line x1="10" y1="6.5" x2="11.5" y2="6.5" stroke="white" stroke-width="1.2" stroke-linecap="round"/></svg></div>`
+    } else if (m.weather === 'rainy') {
+      weatherBadgeHtml = `<div style="position:absolute;bottom:${wb};left:2px;width:13px;height:13px;border-radius:50%;background:${wc};box-shadow:0 1px 3px rgba(0,0,0,0.45);display:flex;align-items:center;justify-content:center" title="${wl}"><svg width="11" height="11" viewBox="0 0 13 13"><rect x="2.5" y="3" width="8" height="4" rx="2" fill="white"/><line x1="5" y1="8.5" x2="4.5" y2="11" stroke="white" stroke-width="1" stroke-linecap="round"/><line x1="8" y1="8.5" x2="7.5" y2="11" stroke="white" stroke-width="1" stroke-linecap="round"/></svg></div>`
+    } else if (m.weather === 'snowy') {
+      weatherBadgeHtml = `<div style="position:absolute;bottom:${wb};left:2px;width:13px;height:13px;border-radius:50%;background:${wc};box-shadow:0 1px 3px rgba(0,0,0,0.45);display:flex;align-items:center;justify-content:center" title="${wl}"><svg width="11" height="11" viewBox="0 0 13 13"><line x1="6.5" y1="2" x2="6.5" y2="11" stroke="white" stroke-width="1.2" stroke-linecap="round"/><line x1="2" y1="6.5" x2="11" y2="6.5" stroke="white" stroke-width="1.2" stroke-linecap="round"/><line x1="3.3" y1="3.3" x2="9.7" y2="9.7" stroke="white" stroke-width="1" stroke-linecap="round"/><line x1="9.7" y1="3.3" x2="3.3" y2="9.7" stroke="white" stroke-width="1" stroke-linecap="round"/></svg></div>`
+    }
+  }
+
   return L.divIcon({
     className: `custom-marker${found ? ' found' : ''}`,
     html: `
@@ -108,6 +137,8 @@ function createMarkerIcon(m: MarkerData, found: boolean): L.DivIcon {
         ${overlaysHtml}
         ${found ? `<svg width="${size}" height="${size}" viewBox="0 0 36 36" style="position:absolute;top:0;left:0;pointer-events:none"><circle cx="31" cy="7" r="4.5" fill="#22c55e" stroke="white" stroke-width="1.5"/><path d="M28.5 7 l2 2 l4-4" stroke="white" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>` : ''}
         ${displayCount > 0 ? `<svg width="${size}" height="${size}" viewBox="0 0 36 36" style="position:absolute;top:0;left:0;pointer-events:none"><circle cx="30" cy="30" r="6" fill="#f0441c"/><text x="30" y="32.5" text-anchor="middle" fill="white" font-size="9" font-weight="bold">${displayCount}</text></svg>` : ''}
+        ${timeBadgeHtml}
+        ${weatherBadgeHtml}
       </div>`,
     iconSize: [size, size],
     iconAnchor: [size / 2, size / 2],
