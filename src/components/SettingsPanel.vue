@@ -5,6 +5,7 @@ import { EDITOR_ENABLED } from '@/config'
 
 const store = useMarkerStore()
 const expanded = ref(false)
+const editHintVisible = ref(false)
 const importResult = ref('')
 let importResultTimer: ReturnType<typeof setTimeout> | null = null
 const fileInput = ref<HTMLInputElement | null>(null)
@@ -107,15 +108,40 @@ async function handleToggleOfflineEdit() {
         <template v-if="!EDITOR_ENABLED">
         <div class="border-t border-white/10 pt-1.5 mt-1.5">
           <!-- Offline edit mode toggle -->
-          <button
-            @click="handleToggleOfflineEdit()"
-            class="w-full flex items-center justify-between px-2 py-1.5 rounded-lg hover:bg-white/5 transition-colors"
-          >
-            <span class="text-xs" :class="store.isOfflineEditMode ? 'text-green-300' : 'text-slate-300'">自定义编辑</span>
-            <span class="relative inline-flex w-8 h-5 rounded-full transition-colors" :class="store.isOfflineEditMode ? 'bg-green-500' : 'bg-slate-600'">
-              <span class="absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow transition-all" :class="store.isOfflineEditMode ? 'left-[14px]' : 'left-0.5'" />
-            </span>
-          </button>
+          <div class="relative">
+            <button
+              @click="handleToggleOfflineEdit()"
+              class="w-full flex items-center justify-between px-2 py-1.5 rounded-lg hover:bg-white/5 transition-colors"
+            >
+              <span class="flex items-center gap-1">
+                <span class="text-xs" :class="store.isOfflineEditMode ? 'text-green-300' : 'text-slate-300'">自定义编辑</span>
+                <span
+                  @click.stop="editHintVisible = !editHintVisible"
+                  class="inline-flex items-center justify-center w-3.5 h-3.5 rounded-full bg-slate-600/60 text-[10px] text-slate-300 hover:bg-slate-500 hover:text-white cursor-pointer transition-colors leading-none"
+                  title="关于自定义编辑"
+                >?</span>
+              </span>
+              <span class="relative inline-flex w-8 h-5 rounded-full transition-colors" :class="store.isOfflineEditMode ? 'bg-green-500' : 'bg-slate-600'">
+                <span class="absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow transition-all" :class="store.isOfflineEditMode ? 'left-[14px]' : 'left-0.5'" />
+              </span>
+            </button>
+
+            <!-- Edit hint tooltip -->
+            <Transition name="hint">
+              <div
+                v-if="editHintVisible"
+                class="absolute left-1/2 -translate-x-1/2 top-full mt-1 z-30 p-2.5 rounded-lg bg-surface-900/98 backdrop-blur-xl border border-white/10 shadow-xl text-[11px] text-slate-300 leading-relaxed w-60"
+              >
+                <div class="flex items-start justify-between gap-2">
+                  <p>自定义编辑的内容仅保存在<strong class="text-slate-200">浏览器本地存储</strong>中。为防止缓存清空导致修改丢失，编辑后请<strong class="text-yellow-300">及时导出数据</strong>备份。导出的数据也可提交给作者，整合到地图原始数据中。</p>
+                  <button
+                    @click.stop="editHintVisible = false"
+                    class="shrink-0 text-slate-500 hover:text-slate-300 transition-colors leading-none"
+                  >✕</button>
+                </div>
+              </div>
+            </Transition>
+          </div>
 
           <!-- Export / Import -->
           <button
@@ -167,5 +193,15 @@ async function handleToggleOfflineEdit() {
 .settings-leave-to {
   opacity: 0;
   transform: translateY(8px) scale(0.95);
+}
+
+.hint-enter-active,
+.hint-leave-active {
+  transition: all 0.15s ease;
+}
+.hint-enter-from,
+.hint-leave-to {
+  opacity: 0;
+  transform: translateY(-4px);
 }
 </style>
