@@ -279,11 +279,13 @@ function buildMarkers() {
     if (canHover) {
       marker.on('mouseover', () => {
         if (!map) return
+        marker.setZIndexOffset(10000)
         const point = map.latLngToContainerPoint([m.lat, m.lng])
         hoveredMarker.value = m
         hoveredScreenPos.value = { x: point.x, y: point.y }
       })
       marker.on('mouseout', () => {
+        marker.setZIndexOffset(0)
         hoveredMarker.value = null
         hoveredScreenPos.value = null
       })
