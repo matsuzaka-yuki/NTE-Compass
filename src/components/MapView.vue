@@ -54,6 +54,22 @@ function loadImageDimensions(url: string): Promise<{ w: number; h: number }> {
 const canHover = window.matchMedia('(hover: hover)').matches && window.innerWidth >= 768
 const isMobileSegmentNav = window.innerWidth < 768
 
+const isFullscreen = ref(false)
+const fullscreenIconSrc = resolveAssetUrl('./svg/fullscreen_icon.svg')
+const fullscreenExitIconSrc = resolveAssetUrl('./svg/fullscreen_exit_icon.svg')
+
+function onFullscreenChange() {
+  isFullscreen.value = !!document.fullscreenElement
+}
+
+function toggleFullscreen() {
+  if (document.fullscreenElement) {
+    document.exitFullscreen()
+  } else {
+    document.documentElement.requestFullscreen()
+  }
+}
+
 const segmentColors = ['#f59e0b', '#3b82f6', '#22c55e', '#ef4444', '#8b5cf6', '#ec4899']
 
 const focusedSegment = computed(() => {
@@ -499,9 +515,12 @@ onMounted(async () => {
   })
 
   buildMarkers()
+
+  document.addEventListener('fullscreenchange', onFullscreenChange)
 })
 
 onUnmounted(() => {
+  document.removeEventListener('fullscreenchange', onFullscreenChange)
   if (map) {
     map.remove()
     map = null
@@ -516,6 +535,16 @@ defineExpose({ flyToMarker })
     ref="mapContainer"
     class="map-container absolute inset-0 z-0"
   ></div>
+
+  <!-- Fullscreen toggle button -->
+  <button
+    class="fullscreen-toggle"
+    :title="isFullscreen ? '退出全屏' : '全屏'"
+    @click="toggleFullscreen"
+  >
+    <img v-if="!isFullscreen" :src="fullscreenIconSrc" alt="全屏" width="18" height="18" />
+    <img v-else :src="fullscreenExitIconSrc" alt="退出全屏" width="18" height="18" />
+  </button>
 
   <!-- Hover info: image above marker + name below marker -->
   <Teleport to="body">
