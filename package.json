@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "prebuild": "node -e \"const f=require('fs');f.copyFileSync('./markers-data.json','./src/data/markers.json');f.copyFileSync('./routes-data.json','./src/data/routes.json')\"",
+    "prebuild": "node -e \"const f=require('fs');if(f.existsSync('./markers-data.json'))f.copyFileSync('./markers-data.json','./src/data/markers.json');if(f.existsSync('./routes-data.json'))f.copyFileSync('./routes-data.json','./src/data/routes.json')\"",
     "build": "vue-tsc --noEmit && vite build",
     "preview": "vite preview"
   },
