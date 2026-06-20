@@ -40,6 +40,7 @@ export type MarkerType =
   | 'htyf'
   | 'yr'
   | 'yd'
+  | 'wmz'
 
 /** 全景图之间的连接（热点） */
 export interface PanoramaLink {
@@ -218,6 +219,7 @@ export const ALL_MARKER_TYPES: MarkerType[] = [
   'htyf',
   'yr',
   'yd',
+  'wmz',
 ]
 
 export interface CategoryDef {
@@ -225,7 +227,7 @@ export interface CategoryDef {
   types: MarkerType[]
 }
 
-export const ENEMY_CLEARING_TYPES: MarkerType[] = ['pyz', 'msz', 'fdz', 'dyz', 'tcs', 'lmz', 'sxyx', 'sqn', 'kkj', 'yo', 'gmz', 'cpjfdl', 'nns', 'zyzd', 'bbt', 'cmd', 'fsjfdl', 'fjz', 'wz', 'mrr', 'wlcb', 'dht', 'htyf', 'yr', 'yd']
+export const ENEMY_CLEARING_TYPES: MarkerType[] = ['pyz', 'msz', 'fdz', 'dyz', 'tcs', 'lmz', 'sxyx', 'sqn', 'kkj', 'yo', 'gmz', 'cpjfdl', 'nns', 'zyzd', 'bbt', 'cmd', 'fsjfdl', 'fjz', 'wz', 'mrr', 'wlcb', 'dht', 'htyf', 'yr', 'yd', 'wmz']
 
 /** 传送点中折叠为一组的子类型（异象巡礼/界域/追猎/魔女之家/粉爪总行） */
 export const TELEPORT_SUB_TYPES: MarkerType[] = ['yxxl', 'yxjy', 'yxqd', 'mnzj', 'fzyh']
@@ -256,7 +258,7 @@ export const MARKER_CATEGORIES: CategoryDef[] = [
   { label: '收集品', types: ['oraclestone', 'gift21', 'package'] },
   { label: '任务', types: ['anomaly', 'sidequest'] },
   { label: '景点', types: ['checkin', 'pilgrimage', 'qj'] },
-  { label: '敌影清剿', types: ['pyz', 'msz', 'fdz', 'dyz', 'tcs', 'lmz', 'sxyx', 'sqn', 'kkj', 'yo', 'gmz', 'cpjfdl', 'nns', 'zyzd', 'bbt', 'cmd', 'fsjfdl', 'fjz', 'wz', 'mrr', 'wlcb', 'dht', 'htyf', 'yr', 'yd'] },
+  { label: '敌影清剿', types: ['pyz', 'msz', 'fdz', 'dyz', 'tcs', 'lmz', 'sxyx', 'sqn', 'kkj', 'yo', 'gmz', 'cpjfdl', 'nns', 'zyzd', 'bbt', 'cmd', 'fsjfdl', 'fjz', 'wz', 'mrr', 'wlcb', 'dht', 'htyf', 'yr', 'yd', 'wmz'] },
   { label: '其他', types: ['car'] },
 ]
 
@@ -557,5 +559,12 @@ export const MARKER_TYPE_CONFIG: Record<
     bgColor: '#fff3e0',
     icon: 'M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6zM18 14h-3l-.4-2H7V6h5l.4 2H18v6z',
     iconUrl: './images/icons/yd.png',
+  },
+  wmz: {
+    label: '无名众',
+    color: '#60a5fa',
+    bgColor: '#e0f2fe',
+    icon: 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z',
+    iconUrl: './images/icons/wmz.png',
   },
 }
