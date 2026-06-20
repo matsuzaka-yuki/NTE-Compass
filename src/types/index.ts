@@ -41,6 +41,7 @@ export type MarkerType =
   | 'yr'
   | 'yd'
   | 'wmz'
+  | 'ywl'
 
 /** 全景图之间的连接（热点） */
 export interface PanoramaLink {
@@ -220,6 +221,7 @@ export const ALL_MARKER_TYPES: MarkerType[] = [
   'yr',
   'yd',
   'wmz',
+  'ywl',
 ]
 
 export interface CategoryDef {
@@ -259,7 +261,7 @@ export const MARKER_CATEGORIES: CategoryDef[] = [
   { label: '任务', types: ['anomaly', 'sidequest'] },
   { label: '景点', types: ['checkin', 'pilgrimage', 'qj'] },
   { label: '敌影清剿', types: ['pyz', 'msz', 'fdz', 'dyz', 'tcs', 'lmz', 'sxyx', 'sqn', 'kkj', 'yo', 'gmz', 'cpjfdl', 'nns', 'zyzd', 'bbt', 'cmd', 'fsjfdl', 'fjz', 'wz', 'mrr', 'wlcb', 'dht', 'htyf', 'yr', 'yd', 'wmz'] },
-  { label: '其他', types: ['car'] },
+  { label: '其他', types: ['car', 'ywl'] },
 ]
 
 
@@ -566,5 +568,12 @@ export const MARKER_TYPE_CONFIG: Record<
     bgColor: '#e0f2fe',
     icon: 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z',
     iconUrl: './images/icons/wmz.png',
+  },
+  ywl: {
+    label: '异闻录',
+    color: '#d97706',
+    bgColor: '#fef3c7',
+    icon: 'M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14H7v-2h5v2zm0-4H7v-2h5v2zm0-4H7V7h5v2zm5 8h-3v-2h3v2zm0-4h-3v-2h3v2zm0-4h-3V7h3v2z',
+    iconUrl: './images/icons/ywl.png',
   },
 }
