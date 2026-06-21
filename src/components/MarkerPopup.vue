@@ -496,9 +496,9 @@ watch(previewOpen, (open) => {
                 v-if="popupPrimaryType"
                 :src="resolveAssetUrl(MARKER_TYPE_CONFIG[popupPrimaryType].iconUrl)"
                 :alt="MARKER_TYPE_CONFIG[popupPrimaryType].label"
-                :class="isMobileRouteMode ? 'w-4 h-4 rounded-full object-cover flex-shrink-0' : 'w-5 h-5 rounded-full object-cover flex-shrink-0'"
+                :class="[iconClass(popupPrimaryType), isMobileRouteMode ? 'w-4 h-4 rounded-full object-cover flex-shrink-0' : 'w-5 h-5 rounded-full object-cover flex-shrink-0']"
               />
-              <h3 :class="isMobileRouteMode ? 'text-sm font-bold text-white truncate' : 'text-base font-bold text-white truncate'">{{ store.selectedMarker.name }}</h3>
+              <h3 :class="isMobileRouteMode ? 'text-sm font-bold text-base truncate' : 'text-base font-bold text-base truncate'">{{ store.selectedMarker.name }}</h3>
             </div>
 
 <!-- Description -->
