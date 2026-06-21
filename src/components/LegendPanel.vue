@@ -15,7 +15,7 @@ const expanded = ref(false)
     <!-- Toggle button -->
     <button
       @click="expanded = !expanded"
-      class="w-10 h-10 rounded-xl bg-surface-800/90 backdrop-blur-md border border-white/10 shadow-lg flex items-center justify-center text-slate-300 hover:text-white hover:border-white/20 transition-all"
+      class="w-10 h-10 rounded-xl bg-overlay/90 backdrop-blur-md border border-default shadow-lg flex items-center justify-center text-muted hover:text-base hover:border-border-strong transition-all"
       :class="{ 'text-primary-400 border-primary-400/30 bg-primary-500/10': expanded }"
       title="设置"
     >
@@ -29,18 +29,18 @@ const expanded = ref(false)
     <Transition name="legend">
       <div
         v-if="expanded"
-        class="absolute bottom-12 right-0 mb-2 w-52 rounded-xl bg-surface-800/95 backdrop-blur-xl border border-white/10 shadow-2xl p-3 space-y-2.5"
+        class="absolute bottom-12 right-0 mb-2 w-52 rounded-xl bg-overlay/95 backdrop-blur-xl border border-default shadow-2xl p-3 space-y-2.5"
       >
         <!-- ── Display settings ── -->
-        <div class="text-xs font-medium text-slate-400 uppercase tracking-wider">显示设置</div>
+        <div class="text-xs font-medium text-muted uppercase tracking-wider">显示设置</div>
 
         <div class="space-y-1.5">
           <!-- Time toggle -->
           <button
             @click="store.showMarkerTime = !store.showMarkerTime"
-            class="w-full flex items-center justify-between px-2 py-1.5 rounded-lg hover:bg-white/5 transition-colors"
+            class="w-full flex items-center justify-between px-2 py-1.5 rounded-lg hover:bg-elevated transition-colors"
           >
-            <span class="text-xs text-slate-300">时间标记</span>
+            <span class="text-xs text-muted">时间标记</span>
             <span
               class="inline-flex w-8 h-[18px] rounded-full transition-colors"
               :class="store.showMarkerTime ? 'bg-primary-500' : 'bg-slate-600'"
@@ -55,9 +55,9 @@ const expanded = ref(false)
           <!-- Weather toggle -->
           <button
             @click="store.showMarkerWeather = !store.showMarkerWeather"
-            class="w-full flex items-center justify-between px-2 py-1.5 rounded-lg hover:bg-white/5 transition-colors"
+            class="w-full flex items-center justify-between px-2 py-1.5 rounded-lg hover:bg-elevated transition-colors"
           >
-            <span class="text-xs text-slate-300">天气标记</span>
+            <span class="text-xs text-muted">天气标记</span>
             <span
               class="inline-flex w-8 h-[18px] rounded-full transition-colors"
               :class="store.showMarkerWeather ? 'bg-primary-500' : 'bg-slate-600'"
@@ -72,9 +72,9 @@ const expanded = ref(false)
           <!-- Monster count toggle -->
           <button
             @click="store.showMarkerCount = !store.showMarkerCount"
-            class="w-full flex items-center justify-between px-2 py-1.5 rounded-lg hover:bg-white/5 transition-colors"
+            class="w-full flex items-center justify-between px-2 py-1.5 rounded-lg hover:bg-elevated transition-colors"
           >
-            <span class="text-xs text-slate-300">怪物数量</span>
+            <span class="text-xs text-muted">怪物数量</span>
             <span
               class="inline-flex w-8 h-[18px] rounded-full transition-colors"
               :class="store.showMarkerCount ? 'bg-primary-500' : 'bg-slate-600'"
@@ -88,17 +88,17 @@ const expanded = ref(false)
         </div>
 
         <!-- Divider -->
-        <div class="border-t border-white/10"></div>
+        <div class="border-t border-default"></div>
 
         <!-- ── Legend ── -->
-        <div class="text-xs font-medium text-slate-400 uppercase tracking-wider">图例</div>
+        <div class="text-xs font-medium text-muted uppercase tracking-wider">图例</div>
         <template v-for="cat in MARKER_CATEGORIES" :key="cat.label">
-          <div class="text-[10px] font-medium text-slate-500 uppercase tracking-wider pt-1 mb-0.5">{{ cat.label }}</div>
+          <div class="text-[10px] font-medium text-faint uppercase tracking-wider pt-1 mb-0.5">{{ cat.label }}</div>
           <div
             v-for="type in cat.types"
             :key="type"
             @click="store.toggleType(type)"
-            class="flex items-center gap-2 px-2 py-1.5 rounded-lg cursor-pointer hover:bg-white/5 transition-colors"
+            class="flex items-center gap-2 px-2 py-1.5 rounded-lg cursor-pointer hover:bg-elevated transition-colors"
             :class="{ 'opacity-50': !store.selectedTypes.has(type) }"
           >
             <img
@@ -106,7 +106,7 @@ const expanded = ref(false)
               :alt="MARKER_TYPE_CONFIG[type].label"
               class="w-[18px] h-[18px] rounded-full object-cover"
             />
-            <span class="text-xs text-slate-300 flex-1">{{ MARKER_TYPE_CONFIG[type].label }}</span>
+            <span class="text-xs text-muted flex-1">{{ MARKER_TYPE_CONFIG[type].label }}</span>
           </div>
         </template>
       </div>

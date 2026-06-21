@@ -4,6 +4,7 @@ import { useMarkerStore } from '@/stores/markerStore'
 import { MARKER_TYPE_CONFIG, MARKER_CATEGORIES, ENEMY_CLEARING_TYPES, TELEPORT_SUB_TYPES, TELEPORT_BASIC_TYPES, ALL_ITEMS, ALL_MARKER_TYPES, getIconUrl } from '@/types'
 import type { MarkerType } from '@/types'
 import { resolveAssetUrl } from '@/config'
+import { AppIcon } from '@/components/ui'
 
 const store = useMarkerStore()
 
@@ -308,6 +309,17 @@ const flatVisibleTypes = computed(() => {
   return result
 })
 
+// Overall collection progress across all selected & visible types.
+const progressSummary = computed(() => {
+  let found = 0
+  let total = 0
+  for (const item of flatVisibleTypes.value) {
+    found += item.foundCount
+    total += item.totalCount
+  }
+  return { found, total }
+})
+
 const detailMarkers = computed(() => {
   if (!detailType.value) return []
   return store.filteredMarkers.filter((m) => m.types.includes(detailType.value!))
@@ -576,7 +588,7 @@ function getSegmentTotalCounts(markerIds: string[]): number {
   <button
     v-if="!store.sidebarOpen"
     @click="store.sidebarOpen = true"
-    class="fixed bottom-6 left-6 z-30 w-10 h-10 rounded-xl bg-surface-800/90 backdrop-blur-md border border-white/10 shadow-lg flex items-center justify-center text-slate-300 hover:text-white hover:border-white/20 transition-all md:hidden"
+    class="fixed bottom-6 left-6 z-30 w-10 h-10 rounded-xl bg-overlay/90 backdrop-blur-md border border-default shadow-lg flex items-center justify-center text-muted hover:text-base hover:border-border-strong transition-all md:hidden"
   >
     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
@@ -596,13 +608,13 @@ function getSegmentTotalCounts(markerIds: string[]): number {
   <Transition name="slide">
     <div
       v-if="store.sidebarOpen"
-      class="fixed z-50 flex flex-col bg-surface-900/95 backdrop-blur-xl border border-white/10 shadow-2xl inset-x-0 bottom-0 rounded-t-2xl md:h-auto md:top-3 md:bottom-3 md:left-3 md:inset-x-auto md:w-[330px] md:rounded-2xl md:overflow-hidden"
+      class="fixed z-50 flex flex-col bg-surface/95 backdrop-blur-xl border border-default shadow-2xl inset-x-0 bottom-0 rounded-t-2xl md:h-auto md:top-3 md:bottom-3 md:left-3 md:inset-x-auto md:w-[330px] md:rounded-2xl md:overflow-hidden text-base"
       :style="isMobile ? { height: 'clamp(280px, 42dvh, 600px)' } : {}"
     >
       <!-- Mobile close button (at top edge of panel) -->
       <button
         @click="store.sidebarOpen = false"
-        class="absolute left-2 z-30 w-9 h-9 rounded-lg bg-surface-800/90 backdrop-blur-md border border-white/10 shadow-lg flex items-center justify-center text-slate-300 hover:text-white hover:border-white/20 transition-all md:hidden"
+        class="absolute left-2 z-30 w-9 h-9 rounded-lg bg-overlay/90 backdrop-blur-md border border-default shadow-lg flex items-center justify-center text-muted hover:text-base hover:border-border-strong transition-all md:hidden"
         style="top: -2.75rem;"
       >
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -659,7 +671,7 @@ function getSegmentTotalCounts(markerIds: string[]): number {
       <button
         v-if="!searchExpanded"
         @click="toggleSearch()"
-        class="absolute right-2 z-30 w-9 h-9 rounded-lg bg-surface-800/90 backdrop-blur-md border border-white/10 shadow-lg flex items-center justify-center text-slate-300 hover:text-white hover:border-white/20 transition-all md:hidden"
+        class="absolute right-2 z-30 w-9 h-9 rounded-lg bg-overlay/90 backdrop-blur-md border border-default shadow-lg flex items-center justify-center text-muted hover:text-base hover:border-border-strong transition-all md:hidden"
         style="top: -2.75rem;"
       >
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -675,7 +687,7 @@ function getSegmentTotalCounts(markerIds: string[]): number {
       >
         <div class="relative w-full h-full">
           <svg
-            class="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none"
+            class="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted pointer-events-none"
             fill="none" stroke="currentColor" viewBox="0 0 24 24"
           >
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -686,11 +698,11 @@ function getSegmentTotalCounts(markerIds: string[]): number {
             placeholder="搜索..."
             ref="searchInput"
             @keydown.enter="($event.target as HTMLInputElement).blur()"
-            class="w-full h-full pl-8 pr-7 text-xs bg-surface-800/90 backdrop-blur-md border border-white/10 rounded-lg text-slate-200 placeholder-slate-500 focus:outline-none focus:border-primary-500 transition-colors"
+            class="w-full h-full pl-8 pr-7 text-xs bg-overlay/90 backdrop-blur-md border border-default rounded-lg text-base placeholder:text-faint focus:outline-none focus:border-primary-500 transition-colors"
           />
           <button
             @click="toggleSearch()"
-            class="absolute right-1.5 top-1/2 -translate-y-1/2 w-4 h-4 flex items-center justify-center text-slate-400 hover:text-white transition-colors"
+            class="absolute right-1.5 top-1/2 -translate-y-1/2 w-4 h-4 flex items-center justify-center text-muted hover:text-base transition-colors"
             title="关闭"
           >
             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -704,12 +716,13 @@ function getSegmentTotalCounts(markerIds: string[]): number {
       <div v-if="!store.showRouteView" class="flex-shrink-0 space-y-3" :class="{ 'p-2': !isMobile, 'p-1': isMobile && detailType === null && !showCategoryList && !enemyMobileView && !teleportSubMobileView }">
         <!-- Header -->
         <div class="flex items-center gap-2">
-          <h1 v-if="!searchExpanded" class="text-lg font-bold tracking-wide text-primary-400 select-none whitespace-nowrap truncate max-md:hidden">
-            异环 大地图
+          <h1 v-if="!searchExpanded" class="flex items-center gap-1.5 select-none whitespace-nowrap truncate max-md:hidden">
+            <span class="inline-block h-2 w-2 rotate-45 rounded-[2px] bg-primary-500 dark:bg-primary-400"></span>
+            <span class="text-base font-semibold tracking-[0.2em] text-base">NTE&nbsp;MAP</span>
           </h1>
           <div v-if="searchExpanded" class="relative flex-1 min-w-0 max-md:hidden">
             <svg
-              class="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none"
+              class="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted pointer-events-none"
               fill="none" stroke="currentColor" viewBox="0 0 24 24"
             >
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -720,11 +733,11 @@ function getSegmentTotalCounts(markerIds: string[]): number {
               placeholder="搜索..."
               ref="searchInput"
               @keydown.enter="($event.target as HTMLInputElement).blur()"
-              class="w-full pl-8 pr-7 py-1.5 text-xs bg-surface-800 border border-white/10 rounded-lg text-slate-200 placeholder-slate-500 focus:outline-none focus:border-primary-500 transition-colors"
+              class="w-full pl-8 pr-7 py-1.5 text-xs bg-surface border border-default rounded-lg text-base placeholder:text-faint focus:outline-none focus:border-primary-500 transition-colors"
             />
             <button
               @click="toggleSearch()"
-              class="absolute right-1.5 top-1/2 -translate-y-1/2 w-4 h-4 flex items-center justify-center text-slate-400 hover:text-white transition-colors"
+              class="absolute right-1.5 top-1/2 -translate-y-1/2 w-4 h-4 flex items-center justify-center text-muted hover:text-base transition-colors"
               title="关闭"
             >
               <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -737,7 +750,7 @@ function getSegmentTotalCounts(markerIds: string[]): number {
           <button
             @click="store.showRouteView ? store.closeRouteView() : store.openRouteList()"
             class="w-7 h-7 flex items-center justify-center rounded-lg transition-colors flex-shrink-0 max-md:hidden"
-            :class="store.showRouteView ? 'text-primary-400 bg-primary-500/10' : 'text-slate-400 hover:text-white hover:bg-white/10'"
+            :class="store.showRouteView ? 'text-primary-500 dark:text-primary-400 bg-primary-500/10' : 'text-muted hover:text-base hover:bg-elevated'"
             title="路线"
           >
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -747,7 +760,7 @@ function getSegmentTotalCounts(markerIds: string[]): number {
           <button
             v-if="!searchExpanded"
             @click="toggleSearch()"
-            class="w-7 h-7 flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/10 rounded-lg transition-colors flex-shrink-0 max-md:hidden"
+            class="w-7 h-7 flex items-center justify-center text-muted hover:text-base hover:bg-elevated rounded-lg transition-colors flex-shrink-0 max-md:hidden"
             title="搜索"
           >
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -761,20 +774,20 @@ function getSegmentTotalCounts(markerIds: string[]): number {
       <template v-if="store.showRouteView">
         <!-- Route list view -->
         <div v-if="!store.currentRouteId" class="flex-1 flex flex-col overflow-hidden" :class="{ 'rounded-t-2xl': isMobile }">
-          <div class="flex-shrink-0 flex items-center gap-2.5 px-4 py-1.5 border-b border-white/10 bg-surface-800/80">
+          <div class="flex-shrink-0 flex items-center gap-2.5 px-4 py-1.5 border-b border-default bg-overlay/80">
             <button
               @click="store.closeRouteView()"
-              class="w-6 h-6 flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/10 rounded-md transition-colors flex-shrink-0"
+              class="w-6 h-6 flex items-center justify-center text-muted hover:text-base hover:bg-elevated rounded-md transition-colors flex-shrink-0"
             >
               <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
               </svg>
             </button>
-            <span class="flex-1 text-sm leading-none font-medium text-slate-200 truncate">路线</span>
+            <span class="flex-1 text-sm leading-none font-medium text-base truncate">路线</span>
             <button
               v-if="store.isAnyEditMode"
               @click="openCreateRouteDialog()"
-              class="w-6 h-6 flex items-center justify-center text-slate-400 hover:text-primary-400 hover:bg-white/10 rounded-md transition-colors flex-shrink-0"
+              class="w-6 h-6 flex items-center justify-center text-muted hover:text-primary-400 hover:bg-elevated rounded-md transition-colors flex-shrink-0"
               title="创建路线"
             >
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -789,64 +802,64 @@ function getSegmentTotalCounts(markerIds: string[]): number {
                 v-for="route in store.routes"
                 :key="route.id"
                 @click="handleRouteClick(route.id)"
-                class="flex items-center gap-3 p-2 rounded-xl cursor-pointer hover:bg-white/5 transition-colors border border-white/5"
+                class="flex items-center gap-3 p-2 rounded-xl cursor-pointer hover:bg-elevated transition-colors border border-default"
               >
-                <div class="w-10 h-10 rounded-lg overflow-hidden flex-shrink-0 bg-surface-800">
+                <div class="w-10 h-10 rounded-lg overflow-hidden flex-shrink-0 bg-elevated">
                   <img v-if="route.image" :src="route.image" class="w-full h-full object-cover" />
                   <div v-else class="w-full h-full flex items-center justify-center">
-                    <svg class="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-5 h-5 text-faint" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
                     </svg>
                   </div>
                 </div>
                 <div class="flex-1 min-w-0">
-                  <div class="text-sm text-slate-200 truncate">{{ route.name }}</div>
-                  <div class="text-xs text-slate-500">{{ route.segments.length }} 个路段</div>
+                  <div class="text-sm text-base truncate">{{ route.name }}</div>
+                  <div class="text-xs text-faint">{{ route.segments.length }} 个路段</div>
                 </div>
                 <button
                   v-if="store.isAnyEditMode"
                   @click.stop="handleDeleteRoute(route.id)"
-                  class="w-6 h-6 flex items-center justify-center text-slate-500 hover:text-red-400 rounded transition-colors flex-shrink-0"
+                  class="w-6 h-6 flex items-center justify-center text-faint hover:text-red-400 rounded transition-colors flex-shrink-0"
                 >
                   <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                   </svg>
                 </button>
-                <svg class="w-3.5 h-3.5 text-slate-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <svg class="w-3.5 h-3.5 text-faint flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                   <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
                 </svg>
               </div>
             </template>
 
-            <div v-else class="flex flex-col items-center justify-center gap-2 text-slate-500 py-12">
+            <div v-else class="flex flex-col items-center justify-center gap-2 text-faint py-12">
               <svg class="w-10 h-10 opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
               </svg>
               <span class="text-xs">暂无路线</span>
-              <span v-if="store.isAnyEditMode" class="text-xs text-slate-600">点击右上角 + 创建路线</span>
+              <span v-if="store.isAnyEditMode" class="text-xs text-faint">点击右上角 + 创建路线</span>
             </div>
           </div>
         </div>
 
         <!-- Route detail view -->
         <div v-else class="flex-1 flex flex-col overflow-hidden" :class="{ 'rounded-t-2xl': isMobile }">
-          <div class="flex-shrink-0 flex items-center gap-2.5 px-4 py-1.5 border-b border-white/10 bg-surface-800/80">
+          <div class="flex-shrink-0 flex items-center gap-2.5 px-4 py-1.5 border-b border-default bg-overlay/80">
             <button
               @click="handleBackToRouteList()"
-              class="w-6 h-6 flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/10 rounded-md transition-colors flex-shrink-0"
+              class="w-6 h-6 flex items-center justify-center text-muted hover:text-base hover:bg-elevated rounded-md transition-colors flex-shrink-0"
             >
               <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
               </svg>
             </button>
-            <div v-if="store.currentRoute?.image" class="w-5 h-5 rounded overflow-hidden flex-shrink-0 bg-surface-800">
+            <div v-if="store.currentRoute?.image" class="w-5 h-5 rounded overflow-hidden flex-shrink-0 bg-elevated">
               <img :src="store.currentRoute.image" class="w-full h-full object-cover" />
             </div>
-            <span class="flex-1 text-sm leading-none font-medium text-slate-200 truncate">{{ store.currentRoute?.name ?? '' }}</span>
+            <span class="flex-1 text-sm leading-none font-medium text-base truncate">{{ store.currentRoute?.name ?? '' }}</span>
             <button
               v-if="store.isAnyEditMode"
               @click="openEditRouteDialog()"
-              class="w-6 h-6 flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/10 rounded-md transition-colors flex-shrink-0"
+              class="w-6 h-6 flex items-center justify-center text-muted hover:text-base hover:bg-elevated rounded-md transition-colors flex-shrink-0"
               title="编辑路线"
             >
               <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -857,7 +870,7 @@ function getSegmentTotalCounts(markerIds: string[]): number {
               v-if="!store.isAddingSegment"
               @click="toggleRouteMarkerFilter()"
               class="w-6 h-6 flex items-center justify-center rounded-md transition-colors flex-shrink-0"
-              :class="store.routeMarkerFilterIds ? 'text-amber-400 bg-amber-500/10' : 'text-slate-400 hover:text-white hover:bg-white/10'"
+              :class="store.routeMarkerFilterIds ? 'text-amber-600 dark:text-amber-400 bg-amber-500/10' : 'text-muted hover:text-base hover:bg-elevated'"
               :title="store.routeMarkerFilterIds ? '显示全部标点' : '仅显示路线标点'"
             >
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -867,7 +880,7 @@ function getSegmentTotalCounts(markerIds: string[]): number {
             <button
               v-if="store.isAnyEditMode && !store.isAddingSegment"
               @click="handleAddSegmentClick()"
-              class="w-6 h-6 flex items-center justify-center text-slate-400 hover:text-primary-400 hover:bg-white/10 rounded-md transition-colors flex-shrink-0"
+              class="w-6 h-6 flex items-center justify-center text-muted hover:text-primary-400 hover:bg-elevated rounded-md transition-colors flex-shrink-0"
               title="添加路段"
             >
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -886,7 +899,7 @@ function getSegmentTotalCounts(markerIds: string[]): number {
             </span>
             <button
               @click="handleCancelSegmentClick()"
-              class="px-2 py-1 text-xs text-slate-400 hover:text-white rounded transition-colors"
+              class="px-2 py-1 text-xs text-muted hover:text-base rounded transition-colors"
             >取消</button>
             <button
               @click="handleFinishSegmentClick()"
@@ -906,12 +919,12 @@ function getSegmentTotalCounts(markerIds: string[]): number {
                 @dragend="onDragEnd($event)"
                 @dragover="onDragOver(idx, $event)"
                 @drop="onDrop(idx, $event)"
-                class="p-3 rounded-xl border border-white/5 bg-white/[0.02] cursor-pointer hover:bg-white/[0.04] transition-colors group"
+                class="p-3 rounded-xl border border-default bg-elevated/40 cursor-pointer hover:bg-elevated/60 transition-colors group"
               >
                 <div class="flex items-center gap-2 mb-2">
                   <button
                     v-if="store.isAnyEditMode"
-                    class="w-4 h-4 flex items-center justify-center text-slate-600 hover:text-slate-400 cursor-grab active:cursor-grabbing flex-shrink-0"
+                    class="w-4 h-4 flex items-center justify-center text-faint hover:text-muted cursor-grab active:cursor-grabbing flex-shrink-0"
                     title="拖动排序"
                     @click.stop
                   >
@@ -923,15 +936,15 @@ function getSegmentTotalCounts(markerIds: string[]): number {
                     class="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold text-white flex-shrink-0"
                     :style="{ backgroundColor: ['#f59e0b','#3b82f6','#22c55e','#ef4444','#8b5cf6','#ec4899'][idx % 6] }"
                   >{{ idx + 1 }}</span>
-                  <span class="text-sm font-medium text-slate-200 truncate flex-1">{{ segment.name }}</span>
+                  <span class="text-sm font-medium text-base truncate flex-1">{{ segment.name }}</span>
                   <span
                     v-if="getSegmentTotalCounts(segment.markerIds) > 0"
-                    class="text-xs px-1.5 py-0.5 rounded-full bg-red-500/15 text-red-400 flex-shrink-0 font-mono"
+                    class="text-xs px-1.5 py-0.5 rounded-full bg-red-500/15 text-red-500 dark:text-red-400 flex-shrink-0 font-mono"
                   >{{ getSegmentTotalCounts(segment.markerIds) }}</span>
                   <button
                     v-if="store.isAnyEditMode"
                     @click.stop="openEditSegmentDialog(segment.id)"
-                    class="w-5 h-5 flex items-center justify-center text-slate-500 hover:text-white rounded transition-colors flex-shrink-0"
+                    class="w-5 h-5 flex items-center justify-center text-faint hover:text-base rounded transition-colors flex-shrink-0"
                   >
                     <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -940,7 +953,7 @@ function getSegmentTotalCounts(markerIds: string[]): number {
                   <button
                     v-if="store.isAnyEditMode"
                     @click.stop="handleDeleteSegment(segment.id)"
-                    class="w-5 h-5 flex items-center justify-center text-slate-500 hover:text-red-400 rounded transition-colors flex-shrink-0"
+                    class="w-5 h-5 flex items-center justify-center text-faint hover:text-red-400 rounded transition-colors flex-shrink-0"
                   >
                     <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -951,7 +964,7 @@ function getSegmentTotalCounts(markerIds: string[]): number {
                   <span
                     v-for="stat in getSegmentTypeStats(segment.markerIds)"
                     :key="stat.type"
-                    class="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] rounded bg-surface-700 text-slate-300"
+                    class="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] rounded bg-elevated text-muted"
                   >
                     <img
                       :src="resolveAssetUrl(MARKER_TYPE_CONFIG[stat.type].iconUrl)"
@@ -959,18 +972,18 @@ function getSegmentTotalCounts(markerIds: string[]): number {
                       class="w-3.5 h-3.5 rounded-full object-cover flex-shrink-0"
                     />
                     <span>{{ MARKER_TYPE_CONFIG[stat.type].label }}</span>
-                    <span class="font-mono text-slate-400">{{ stat.count }}</span>
+                    <span class="font-mono text-muted">{{ stat.count }}</span>
                   </span>
                 </div>
               </div>
             </template>
 
-            <div v-else-if="!store.isAddingSegment" class="flex flex-col items-center justify-center gap-2 text-slate-500 py-12">
+            <div v-else-if="!store.isAddingSegment" class="flex flex-col items-center justify-center gap-2 text-faint py-12">
               <svg class="w-10 h-10 opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 10V3L4 14h7v7l9-11h-7z" />
               </svg>
               <span class="text-xs">暂无路段</span>
-              <span v-if="store.isAnyEditMode" class="text-xs text-slate-600">点击右上角 + 添加路段</span>
+              <span v-if="store.isAnyEditMode" class="text-xs text-faint">点击右上角 + 添加路段</span>
             </div>
           </div>
         </div>
@@ -981,54 +994,49 @@ function getSegmentTotalCounts(markerIds: string[]): number {
       <div v-if="detailType === null && !showCategoryList && !enemyMobileView && !teleportSubMobileView" class="flex-1 overflow-y-auto overflow-hidden px-4 pb-4 space-y-3 max-md:space-y-2" @click.self="enemyExpanded = false; teleportSubExpanded = false">
         <!-- Type filters -->
         <div>
-          <div class="flex items-center justify-between mb-2">
-            <button
-              @click="openCategoryList()"
-              class="flex items-center gap-1 px-2 py-1 rounded-lg border border-white/10 hover:border-white/20 hover:bg-white/5 transition-colors"
-            >
-              <span class="text-xs text-slate-400">分类</span>
-              <svg class="w-3 h-3 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-              </svg>
-            </button>
-            <div class="flex items-center gap-2">
-              <label class="inline-flex items-center gap-1.5 cursor-pointer">
-                <span class="text-xs text-slate-500">仅未标记</span>
-                <div class="relative">
-                  <input
-                    type="checkbox"
-                    :checked="store.filterMode === 'unfound'"
-                    @change="store.filterMode = store.filterMode === 'unfound' ? 'all' : 'unfound'"
-                    class="sr-only peer"
-                  />
-                  <div class="w-8 h-4 bg-surface-700 rounded-full peer-checked:bg-primary-600 transition-colors"></div>
-                  <div
-                    class="absolute left-0.5 top-0.5 w-3 h-3 bg-white rounded-full transition-transform"
-                    :class="store.filterMode === 'unfound' ? 'translate-x-4' : ''"
-                  ></div>
-                </div>
-              </label>
+          <!-- Toolbar: progress summary (left) + icon actions (right) -->
+          <div class="flex items-center justify-between gap-2 mb-2">
+            <div class="flex items-baseline gap-1.5 min-w-0">
+              <span class="text-sm font-semibold text-base tabular-nums">{{ progressSummary.found }}<span class="text-faint">/{{ progressSummary.total }}</span></span>
+              <span class="text-[11px] text-faint truncate">已收集</span>
+            </div>
+            <div class="flex items-center gap-0.5">
+              <!-- Unfound-only toggle -->
               <button
-                @click="handleResetProgress()"
-                class="text-xs text-slate-400 hover:text-red-400 transition-colors"
+                @click="store.filterMode = store.filterMode === 'unfound' ? 'all' : 'unfound'"
+                class="flex items-center gap-1 h-6 px-2 rounded-md text-[11px] transition-colors"
+                :class="store.filterMode === 'unfound' ? 'bg-primary-500/15 text-primary-600 dark:text-primary-400' : 'text-muted hover:text-base hover:bg-elevated'"
+                title="仅显示未收集"
               >
-                重置
+                <AppIcon name="check" class="h-3 w-3" />
+                <span class="max-md:hidden">未收集</span>
               </button>
+              <!-- Select all / invert -->
               <button
                 @click="toggleSelectAll()"
-                class="text-xs text-primary-400 hover:text-primary-300 transition-colors"
+                class="flex items-center gap-1 h-6 px-2 rounded-md text-[11px] text-muted hover:text-base hover:bg-elevated transition-colors"
+                :title="allSelected ? '反选' : '全选'"
               >
-                {{ allSelected ? '反选' : '全选' }}
+                <AppIcon :name="allSelected ? 'check' : 'plus'" class="h-3 w-3" />
+                <span class="max-md:hidden">{{ allSelected ? '反选' : '全选' }}</span>
+              </button>
+              <!-- Reset (destructive, set apart) -->
+              <button
+                @click="handleResetProgress()"
+                class="flex items-center gap-1 h-6 px-2 rounded-md text-[11px] text-muted hover:text-red-500 dark:hover:text-red-400 hover:bg-red-500/10 transition-colors"
+                title="重置进度"
+              >
+                <AppIcon name="trash" class="h-3 w-3" />
               </button>
             </div>
           </div>
           <div :class="isMobile ? 'flex flex-col gap-2 overflow-x-auto pb-1' : 'space-y-2'">
             <div v-for="(row, ri) in categoryRows" :key="ri" :class="isMobile ? 'flex gap-2 w-max' : 'space-y-2'">
-              <div v-for="cat in row" :key="cat.label" :class="isMobile ? 'flex bg-white/5 rounded-lg px-2 py-1 flex-col gap-1 shrink-0' : 'flex items-start gap-1.5'">
+              <div v-for="cat in row" :key="cat.label" :class="isMobile ? 'flex bg-elevated/60 rounded-lg px-2 py-1 flex-col gap-1 shrink-0' : 'flex items-start gap-1.5'">
                 <button
                   @click="toggleCategory(cat.types)"
                   class="text-xs font-medium transition-colors"
-                  :class="[categoryAllSelected(cat.types) ? 'text-slate-200' : categoryAnySelected(cat.types) ? 'text-slate-400' : 'text-slate-600', isMobile ? 'w-auto text-left pt-0 text-[11px]' : 'w-12 flex-shrink-0 text-right pt-0.5']"
+                  :class="[categoryAllSelected(cat.types) ? 'text-base' : categoryAnySelected(cat.types) ? 'text-muted' : 'text-faint', isMobile ? 'w-auto text-left pt-0 text-[11px]' : 'w-12 flex-shrink-0 text-right pt-0.5']"
                 >{{ cat.label }}</button>
                 <!-- Teleport category: basic types inline + sub-group compact entry -->
                 <template v-if="cat.label === '传送点'">
@@ -1037,8 +1045,9 @@ function getSegmentTotalCounts(markerIds: string[]): number {
                       v-for="type in TELEPORT_BASIC_TYPES"
                       :key="type"
                       @click="store.toggleType(type)"
-                      :class="['inline-flex items-center gap-1 px-2 py-0.5 text-xs rounded-full border transition-all', isMobile ? 'whitespace-nowrap shrink-0' : '', store.selectedTypes.has(type) ? 'border-current text-white' : 'border-white/10 text-slate-500 bg-transparent']"
-                      :style="store.selectedTypes.has(type) ? { backgroundColor: MARKER_TYPE_CONFIG[type].color + '33', borderColor: MARKER_TYPE_CONFIG[type].color + '66' } : {}"
+                      class="inline-flex items-center gap-1 px-2 py-0.5 text-xs rounded-full border transition-all"
+                      :class="[isMobile ? 'whitespace-nowrap shrink-0' : '', store.selectedTypes.has(type) ? 'border-current font-medium' : 'border-default bg-transparent opacity-60 hover:opacity-100 font-normal']"
+                      :style="{ color: MARKER_TYPE_CONFIG[type].color, backgroundColor: store.selectedTypes.has(type) ? MARKER_TYPE_CONFIG[type].color + '33' : 'transparent', borderColor: store.selectedTypes.has(type) ? MARKER_TYPE_CONFIG[type].color + '66' : undefined }"
                     >
                       <img
                         :src="resolveAssetUrl(MARKER_TYPE_CONFIG[type].iconUrl)"
@@ -1052,8 +1061,8 @@ function getSegmentTotalCounts(markerIds: string[]): number {
                       ref="teleportSubTriggerRef"
                       @click.stop="handleTeleportSubClick()"
                       class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full border transition-all cursor-pointer select-none"
-                      :class="[teleportSubActiveTypes.length > 0 ? 'border-current text-white' : 'border-white/10 text-slate-500 bg-transparent', isMobile ? 'whitespace-nowrap shrink-0' : '']"
-                      :style="teleportSubActiveTypes.length > 0 ? { backgroundColor: '#a855f733', borderColor: '#a855f766' } : {}"
+                      :class="[teleportSubActiveTypes.length > 0 ? 'border-current font-medium' : 'border-default bg-transparent opacity-60 hover:opacity-100 font-normal', isMobile ? 'whitespace-nowrap shrink-0' : '']"
+                      :style="{ color: '#a855f7', backgroundColor: teleportSubActiveTypes.length > 0 ? '#a855f733' : 'transparent', borderColor: teleportSubActiveTypes.length > 0 ? '#a855f766' : undefined }"
                     >
                       <span class="text-[10px] font-mono font-bold min-w-[14px] text-center">{{ teleportSubActiveTypes.length }}</span>
                       <div class="flex items-center" style="margin-left: 1px;">
@@ -1062,14 +1071,12 @@ function getSegmentTotalCounts(markerIds: string[]): number {
                           :key="type"
                           :src="resolveAssetUrl(MARKER_TYPE_CONFIG[type].iconUrl)"
                           :alt="MARKER_TYPE_CONFIG[type].label"
-                          class="w-3.5 h-3.5 rounded-full object-cover border border-surface-900"
+                          class="w-3.5 h-3.5 rounded-full object-cover border border-overlay"
                           :style="{ marginLeft: i > 0 ? '-6px' : '0' }"
                         />
-                        <span v-if="teleportSubActiveTypes.length > 6" class="text-[9px] text-slate-400 ml-0.5">...</span>
+                        <span v-if="teleportSubActiveTypes.length > 6" class="text-[9px] text-muted ml-0.5">...</span>
                       </div>
-                      <svg class="w-3 h-3 text-slate-500 flex-shrink-0 transition-transform" :class="{ 'rotate-90': teleportSubExpanded && !isMobile }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                      </svg>
+                      <AppIcon name="chevronRight" class="w-3 h-3 text-faint flex-shrink-0 transition-transform" :class="{ 'rotate-90': teleportSubExpanded && !isMobile }" />
                     </div>
                   </div>
                 </template>
@@ -1079,8 +1086,9 @@ function getSegmentTotalCounts(markerIds: string[]): number {
                     v-for="type in cat.types"
                     :key="type"
                     @click="store.toggleType(type)"
-                    :class="['inline-flex items-center gap-1 px-2 py-0.5 text-xs rounded-full border transition-all', isMobile ? 'whitespace-nowrap shrink-0' : '', store.selectedTypes.has(type) ? 'border-current text-white' : 'border-white/10 text-slate-500 bg-transparent']"
-                    :style="store.selectedTypes.has(type) ? { backgroundColor: MARKER_TYPE_CONFIG[type].color + '33', borderColor: MARKER_TYPE_CONFIG[type].color + '66' } : {}"
+                    class="inline-flex items-center gap-1 px-2 py-0.5 text-xs rounded-full border transition-all"
+                    :class="[isMobile ? 'whitespace-nowrap shrink-0' : '', store.selectedTypes.has(type) ? 'border-current font-medium' : 'border-default bg-transparent opacity-60 hover:opacity-100 font-normal']"
+                    :style="{ color: MARKER_TYPE_CONFIG[type].color, backgroundColor: store.selectedTypes.has(type) ? MARKER_TYPE_CONFIG[type].color + '33' : 'transparent', borderColor: store.selectedTypes.has(type) ? MARKER_TYPE_CONFIG[type].color + '66' : undefined }"
                   >
                     <img
                       :src="resolveAssetUrl(MARKER_TYPE_CONFIG[type].iconUrl)"
@@ -1096,8 +1104,8 @@ function getSegmentTotalCounts(markerIds: string[]): number {
                     ref="enemyTriggerRef"
                     @click.stop="handleEnemyClick()"
                     class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full border transition-all cursor-pointer select-none"
-                    :class="[enemyActiveTypes.length > 0 ? 'border-current text-white' : 'border-white/10 text-slate-500 bg-transparent', isMobile ? 'whitespace-nowrap shrink-0' : '']"
-                    :style="enemyActiveTypes.length > 0 ? { backgroundColor: '#a78bfa33', borderColor: '#a78bfa66' } : {}"
+                    :class="[enemyActiveTypes.length > 0 ? 'border-current font-medium' : 'border-default bg-transparent opacity-60 hover:opacity-100 font-normal', isMobile ? 'whitespace-nowrap shrink-0' : '']"
+                      :style="{ color: '#a78bfa', backgroundColor: enemyActiveTypes.length > 0 ? '#a78bfa33' : 'transparent', borderColor: enemyActiveTypes.length > 0 ? '#a78bfa66' : undefined }"
                   >
                     <span class="text-[10px] font-mono font-bold min-w-[14px] text-center">{{ enemyActiveTypes.length }}</span>
                     <div class="flex items-center" style="margin-left: 1px;">
@@ -1106,14 +1114,12 @@ function getSegmentTotalCounts(markerIds: string[]): number {
                         :key="type"
                         :src="resolveAssetUrl(MARKER_TYPE_CONFIG[type].iconUrl)"
                         :alt="MARKER_TYPE_CONFIG[type].label"
-                        class="w-3.5 h-3.5 rounded-full object-cover border border-surface-900"
+                        class="w-3.5 h-3.5 rounded-full object-cover border border-overlay"
                         :style="{ marginLeft: i > 0 ? '-6px' : '0' }"
                       />
-                      <span v-if="enemyActiveTypes.length > 6" class="text-[9px] text-slate-400 ml-0.5">...</span>
+                      <span v-if="enemyActiveTypes.length > 6" class="text-[9px] text-muted ml-0.5">...</span>
                     </div>
-                    <svg class="w-3 h-3 text-slate-500 flex-shrink-0 transition-transform" :class="{ 'rotate-90': enemyExpanded && !isMobile }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                    </svg>
+                    <AppIcon name="chevronRight" class="w-3 h-3 text-faint flex-shrink-0 transition-transform" :class="{ 'rotate-90': enemyExpanded && !isMobile }" />
                   </div>
                 </template>
               </div>
@@ -1121,9 +1127,19 @@ function getSegmentTotalCounts(markerIds: string[]): number {
           </div>
         </div>
 
-        <!-- Results count -->
-        <div class="text-xs text-slate-500 pt-1 border-t border-white/5">
-          <span>共 {{ store.filteredMarkers.length }} 个标记点</span>
+        <!-- Results count + category-list entry -->
+        <div class="flex items-center justify-between pt-1 border-t border-default">
+          <span class="text-[11px] text-faint">
+            {{ flatVisibleTypes.length }} 类 · {{ store.filteredMarkers.length }} 个标记
+          </span>
+          <button
+            @click="openCategoryList()"
+            class="flex items-center gap-1 text-[11px] text-muted hover:text-base transition-colors"
+            title="按分类浏览全部类型"
+          >
+            <span>全部类型</span>
+            <AppIcon name="chevronRight" class="h-3 w-3" />
+          </button>
         </div>
 
         <!-- Flat type list -->
@@ -1132,26 +1148,34 @@ function getSegmentTotalCounts(markerIds: string[]): number {
           <template v-for="item in flatVisibleTypes" :key="item.type">
             <div
               @click="showDetail(item.type)"
-              class="flex items-center gap-3 px-4 py-2.5 cursor-pointer hover:bg-white/5 transition-colors border-b border-white/5 select-none -mx-4 max-md:flex-shrink-0 max-md:flex-col max-md:gap-1 max-md:px-2 max-md:py-1.5 max-md:mx-0 max-md:rounded-lg max-md:bg-white/5 max-md:border-b-0 max-md:min-w-[60px] max-md:text-center max-md:hover:bg-white/10 max-md:relative"
+              class="flex items-center gap-3 px-3 py-2 cursor-pointer rounded-lg hover:bg-elevated active:bg-elevated transition-colors border-b border-default select-none max-md:flex-shrink-0 max-md:flex-col max-md:gap-1 max-md:px-2 max-md:py-1.5 max-md:rounded-lg max-md:bg-elevated/60 max-md:border-b-0 max-md:min-w-[60px] max-md:text-center max-md:hover:bg-elevated max-md:relative"
+              :class="{ 'opacity-50': item.foundCount === item.totalCount && item.totalCount > 0 }"
             >
               <img
                 :src="resolveAssetUrl(MARKER_TYPE_CONFIG[item.type].iconUrl)"
                 :alt="MARKER_TYPE_CONFIG[item.type].label"
                 class="w-[18px] h-[18px] rounded-full object-cover flex-shrink-0 max-md:w-6 max-md:h-6"
               />
-              <span class="flex-1 text-sm text-slate-200 truncate max-md:text-xs max-md:flex-initial">{{ MARKER_TYPE_CONFIG[item.type].label }}</span>
+              <span class="flex-1 text-sm text-base truncate max-md:text-xs max-md:flex-initial">{{ MARKER_TYPE_CONFIG[item.type].label }}</span>
               <span
-                class="text-xs font-mono flex-shrink-0"
-                :class="item.foundCount === item.totalCount && item.totalCount > 0 ? 'text-green-400' : 'text-slate-500'"
+                v-if="item.foundCount === item.totalCount && item.totalCount > 0"
+                class="flex items-center justify-center w-4 h-4 rounded-full bg-green-500/15 text-green-600 dark:text-green-400 flex-shrink-0 max-md:hidden"
+                title="已完成"
+              >
+                <AppIcon name="check" class="h-2.5 w-2.5" stroke="3" />
+              </span>
+              <span
+                class="text-xs font-mono flex-shrink-0 tabular-nums"
+                :class="item.foundCount === item.totalCount && item.totalCount > 0 ? 'text-green-600 dark:text-green-400' : 'text-faint'"
               >
                 {{ item.foundCount }}/{{ item.totalCount }}
               </span>
               <span
                 v-if="item.monsterSum"
-                class="text-xs px-1.5 py-0.5 rounded-full bg-red-500/15 text-red-400 flex-shrink-0 font-mono max-md:absolute max-md:top-0 max-md:right-0 max-md:text-[10px] max-md:px-1 max-md:py-px max-md:z-10"
+                    class="text-xs px-1.5 py-0.5 rounded-full bg-red-500/15 text-red-500 dark:text-red-400 flex-shrink-0 font-mono max-md:absolute max-md:top-0 max-md:right-0 max-md:text-[10px] max-md:px-1 max-md:py-px max-md:z-10"
               >{{ item.monsterSum }}</span>
               <svg
-                class="w-3.5 h-3.5 text-slate-500 flex-shrink-0 max-md:hidden"
+                class="w-3.5 h-3.5 text-faint flex-shrink-0 max-md:hidden"
                 fill="currentColor"
                 viewBox="0 0 20 20"
               >
@@ -1160,10 +1184,8 @@ function getSegmentTotalCounts(markerIds: string[]): number {
             </div>
           </template>
 
-          <div v-if="flatVisibleTypes.length === 0" class="flex items-center justify-center gap-2 text-slate-500 py-2.5 max-md:min-h-[72px] max-md:min-w-[60px] max-md:flex-shrink-0 max-md:flex-col max-md:py-1.5 max-md:rounded-lg max-md:bg-white/5">
-            <svg class="w-8 h-8 opacity-30 max-md:w-8 max-md:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
+          <div v-if="flatVisibleTypes.length === 0" class="flex items-center justify-center gap-2 text-faint py-2.5 max-md:min-h-[72px] max-md:min-w-[60px] max-md:flex-shrink-0 max-md:flex-col max-md:py-1.5 max-md:rounded-lg max-md:bg-elevated/60">
+            <AppIcon name="filter" class="w-7 h-7 opacity-30 max-md:w-7 max-md:h-7" stroke="1.5" />
             <span class="text-xs">无匹配</span>
           </div>
         </div>
@@ -1175,17 +1197,17 @@ function getSegmentTotalCounts(markerIds: string[]): number {
         class="flex-1 flex flex-col overflow-hidden max-md:rounded-t-2xl"
       >
         <!-- Header -->
-        <div class="flex-shrink-0 flex items-center gap-2.5 px-4 py-1.5 border-b border-white/10 bg-surface-800/80">
+        <div class="flex-shrink-0 flex items-center gap-2.5 px-4 py-1.5 border-b border-default bg-overlay/80">
           <button
             @click="closeEnemyMobile()"
-            class="w-6 h-6 flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/10 rounded-md transition-colors flex-shrink-0"
+            class="w-6 h-6 flex items-center justify-center text-muted hover:text-base hover:bg-elevated rounded-md transition-colors flex-shrink-0"
           >
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
             </svg>
           </button>
-          <span class="flex-1 text-sm leading-none font-medium text-slate-200 truncate">敌影清剿</span>
-          <span class="text-xs leading-none font-mono text-slate-500 flex-shrink-0">
+          <span class="flex-1 text-sm leading-none font-medium text-base truncate">敌影清剿</span>
+          <span class="text-xs leading-none font-mono text-faint flex-shrink-0">
             {{ enemyCombinedStats.found }}/{{ enemyCombinedStats.total }}
           </span>
         </div>
@@ -1198,8 +1220,8 @@ function getSegmentTotalCounts(markerIds: string[]): number {
               :key="item.type"
               @click="store.toggleType(item.type)"
               class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-full border transition-all"
-              :class="item.selected ? 'border-current text-white' : 'border-white/10 text-slate-500 bg-transparent'"
-              :style="item.selected ? { backgroundColor: MARKER_TYPE_CONFIG[item.type].color + '33', borderColor: MARKER_TYPE_CONFIG[item.type].color + '66' } : {}"
+              :class="item.selected ? 'border-current font-medium' : 'border-default bg-transparent opacity-60 hover:opacity-100 font-normal'"
+              :style="{ color: MARKER_TYPE_CONFIG[item.type].color, backgroundColor: item.selected ? MARKER_TYPE_CONFIG[item.type].color + '33' : 'transparent', borderColor: item.selected ? MARKER_TYPE_CONFIG[item.type].color + '66' : undefined }"
             >
               <img
                 :src="resolveAssetUrl(MARKER_TYPE_CONFIG[item.type].iconUrl)"
@@ -1208,16 +1230,13 @@ function getSegmentTotalCounts(markerIds: string[]): number {
               />
               <span>{{ MARKER_TYPE_CONFIG[item.type].label }}</span>
               <span
-                class="font-mono text-[10px]"
-                :class="item.foundCount === item.totalCount && item.totalCount > 0 ? 'text-green-400' : 'text-slate-500'"
+                class="font-mono text-[10px] opacity-70"
               >{{ item.foundCount }}/{{ item.totalCount }}</span>
             </button>
           </div>
 
-          <div v-if="enemyAllTypes.length === 0" class="flex items-center justify-center gap-2 text-slate-500 py-8">
-            <svg class="w-8 h-8 opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
+          <div v-if="enemyAllTypes.length === 0" class="flex items-center justify-center gap-2 text-faint py-8">
+            <AppIcon name="filter" class="w-7 h-7 opacity-30" stroke="1.5" />
             <span class="text-xs">无匹配</span>
           </div>
         </div>
@@ -1229,17 +1248,17 @@ function getSegmentTotalCounts(markerIds: string[]): number {
         class="flex-1 flex flex-col overflow-hidden max-md:rounded-t-2xl"
       >
         <!-- Header -->
-        <div class="flex-shrink-0 flex items-center gap-2.5 px-4 py-1.5 border-b border-white/10 bg-surface-800/80">
+        <div class="flex-shrink-0 flex items-center gap-2.5 px-4 py-1.5 border-b border-default bg-overlay/80">
           <button
             @click="closeTeleportSubMobile()"
-            class="w-6 h-6 flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/10 rounded-md transition-colors flex-shrink-0"
+            class="w-6 h-6 flex items-center justify-center text-muted hover:text-base hover:bg-elevated rounded-md transition-colors flex-shrink-0"
           >
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
             </svg>
           </button>
-          <span class="flex-1 text-sm leading-none font-medium text-slate-200 truncate">传送点 · 异象/特殊</span>
-          <span class="text-xs leading-none font-mono text-slate-500 flex-shrink-0">
+          <span class="flex-1 text-sm leading-none font-medium text-base truncate">传送点 · 异象/特殊</span>
+          <span class="text-xs leading-none font-mono text-faint flex-shrink-0">
             {{ teleportSubCombinedStats.found }}/{{ teleportSubCombinedStats.total }}
           </span>
         </div>
@@ -1252,8 +1271,8 @@ function getSegmentTotalCounts(markerIds: string[]): number {
               :key="item.type"
               @click="store.toggleType(item.type)"
               class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-full border transition-all"
-              :class="item.selected ? 'border-current text-white' : 'border-white/10 text-slate-500 bg-transparent'"
-              :style="item.selected ? { backgroundColor: MARKER_TYPE_CONFIG[item.type].color + '33', borderColor: MARKER_TYPE_CONFIG[item.type].color + '66' } : {}"
+              :class="item.selected ? 'border-current font-medium' : 'border-default bg-transparent opacity-60 hover:opacity-100 font-normal'"
+              :style="{ color: MARKER_TYPE_CONFIG[item.type].color, backgroundColor: item.selected ? MARKER_TYPE_CONFIG[item.type].color + '33' : 'transparent', borderColor: item.selected ? MARKER_TYPE_CONFIG[item.type].color + '66' : undefined }"
             >
               <img
                 :src="resolveAssetUrl(MARKER_TYPE_CONFIG[item.type].iconUrl)"
@@ -1262,16 +1281,13 @@ function getSegmentTotalCounts(markerIds: string[]): number {
               />
               <span>{{ MARKER_TYPE_CONFIG[item.type].label }}</span>
               <span
-                class="font-mono text-[10px]"
-                :class="item.foundCount === item.totalCount && item.totalCount > 0 ? 'text-green-400' : 'text-slate-500'"
+                class="font-mono text-[10px] opacity-70"
               >{{ item.foundCount }}/{{ item.totalCount }}</span>
             </button>
           </div>
 
-          <div v-if="teleportSubAllTypes.length === 0" class="flex items-center justify-center gap-2 text-slate-500 py-8">
-            <svg class="w-8 h-8 opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
+          <div v-if="teleportSubAllTypes.length === 0" class="flex items-center justify-center gap-2 text-faint py-8">
+            <AppIcon name="filter" class="w-7 h-7 opacity-30" stroke="1.5" />
             <span class="text-xs">无匹配</span>
           </div>
         </div>
@@ -1283,33 +1299,31 @@ function getSegmentTotalCounts(markerIds: string[]): number {
         class="flex-1 flex flex-col overflow-hidden max-md:rounded-t-2xl"
       >
         <!-- Back button + header -->
-        <div class="flex-shrink-0 flex items-center gap-2.5 px-4 py-1.5 border-b border-white/10 bg-surface-800/80">
+        <div class="flex-shrink-0 flex items-center gap-2.5 px-4 py-1.5 border-b border-default bg-overlay/80">
           <button
             @click="closeCategoryList()"
-            class="w-6 h-6 flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/10 rounded-md transition-colors flex-shrink-0"
+            class="w-6 h-6 flex items-center justify-center text-muted hover:text-base hover:bg-elevated rounded-md transition-colors flex-shrink-0"
           >
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
             </svg>
           </button>
-          <span class="flex-1 text-sm leading-none font-medium text-slate-200 truncate">分类列表</span>
+          <span class="flex-1 text-sm leading-none font-medium text-base truncate">分类列表</span>
         </div>
 
         <!-- Two panels -->
         <div class="flex-1 flex overflow-hidden">
           <!-- Left panel: category labels -->
-          <div class="w-[72px] flex-shrink-0 overflow-y-auto border-r border-white/5 py-1.5 space-y-0.5 px-1.5">
+          <div class="w-[72px] flex-shrink-0 overflow-y-auto border-r border-default py-1.5 space-y-0.5 px-1.5">
             <button
               v-for="cat in categoryListData"
               :key="cat.label"
               @click="scrollToCategory(cat.label)"
-              class="w-full text-center px-1 py-3 rounded-lg text-slate-400 hover:bg-white/10 hover:text-slate-200 transition-colors text-[11px] font-medium leading-tight"
+              class="w-full text-center px-1 py-3 rounded-lg text-muted hover:bg-elevated hover:text-base transition-colors text-[11px] font-medium leading-tight"
             >{{ cat.label }}</button>
 
-            <div v-if="categoryListData.length === 0" class="flex flex-col items-center gap-1 py-4 text-slate-600">
-              <svg class="w-5 h-5 opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
+            <div v-if="categoryListData.length === 0" class="flex flex-col items-center gap-1 py-4 text-faint">
+              <AppIcon name="filter" class="w-5 h-5 opacity-30" stroke="1.5" />
               <span class="text-[10px]">无</span>
             </div>
           </div>
@@ -1318,7 +1332,7 @@ function getSegmentTotalCounts(markerIds: string[]): number {
           <div ref="categoryScrollRef" class="flex-1 overflow-y-auto py-2 px-2 space-y-3">
             <template v-for="cat in categoryListData" :key="cat.label">
               <div :id="`cat-section-${cat.label}`">
-                <div class="text-xs font-medium text-slate-400 px-1 mb-2">{{ cat.label }}</div>
+                <div class="text-xs font-medium text-muted px-1 mb-2">{{ cat.label }}</div>
                 <div class="flex flex-wrap gap-1.5">
                   <div
                     v-for="t in cat.types"
@@ -1329,8 +1343,8 @@ function getSegmentTotalCounts(markerIds: string[]): number {
                       @click="store.toggleType(t.type)"
                       class="flex items-center justify-center w-[60px] h-[44px] rounded-lg cursor-pointer border transition-colors"
                       :class="t.selected
-                        ? 'border-current'
-                        : 'border-white/5 hover:bg-white/5'"
+                        ? 'border-current font-medium'
+                        : 'border-default hover:bg-elevated'"
                       :style="t.selected ? { backgroundColor: t.config.color + '22', borderColor: t.config.color + '66' } : {}"
                       :title="t.config.label"
                     >
@@ -1342,17 +1356,15 @@ function getSegmentTotalCounts(markerIds: string[]): number {
                     </div>
                     <span
                       class="text-[10px] leading-tight text-center w-[60px] truncate"
-                      :class="t.selected ? 'text-slate-200' : 'text-slate-500'"
+                      :class="t.selected ? 'text-base' : 'text-faint'"
                     >{{ t.config.label }}</span>
                   </div>
                 </div>
               </div>
             </template>
 
-            <div v-if="categoryListData.length === 0" class="flex items-center justify-center gap-2 text-slate-500 py-8">
-              <svg class="w-8 h-8 opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
+            <div v-if="categoryListData.length === 0" class="flex items-center justify-center gap-2 text-faint py-8">
+              <AppIcon name="filter" class="w-7 h-7 opacity-30" stroke="1.5" />
               <span class="text-xs">无匹配</span>
             </div>
           </div>
@@ -1365,10 +1377,10 @@ function getSegmentTotalCounts(markerIds: string[]): number {
         class="flex-1 flex flex-col overflow-hidden max-md:rounded-t-2xl"
       >
         <!-- Back button + type header -->
-        <div class="flex-shrink-0 flex items-center gap-2.5 px-4 py-1.5 border-b border-white/10 bg-surface-800/80">
+        <div class="flex-shrink-0 flex items-center gap-2.5 px-4 py-1.5 border-b border-default bg-overlay/80">
           <button
             @click="backToList()"
-            class="w-6 h-6 flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/10 rounded-md transition-colors flex-shrink-0"
+            class="w-6 h-6 flex items-center justify-center text-muted hover:text-base hover:bg-elevated rounded-md transition-colors flex-shrink-0"
           >
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
@@ -1379,8 +1391,8 @@ function getSegmentTotalCounts(markerIds: string[]): number {
             :alt="MARKER_TYPE_CONFIG[detailType].label"
             class="w-4 h-4 rounded-full object-cover flex-shrink-0"
           />
-          <span class="flex-1 text-sm leading-none font-medium text-slate-200 truncate">{{ MARKER_TYPE_CONFIG[detailType].label }}</span>
-          <span class="text-xs leading-none font-mono text-slate-500 flex-shrink-0">
+          <span class="flex-1 text-sm leading-none font-medium text-base truncate">{{ MARKER_TYPE_CONFIG[detailType].label }}</span>
+          <span class="text-xs leading-none font-mono text-faint flex-shrink-0">
             {{ store.typeStats[detailType].found }}/{{ store.typeStats[detailType].total }}
           </span>
         </div>
@@ -1393,7 +1405,7 @@ function getSegmentTotalCounts(markerIds: string[]): number {
                 v-for="m in row"
                 :key="m.id"
                 @click="scrollToList(m.id)"
-                class="flex gap-3 p-2 rounded-xl cursor-pointer hover:bg-white/5 transition-colors border border-white/5 max-md:flex-shrink-0 max-md:overflow-hidden relative"
+                class="flex gap-3 p-2 rounded-xl cursor-pointer hover:bg-elevated transition-colors border border-default max-md:flex-shrink-0 max-md:overflow-hidden relative"
                 :style="isMobile ? { width: m.description ? 'var(--card-width)' : 'var(--card-width-narrow)', minWidth: m.description ? 'var(--card-width)' : 'var(--card-width-narrow)', height: 'var(--card-row-h)' } : {}"
                 :class="[
                   { 'bg-primary-500/10 border-primary-500/30': store.selectedMarkerId === m.id },
@@ -1403,11 +1415,11 @@ function getSegmentTotalCounts(markerIds: string[]): number {
                 <!-- Count badge (absolute top-left, mobile only) -->
                 <span
                   v-if="m.counts && Object.values(m.counts).some(v => v > 0)"
-                  class="md:hidden absolute top-1 left-1 text-[10px] px-1 py-0.5 rounded-full bg-red-500/20 text-red-400 font-mono leading-none z-10"
+                  class="md:hidden absolute top-1 left-1 text-[10px] px-1 py-0.5 rounded-full bg-red-500/20 text-red-500 dark:text-red-400 font-mono leading-none z-10"
                 >{{ Object.values(m.counts).reduce((a: number, b: number) => a + b, 0) }}</span>
 
                 <!-- Image -->
-                <div v-if="m.image || (m.images && m.images.length > 0)" class="rounded-lg overflow-hidden flex-shrink-0 bg-surface-800"
+                <div v-if="m.image || (m.images && m.images.length > 0)" class="rounded-lg overflow-hidden flex-shrink-0 bg-elevated"
                   :class="{ 'self-center': !isMobile || !!m.description }"
                   :style="isMobile ? { width: 'var(--card-img-size)', height: 'var(--card-img-size)' } : { width: '64px', height: '64px' }">
                   <img
@@ -1416,7 +1428,7 @@ function getSegmentTotalCounts(markerIds: string[]): number {
                     class="w-full h-full object-cover"
                   />
                 </div>
-                <div v-else class="rounded-lg flex-shrink-0 bg-surface-800 flex items-center justify-center"
+                <div v-else class="rounded-lg flex-shrink-0 bg-elevated flex items-center justify-center"
                   :class="{ 'self-center': !isMobile || !!m.description }"
                   :style="isMobile ? { width: 'var(--card-img-size)', height: 'var(--card-img-size)' } : { width: '64px', height: '64px' }">
                   <img
@@ -1432,21 +1444,21 @@ function getSegmentTotalCounts(markerIds: string[]): number {
                   :class="isMobile && !m.description ? 'flex-initial items-center text-center' : ''">
                   <div class="flex items-center gap-2 flex-shrink-0"
                     :class="isMobile && !m.description ? 'flex-col gap-0.5' : ''">
-                    <span class="font-medium truncate" :class="store.isFound(m.id) ? 'text-slate-500 line-through' : 'text-slate-200'" :style="isMobile ? { fontSize: 'var(--card-font-size)' } : { fontSize: '14px' }">
+                    <span class="font-medium truncate" :class="store.isFound(m.id) ? 'text-faint line-through' : 'text-base'" :style="isMobile ? { fontSize: 'var(--card-font-size)' } : { fontSize: '14px' }">
                       {{ m.name }}
                     </span>
                     <span
                       v-if="store.isFound(m.id)"
-                      class="text-xs px-1.5 py-0.5 rounded-full bg-green-500/15 text-green-400 flex-shrink-0"
+                      class="text-xs px-1.5 py-0.5 rounded-full bg-green-500/15 text-green-600 dark:text-green-400 flex-shrink-0"
                     >已标记</span>
                     <span
                       v-if="m.counts && Object.values(m.counts).some(v => v > 0)"
-                      class="max-md:hidden text-xs px-1.5 py-0.5 rounded-full bg-red-500/15 text-red-400 flex-shrink-0 font-mono"
+                      class="max-md:hidden text-xs px-1.5 py-0.5 rounded-full bg-red-500/15 text-red-500 dark:text-red-400 flex-shrink-0 font-mono"
                     >{{ Object.values(m.counts).reduce((a: number, b: number) => a + b, 0) }}</span>
                   </div>
                   <div
                     v-if="m.description"
-                    class="text-slate-500 mt-0.5 overflow-y-auto flex-1 min-h-0"
+                    class="text-faint mt-0.5 overflow-y-auto flex-1 min-h-0"
                     :style="{ fontSize: isMobile ? 'var(--card-font-size)' : '12px' }"
                   >
                     {{ m.description }}
@@ -1457,10 +1469,8 @@ function getSegmentTotalCounts(markerIds: string[]): number {
             </div>
           </template>
 
-          <div v-else class="flex items-center justify-center gap-2 text-slate-500 max-md:flex-shrink-0 max-md:flex-col max-md:rounded-xl max-md:bg-white/5 max-md:border max-md:border-white/5" :style="isMobile ? { minWidth: '160px', height: 'calc(var(--card-row-h) * 2 + 8px)' } : {}">
-            <svg class="w-8 h-8 opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
+          <div v-else class="flex items-center justify-center gap-2 text-faint max-md:flex-shrink-0 max-md:flex-col max-md:rounded-xl max-md:bg-elevated/60 max-md:border max-md:border-default" :style="isMobile ? { minWidth: '160px', height: 'calc(var(--card-row-h) * 2 + 8px)' } : {}">
+            <AppIcon name="filter" class="w-7 h-7 opacity-30" stroke="1.5" />
             <span class="text-xs">无匹配</span>
           </div>
         </div>
@@ -1478,12 +1488,12 @@ function getSegmentTotalCounts(markerIds: string[]): number {
         @click.self="onConfirmResult(false)"
       >
         <div class="absolute inset-0 bg-black/60"></div>
-        <div class="relative bg-surface-800 border border-white/10 rounded-2xl shadow-2xl p-6 w-72 mx-4">
-          <p class="text-sm text-slate-200 text-center leading-relaxed">{{ confirmMessage }}</p>
+        <div class="relative bg-elevated border border-default rounded-2xl shadow-2xl p-6 w-72 mx-4">
+          <p class="text-sm text-base text-center leading-relaxed">{{ confirmMessage }}</p>
           <div class="flex gap-3 mt-5">
             <button
               @click="onConfirmResult(false)"
-              class="flex-1 py-2 text-xs font-medium rounded-lg bg-surface-700 text-slate-300 hover:bg-surface-600 transition-colors"
+              class="flex-1 py-2 text-xs font-medium rounded-lg bg-elevated text-muted hover:bg-surface transition-colors"
             >取消</button>
             <button
               @click="onConfirmResult(true)"
@@ -1506,15 +1516,16 @@ function getSegmentTotalCounts(markerIds: string[]): number {
       v-if="!isMobile && enemyExpanded"
       :style="enemyPopoverStyle"
       @click.stop
-      class="bg-surface-800/95 backdrop-blur-xl border border-white/10 rounded-xl shadow-2xl p-3 w-[320px]"
+      class="bg-overlay/95 backdrop-blur-xl border border-default rounded-xl shadow-2xl p-3 w-[320px]"
     >
       <div class="flex flex-wrap gap-1.5">
         <button
           v-for="type in ENEMY_CLEARING_TYPES"
           :key="type"
           @click="store.toggleType(type)"
-          :class="['inline-flex items-center gap-1 px-2 py-0.5 text-xs rounded-full border transition-all', store.selectedTypes.has(type) ? 'border-current text-white' : 'border-white/10 text-slate-500 bg-transparent']"
-          :style="store.selectedTypes.has(type) ? { backgroundColor: MARKER_TYPE_CONFIG[type].color + '33', borderColor: MARKER_TYPE_CONFIG[type].color + '66' } : {}"
+          class="inline-flex items-center gap-1 px-2 py-0.5 text-xs rounded-full border transition-all"
+          :class="store.selectedTypes.has(type) ? 'border-current font-medium' : 'border-default bg-transparent opacity-60 hover:opacity-100 font-normal'"
+          :style="{ color: MARKER_TYPE_CONFIG[type].color, backgroundColor: store.selectedTypes.has(type) ? MARKER_TYPE_CONFIG[type].color + '33' : 'transparent', borderColor: store.selectedTypes.has(type) ? MARKER_TYPE_CONFIG[type].color + '66' : undefined }"
         >
           <img
             :src="resolveAssetUrl(MARKER_TYPE_CONFIG[type].iconUrl)"
@@ -1538,15 +1549,16 @@ function getSegmentTotalCounts(markerIds: string[]): number {
       v-if="!isMobile && teleportSubExpanded"
       :style="teleportSubPopoverStyle"
       @click.stop
-      class="bg-surface-800/95 backdrop-blur-xl border border-white/10 rounded-xl shadow-2xl p-3 w-[320px]"
+      class="bg-overlay/95 backdrop-blur-xl border border-default rounded-xl shadow-2xl p-3 w-[320px]"
     >
       <div class="flex flex-wrap gap-1.5">
         <button
           v-for="type in TELEPORT_SUB_TYPES"
           :key="type"
           @click="store.toggleType(type)"
-          :class="['inline-flex items-center gap-1 px-2 py-0.5 text-xs rounded-full border transition-all', store.selectedTypes.has(type) ? 'border-current text-white' : 'border-white/10 text-slate-500 bg-transparent']"
-          :style="store.selectedTypes.has(type) ? { backgroundColor: MARKER_TYPE_CONFIG[type].color + '33', borderColor: MARKER_TYPE_CONFIG[type].color + '66' } : {}"
+          class="inline-flex items-center gap-1 px-2 py-0.5 text-xs rounded-full border transition-all"
+          :class="store.selectedTypes.has(type) ? 'border-current font-medium' : 'border-default bg-transparent opacity-60 hover:opacity-100 font-normal'"
+          :style="{ color: MARKER_TYPE_CONFIG[type].color, backgroundColor: store.selectedTypes.has(type) ? MARKER_TYPE_CONFIG[type].color + '33' : 'transparent', borderColor: store.selectedTypes.has(type) ? MARKER_TYPE_CONFIG[type].color + '66' : undefined }"
         >
           <img
             :src="resolveAssetUrl(MARKER_TYPE_CONFIG[type].iconUrl)"
@@ -1568,38 +1580,38 @@ function getSegmentTotalCounts(markerIds: string[]): number {
         @click.self="showCreateRouteDialog = false"
       >
         <div class="absolute inset-0 bg-black/60"></div>
-        <div class="relative bg-surface-800 border border-white/10 rounded-2xl shadow-2xl p-5 w-[380px] max-w-[92vw] max-h-[85vh] flex flex-col">
-          <h3 class="text-sm font-medium text-slate-200 mb-4">创建路线</h3>
+        <div class="relative bg-elevated border border-default rounded-2xl shadow-2xl p-5 w-[380px] max-w-[92vw] max-h-[85vh] flex flex-col">
+          <h3 class="text-sm font-medium text-base mb-4">创建路线</h3>
           <div class="mb-3">
-            <label class="block text-xs text-slate-400 mb-1.5">路线名称</label>
+            <label class="block text-xs text-muted mb-1.5">路线名称</label>
             <input
               v-model="newRouteName"
               type="text"
               placeholder="输入路线名称"
-              class="w-full px-3 py-2 text-sm bg-surface-700 border border-white/10 rounded-lg text-slate-200 placeholder-slate-500 focus:outline-none focus:border-primary-500 transition-colors"
+              class="w-full px-3 py-2 text-sm bg-elevated border border-default rounded-lg text-base placeholder:text-faint focus:outline-none focus:border-primary-500 transition-colors"
               @keydown.enter="confirmCreateRoute()"
             />
           </div>
           <div class="flex-1 min-h-0 mb-4">
-            <label class="block text-xs text-slate-400 mb-1.5">选择路线图片</label>
+            <label class="block text-xs text-muted mb-1.5">选择路线图片</label>
             <div v-if="routeImageOptions.length > 0" class="grid grid-cols-5 gap-2 max-h-[240px] overflow-y-auto">
               <div
                 v-for="(img, idx) in routeImageOptions"
                 :key="idx"
                 @click="newRouteImage = img.url"
-                class="aspect-square rounded-lg overflow-hidden cursor-pointer border-2 transition-colors bg-surface-700"
-                :class="newRouteImage === img.url ? 'border-primary-500' : 'border-transparent hover:border-white/20'"
+                class="aspect-square rounded-lg overflow-hidden cursor-pointer border-2 transition-colors bg-elevated"
+                :class="newRouteImage === img.url ? 'border-primary-500' : 'border-transparent hover:border-border-strong'"
                 :title="img.label"
               >
                 <img :src="img.url" class="w-full h-full object-cover" />
               </div>
             </div>
-            <div v-else class="text-xs text-slate-500 py-4 text-center">暂无可用图片</div>
+            <div v-else class="text-xs text-faint py-4 text-center">暂无可用图片</div>
           </div>
           <div class="flex gap-3 flex-shrink-0">
             <button
               @click="showCreateRouteDialog = false"
-              class="flex-1 py-2 text-xs font-medium rounded-lg bg-surface-700 text-slate-300 hover:bg-surface-600 transition-colors"
+              class="flex-1 py-2 text-xs font-medium rounded-lg bg-elevated text-muted hover:bg-surface transition-colors"
             >取消</button>
             <button
               @click="confirmCreateRoute()"
@@ -1621,36 +1633,36 @@ function getSegmentTotalCounts(markerIds: string[]): number {
         @click.self="showCreateSegmentDialog = false"
       >
         <div class="absolute inset-0 bg-black/60"></div>
-        <div class="relative bg-surface-800 border border-white/10 rounded-2xl shadow-2xl p-5 w-[380px] max-w-[92vw] max-h-[85vh] flex flex-col">
-          <h3 class="text-sm font-medium text-slate-200 mb-4">新建路段</h3>
+        <div class="relative bg-elevated border border-default rounded-2xl shadow-2xl p-5 w-[380px] max-w-[92vw] max-h-[85vh] flex flex-col">
+          <h3 class="text-sm font-medium text-base mb-4">新建路段</h3>
           <div class="mb-3">
-            <label class="block text-xs text-slate-400 mb-1.5">路段名称</label>
+            <label class="block text-xs text-muted mb-1.5">路段名称</label>
             <input
               v-model="newSegmentName"
               type="text"
               placeholder="输入路段名称"
-              class="w-full px-3 py-2 text-sm bg-surface-700 border border-white/10 rounded-lg text-slate-200 placeholder-slate-500 focus:outline-none focus:border-primary-500 transition-colors"
+              class="w-full px-3 py-2 text-sm bg-elevated border border-default rounded-lg text-base placeholder:text-faint focus:outline-none focus:border-primary-500 transition-colors"
               @keydown.enter="confirmCreateSegment()"
             />
           </div>
           <div class="mb-4">
-            <label class="block text-xs text-slate-400 mb-1.5">连接标点 ({{ store.segmentTempMarkerIds.length }} 个)</label>
+            <label class="block text-xs text-muted mb-1.5">连接标点 ({{ store.segmentTempMarkerIds.length }} 个)</label>
             <div class="max-h-[160px] overflow-y-auto space-y-1">
               <div
                 v-for="(mid, idx) in store.segmentTempMarkerIds"
                 :key="mid"
-                class="flex items-center gap-2 px-2 py-1 rounded bg-surface-700 text-xs text-slate-300"
+                class="flex items-center gap-2 px-2 py-1 rounded bg-elevated text-xs text-muted"
               >
                 <span class="w-4 h-4 rounded-full bg-amber-500 flex items-center justify-center text-[9px] font-bold text-white flex-shrink-0">{{ idx + 1 }}</span>
                 <span class="truncate">{{ getMarkerName(mid) }}</span>
               </div>
-              <div v-if="store.segmentTempMarkerIds.length === 0" class="text-xs text-slate-500 py-2 text-center">无标点</div>
+              <div v-if="store.segmentTempMarkerIds.length === 0" class="text-xs text-faint py-2 text-center">无标点</div>
             </div>
           </div>
           <div class="flex gap-3 flex-shrink-0">
             <button
               @click="showCreateSegmentDialog = false"
-              class="flex-1 py-2 text-xs font-medium rounded-lg bg-surface-700 text-slate-300 hover:bg-surface-600 transition-colors"
+              class="flex-1 py-2 text-xs font-medium rounded-lg bg-elevated text-muted hover:bg-surface transition-colors"
             >取消</button>
             <button
               @click="confirmCreateSegment()"
@@ -1672,38 +1684,38 @@ function getSegmentTotalCounts(markerIds: string[]): number {
         @click.self="showEditRouteDialog = false"
       >
         <div class="absolute inset-0 bg-black/60"></div>
-        <div class="relative bg-surface-800 border border-white/10 rounded-2xl shadow-2xl p-5 w-[380px] max-w-[92vw] max-h-[85vh] flex flex-col">
-          <h3 class="text-sm font-medium text-slate-200 mb-4">编辑路线</h3>
+        <div class="relative bg-elevated border border-default rounded-2xl shadow-2xl p-5 w-[380px] max-w-[92vw] max-h-[85vh] flex flex-col">
+          <h3 class="text-sm font-medium text-base mb-4">编辑路线</h3>
           <div class="mb-3">
-            <label class="block text-xs text-slate-400 mb-1.5">路线名称</label>
+            <label class="block text-xs text-muted mb-1.5">路线名称</label>
             <input
               v-model="editRouteName"
               type="text"
               placeholder="输入路线名称"
-              class="w-full px-3 py-2 text-sm bg-surface-700 border border-white/10 rounded-lg text-slate-200 placeholder-slate-500 focus:outline-none focus:border-primary-500 transition-colors"
+              class="w-full px-3 py-2 text-sm bg-elevated border border-default rounded-lg text-base placeholder:text-faint focus:outline-none focus:border-primary-500 transition-colors"
               @keydown.enter="confirmEditRoute()"
             />
           </div>
           <div class="flex-1 min-h-0 mb-4">
-            <label class="block text-xs text-slate-400 mb-1.5">选择路线图片</label>
+            <label class="block text-xs text-muted mb-1.5">选择路线图片</label>
             <div v-if="routeImageOptions.length > 0" class="grid grid-cols-5 gap-2 max-h-[240px] overflow-y-auto">
               <div
                 v-for="(img, idx) in routeImageOptions"
                 :key="idx"
                 @click="editRouteImage = img.url"
-                class="aspect-square rounded-lg overflow-hidden cursor-pointer border-2 transition-colors bg-surface-700"
-                :class="editRouteImage === img.url ? 'border-primary-500' : 'border-transparent hover:border-white/20'"
+                class="aspect-square rounded-lg overflow-hidden cursor-pointer border-2 transition-colors bg-elevated"
+                :class="editRouteImage === img.url ? 'border-primary-500' : 'border-transparent hover:border-border-strong'"
                 :title="img.label"
               >
                 <img :src="img.url" class="w-full h-full object-cover" />
               </div>
             </div>
-            <div v-else class="text-xs text-slate-500 py-4 text-center">暂无可用图片</div>
+            <div v-else class="text-xs text-faint py-4 text-center">暂无可用图片</div>
           </div>
           <div class="flex gap-3 flex-shrink-0">
             <button
               @click="showEditRouteDialog = false"
-              class="flex-1 py-2 text-xs font-medium rounded-lg bg-surface-700 text-slate-300 hover:bg-surface-600 transition-colors"
+              class="flex-1 py-2 text-xs font-medium rounded-lg bg-elevated text-muted hover:bg-surface transition-colors"
             >取消</button>
             <button
               @click="confirmEditRoute()"
@@ -1725,22 +1737,22 @@ function getSegmentTotalCounts(markerIds: string[]): number {
         @click.self="showEditSegmentDialog = false"
       >
         <div class="absolute inset-0 bg-black/60"></div>
-        <div class="relative bg-surface-800 border border-white/10 rounded-2xl shadow-2xl p-5 w-[320px] max-w-[92vw]">
-          <h3 class="text-sm font-medium text-slate-200 mb-4">编辑路段</h3>
+        <div class="relative bg-elevated border border-default rounded-2xl shadow-2xl p-5 w-[320px] max-w-[92vw]">
+          <h3 class="text-sm font-medium text-base mb-4">编辑路段</h3>
           <div class="mb-4">
-            <label class="block text-xs text-slate-400 mb-1.5">路段名称</label>
+            <label class="block text-xs text-muted mb-1.5">路段名称</label>
             <input
               v-model="editSegmentName"
               type="text"
               placeholder="输入路段名称"
-              class="w-full px-3 py-2 text-sm bg-surface-700 border border-white/10 rounded-lg text-slate-200 placeholder-slate-500 focus:outline-none focus:border-primary-500 transition-colors"
+              class="w-full px-3 py-2 text-sm bg-elevated border border-default rounded-lg text-base placeholder:text-faint focus:outline-none focus:border-primary-500 transition-colors"
               @keydown.enter="confirmEditSegment()"
             />
           </div>
           <div class="flex gap-3">
             <button
               @click="showEditSegmentDialog = false"
-              class="flex-1 py-2 text-xs font-medium rounded-lg bg-surface-700 text-slate-300 hover:bg-surface-600 transition-colors"
+              class="flex-1 py-2 text-xs font-medium rounded-lg bg-elevated text-muted hover:bg-surface transition-colors"
             >取消</button>
             <button
               @click="confirmEditSegment()"

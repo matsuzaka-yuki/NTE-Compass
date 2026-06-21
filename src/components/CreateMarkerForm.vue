@@ -406,15 +406,15 @@ watch(() => store.pendingMarkerPos, (pos) => {
 
         <!-- Form card -->
         <div
-          class="relative w-[420px] max-w-[92vw] max-h-[88vh] rounded-2xl bg-surface-800/95 backdrop-blur-xl border border-white/10 shadow-2xl overflow-hidden"
+          class="relative w-[420px] max-w-[92vw] max-h-[88vh] rounded-2xl bg-overlay/95 backdrop-blur-xl border border-default shadow-2xl overflow-hidden"
         >
           <div class="max-h-[88vh] overflow-y-auto">
             <!-- Header -->
-            <div class="sticky top-0 z-10 flex items-center justify-between p-4 border-b border-white/10 bg-surface-800/95 backdrop-blur-xl">
+            <div class="sticky top-0 z-10 flex items-center justify-between p-4 border-b border-default bg-overlay/95 backdrop-blur-xl">
             <h2 class="text-base font-bold text-white">{{ isEditing ? '编辑标记点' : '新建标记点' }}</h2>
             <button
               @click="handleCancel"
-              class="w-7 h-7 flex items-center justify-center rounded-full bg-surface-700/80 hover:bg-surface-600 text-slate-400 hover:text-white transition-colors"
+              class="w-7 h-7 flex items-center justify-center rounded-full bg-elevated/80 hover:bg-surface text-muted hover:text-base transition-colors"
             >
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -426,7 +426,7 @@ watch(() => store.pendingMarkerPos, (pos) => {
             <!-- Coordinates display (create mode only) -->
             <div
               v-if="!isEditing && store.pendingMarkerPos"
-              class="flex items-center gap-1.5 text-xs text-slate-500 bg-surface-900/50 rounded-lg px-3 py-2"
+              class="flex items-center gap-1.5 text-xs text-faint bg-surface/50 rounded-lg px-3 py-2"
             >
               <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
@@ -437,20 +437,20 @@ watch(() => store.pendingMarkerPos, (pos) => {
 
             <!-- Name -->
             <div>
-              <label class="block text-xs font-medium text-slate-400 mb-1.5">名称 <span class="text-red-400">*</span></label>
+              <label class="block text-xs font-medium text-muted mb-1.5">名称 <span class="text-red-400">*</span></label>
               <input
                 v-model="name"
                 type="text"
                 placeholder="输入标记名称..."
-                class="w-full px-3 py-2 text-sm bg-surface-900 border border-white/10 rounded-lg text-slate-200 placeholder-slate-500 focus:outline-none focus:border-primary-500 transition-colors"
+                class="w-full px-3 py-2 text-sm bg-surface border border-default rounded-lg text-base placeholder:text-faint focus:outline-none focus:border-primary-500 transition-colors"
                 @keyup.enter="handleSave"
               />
             </div>
 
             <!-- Type selector -->
             <div>
-              <label class="block text-xs font-medium text-slate-400 mb-1.5">
-                图标类型 <span class="text-slate-500">(可多选，按点击顺序排列)</span>
+              <label class="block text-xs font-medium text-muted mb-1.5">
+                图标类型 <span class="text-faint">(可多选，按点击顺序排列)</span>
               </label>
               <div class="grid grid-cols-4 gap-2">
                 <button
@@ -459,8 +459,8 @@ watch(() => store.pendingMarkerPos, (pos) => {
                   @click="toggleType(type)"
                   class="relative flex flex-col items-center gap-1 p-2 rounded-lg border transition-all"
                   :class="selectedTypes.includes(type)
-                    ? 'border-current bg-white/10'
-                    : 'border-white/10 hover:border-white/20 bg-surface-900/50'"
+                    ? 'border-current bg-elevated'
+                    : 'border-default hover:border-border-strong bg-surface/50'"
                   :style="selectedTypes.includes(type) ? { borderColor: MARKER_TYPE_CONFIG[type].color } : {}"
                 >
                   <!-- Order badge -->
@@ -484,7 +484,7 @@ watch(() => store.pendingMarkerPos, (pos) => {
 
             <!-- Time selector -->
             <div>
-              <label class="block text-xs font-medium text-slate-400 mb-1.5">时间 <span class="text-slate-500">(可选)</span></label>
+              <label class="block text-xs font-medium text-muted mb-1.5">时间 <span class="text-faint">(可选)</span></label>
               <div class="grid grid-cols-2 gap-2">
                 <button
                   v-for="opt in TIME_OPTIONS"
@@ -493,7 +493,7 @@ watch(() => store.pendingMarkerPos, (pos) => {
                   class="flex items-center justify-center gap-2 p-2.5 rounded-lg border transition-all text-sm"
                   :class="time === opt.value
                     ? 'border-amber-400/60 bg-amber-400/10 text-amber-200'
-                    : 'border-white/10 hover:border-white/20 bg-surface-900/50 text-slate-400'"
+                    : 'border-default hover:border-border-strong bg-surface/50 text-muted'"
                 >
                   <span class="text-lg">{{ opt.icon }}</span>
                   <span>{{ opt.label }}</span>
@@ -503,7 +503,7 @@ watch(() => store.pendingMarkerPos, (pos) => {
 
             <!-- Weather selector -->
             <div>
-              <label class="block text-xs font-medium text-slate-400 mb-1.5">天气 <span class="text-slate-500">(可选)</span></label>
+              <label class="block text-xs font-medium text-muted mb-1.5">天气 <span class="text-faint">(可选)</span></label>
               <div class="grid grid-cols-3 gap-2">
                 <button
                   v-for="opt in WEATHER_OPTIONS"
@@ -516,7 +516,7 @@ watch(() => store.pendingMarkerPos, (pos) => {
                       : opt.value === 'rainy'
                       ? 'border-blue-400/60 bg-blue-400/10 text-blue-200'
                       : 'border-cyan-300/60 bg-cyan-300/10 text-cyan-200'
-                    : 'border-white/10 hover:border-white/20 bg-surface-900/50 text-slate-400'"
+                    : 'border-default hover:border-border-strong bg-surface/50 text-muted'"
                 >
                   <span class="text-lg">{{ opt.icon }}</span>
                   <span>{{ opt.label }}</span>
@@ -527,8 +527,8 @@ watch(() => store.pendingMarkerPos, (pos) => {
             <!-- Image upload (hidden in offline edit mode) -->
             <div v-if="!store.isOfflineEditMode">
               <div class="flex items-center justify-between mb-1.5">
-                <label class="text-xs font-medium text-slate-400">现场图片</label>
-                <span class="text-xs text-slate-500">可选，可传多张</span>
+                <label class="text-xs font-medium text-muted">现场图片</label>
+                <span class="text-xs text-faint">可选，可传多张</span>
               </div>
               <!-- Image previews -->
               <div v-if="images.length > 0" class="flex flex-wrap gap-2 mb-2">
@@ -538,7 +538,7 @@ watch(() => store.pendingMarkerPos, (pos) => {
                   draggable="true"
                   class="relative group w-16 h-16 rounded-lg overflow-hidden border cursor-grab transition-all"
                   :class="{
-                    'border-white/10': dragOverIndex !== idx,
+                    'border-default': dragOverIndex !== idx,
                     'border-primary-400 border-2 scale-105': dragOverIndex === idx && dragIndex !== idx,
                     'opacity-40 scale-90': dragIndex === idx,
                   }"
@@ -567,7 +567,7 @@ watch(() => store.pendingMarkerPos, (pos) => {
               </div>
               <!-- Upload button -->
               <label
-                class="flex items-center justify-center gap-2 px-3 py-2.5 border border-dashed border-white/10 rounded-lg cursor-pointer hover:border-white/20 hover:bg-surface-900/50 transition-colors text-xs text-slate-400"
+                class="flex items-center justify-center gap-2 px-3 py-2.5 border border-dashed border-default rounded-lg cursor-pointer hover:border-border-strong hover:bg-surface/50 transition-colors text-xs text-muted"
               >
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -581,13 +581,13 @@ watch(() => store.pendingMarkerPos, (pos) => {
                   @change="handleFiles"
                 />
               </label>
-              <p class="mt-1 text-xs text-slate-600">图片将自动压缩为 WebP 格式，最大宽度 1920px</p>
+              <p class="mt-1 text-xs text-faint">图片将自动压缩为 WebP 格式，最大宽度 1920px</p>
 
               <!-- Select existing image -->
               <div class="mt-2">
                 <button
                   @click="showImageBrowser = !showImageBrowser; if (showImageBrowser && existingImages.length === 0) fetchExistingImages()"
-                  class="flex items-center justify-center gap-1.5 w-full px-3 py-2 border border-dashed border-white/10 rounded-lg cursor-pointer hover:border-white/20 hover:bg-surface-900/50 transition-colors text-xs text-slate-400"
+                  class="flex items-center justify-center gap-1.5 w-full px-3 py-2 border border-dashed border-default rounded-lg cursor-pointer hover:border-border-strong hover:bg-surface/50 transition-colors text-xs text-muted"
                 >
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -596,8 +596,8 @@ watch(() => store.pendingMarkerPos, (pos) => {
                 </button>
 
                 <!-- Existing images panel -->
-                <div v-if="showImageBrowser" class="mt-2 p-3 rounded-lg border border-white/10 bg-surface-900/50">
-                  <div v-if="loadingExisting" class="flex items-center justify-center py-4 text-xs text-slate-500">
+                <div v-if="showImageBrowser" class="mt-2 p-3 rounded-lg border border-default bg-surface/50">
+                  <div v-if="loadingExisting" class="flex items-center justify-center py-4 text-xs text-faint">
                     加载中...
                   </div>
                   <template v-else-if="existingImages.length > 0">
@@ -607,7 +607,7 @@ watch(() => store.pendingMarkerPos, (pos) => {
                         :key="img.path"
                         @click="toggleExistingSelect(img)"
                         class="relative w-16 h-16 rounded-lg overflow-hidden border-2 cursor-pointer transition-all flex-shrink-0"
-                        :class="selectedExisting.has(img.path) ? 'border-primary-400' : 'border-transparent hover:border-white/20'"
+                        :class="selectedExisting.has(img.path) ? 'border-primary-400' : 'border-transparent hover:border-border-strong'"
                       >
                         <img :src="resolveAssetUrl('./' + img.path)" class="w-full h-full object-cover" />
                         <div
@@ -621,7 +621,7 @@ watch(() => store.pendingMarkerPos, (pos) => {
                       </div>
                     </div>
                     <div class="flex items-center justify-between mt-2">
-                      <span class="text-xs text-slate-500">已选 {{ selectedExisting.size }} 张</span>
+                      <span class="text-xs text-faint">已选 {{ selectedExisting.size }} 张</span>
                       <button
                         @click="addSelectedImages"
                         :disabled="selectedExisting.size === 0"
@@ -629,7 +629,7 @@ watch(() => store.pendingMarkerPos, (pos) => {
                       >添加选中图片</button>
                     </div>
                   </template>
-                  <div v-else class="text-xs text-slate-500 text-center py-4">
+                  <div v-else class="text-xs text-faint text-center py-4">
                     暂无已上传的图片
                   </div>
                 </div>
@@ -639,11 +639,11 @@ watch(() => store.pendingMarkerPos, (pos) => {
             <!-- Panorama image upload (only when 全景 type selected, hidden in offline edit mode) -->
             <div v-if="selectedTypes.includes('qj') && !store.isOfflineEditMode">
               <div class="flex items-center justify-between mb-1.5">
-                <label class="text-xs font-medium text-slate-400">全景图片</label>
-                <span class="text-xs text-slate-500">可选，360°全景图</span>
+                <label class="text-xs font-medium text-muted">全景图片</label>
+                <span class="text-xs text-faint">可选，360°全景图</span>
               </div>
               <!-- Panorama preview -->
-              <div v-if="panoramaImage" class="relative group w-full aspect-video rounded-lg overflow-hidden border border-white/10 mb-2">
+              <div v-if="panoramaImage" class="relative group w-full aspect-video rounded-lg overflow-hidden border border-default mb-2">
                 <img
                   :src="panoramaImage.startsWith('data:') ? panoramaImage : resolveAssetUrl('./' + panoramaImage)"
                   class="w-full h-full object-cover"
@@ -662,7 +662,7 @@ watch(() => store.pendingMarkerPos, (pos) => {
               </div>
               <!-- Upload button -->
               <label
-                class="flex items-center justify-center gap-2 px-3 py-2.5 border border-dashed border-white/10 rounded-lg cursor-pointer hover:border-white/20 hover:bg-surface-900/50 transition-colors text-xs text-slate-400"
+                class="flex items-center justify-center gap-2 px-3 py-2.5 border border-dashed border-default rounded-lg cursor-pointer hover:border-border-strong hover:bg-surface/50 transition-colors text-xs text-muted"
               >
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -675,20 +675,20 @@ watch(() => store.pendingMarkerPos, (pos) => {
                   @change="handlePanoramaFile"
                 />
               </label>
-              <p class="mt-1 text-xs text-slate-600">推荐上传 2:1 比例的等距柱状投影全景图</p>
+              <p class="mt-1 text-xs text-faint">推荐上传 2:1 比例的等距柱状投影全景图</p>
 
               <!-- Audio file selection (only when 全景 type selected) -->
               <div class="mt-3">
                 <div class="flex items-center justify-between mb-1.5">
-                  <label class="text-xs font-medium text-slate-400">背景音乐</label>
-                  <span class="text-xs text-slate-500">可选，进入全景图自动播放</span>
+                  <label class="text-xs font-medium text-muted">背景音乐</label>
+                  <span class="text-xs text-faint">可选，进入全景图自动播放</span>
                 </div>
                 <!-- Selected audio -->
-                <div v-if="audioFile" class="flex items-center gap-2 mb-2 px-3 py-2 rounded-lg border border-white/10 bg-surface-900/50">
+                <div v-if="audioFile" class="flex items-center gap-2 mb-2 px-3 py-2 rounded-lg border border-default bg-surface/50">
                   <svg class="w-4 h-4 text-cyan-400 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
                   </svg>
-                  <span class="text-xs text-slate-300 truncate flex-1">{{ audioFile.replace('audio/', '') }}</span>
+                  <span class="text-xs text-muted truncate flex-1">{{ audioFile.replace('audio/', '') }}</span>
                   <button
                     @click="removeAudioFile"
                     class="w-5 h-5 flex items-center justify-center rounded-full bg-black/50 text-red-400 hover:text-red-300 transition-colors flex-shrink-0"
@@ -701,7 +701,7 @@ watch(() => store.pendingMarkerPos, (pos) => {
                 <!-- Select button -->
                 <button
                   @click="showAudioBrowser = !showAudioBrowser; if (showAudioBrowser && audioFiles.length === 0) fetchAudioFiles()"
-                  class="flex items-center justify-center gap-1.5 w-full px-3 py-2 border border-dashed border-white/10 rounded-lg cursor-pointer hover:border-white/20 hover:bg-surface-900/50 transition-colors text-xs text-slate-400"
+                  class="flex items-center justify-center gap-1.5 w-full px-3 py-2 border border-dashed border-default rounded-lg cursor-pointer hover:border-border-strong hover:bg-surface/50 transition-colors text-xs text-muted"
                 >
                   <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
@@ -710,8 +710,8 @@ watch(() => store.pendingMarkerPos, (pos) => {
                 </button>
 
                 <!-- Audio file list panel -->
-                <div v-if="showAudioBrowser" class="mt-2 p-3 rounded-lg border border-white/10 bg-surface-900/50 max-h-40 overflow-y-auto">
-                  <div v-if="loadingAudio" class="flex items-center justify-center py-4 text-xs text-slate-500">
+                <div v-if="showAudioBrowser" class="mt-2 p-3 rounded-lg border border-default bg-surface/50 max-h-40 overflow-y-auto">
+                  <div v-if="loadingAudio" class="flex items-center justify-center py-4 text-xs text-faint">
                     加载中...
                   </div>
                   <template v-else-if="audioFiles.length > 0">
@@ -720,7 +720,7 @@ watch(() => store.pendingMarkerPos, (pos) => {
                       :key="audio.path"
                       @click="selectAudioFile(audio)"
                       class="flex items-center gap-2 w-full px-3 py-2 rounded-lg text-left transition-all"
-                      :class="audioFile === audio.path ? 'bg-cyan-500/20 text-cyan-300' : 'text-slate-400 hover:bg-white/5 hover:text-slate-300'"
+                      :class="audioFile === audio.path ? 'bg-cyan-500/20 text-cyan-300' : 'text-muted hover:bg-elevated hover:text-muted'"
                     >
                       <svg class="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
@@ -728,7 +728,7 @@ watch(() => store.pendingMarkerPos, (pos) => {
                       <span class="text-xs truncate">{{ audio.name }}</span>
                     </button>
                   </template>
-                  <div v-else class="text-xs text-slate-500 text-center py-4">
+                  <div v-else class="text-xs text-faint text-center py-4">
                     暂无音频文件（请将文件放入 public/audio/ 目录）
                   </div>
                 </div>
@@ -737,40 +737,40 @@ watch(() => store.pendingMarkerPos, (pos) => {
 
             <!-- Description -->
             <div>
-              <label class="block text-xs font-medium text-slate-400 mb-1.5">描述</label>
+              <label class="block text-xs font-medium text-muted mb-1.5">描述</label>
               <textarea
                 v-model="description"
                 rows="3"
                 placeholder="输入描述信息..."
-                class="w-full px-3 py-2 text-sm bg-surface-900 border border-white/10 rounded-lg text-slate-200 placeholder-slate-500 focus:outline-none focus:border-primary-500 transition-colors resize-none"
+                class="w-full px-3 py-2 text-sm bg-surface border border-default rounded-lg text-base placeholder:text-faint focus:outline-none focus:border-primary-500 transition-colors resize-none"
               ></textarea>
             </div>
 
             <!-- Refresh time -->
             <div>
-              <label class="block text-xs font-medium text-slate-400 mb-1.5">刷新时间</label>
+              <label class="block text-xs font-medium text-muted mb-1.5">刷新时间</label>
               <input
                 v-model="refreshTime"
                 type="text"
                 placeholder="例如：每日刷新、72小时刷新..."
-                class="w-full px-3 py-2 text-sm bg-surface-900 border border-white/10 rounded-lg text-slate-200 placeholder-slate-500 focus:outline-none focus:border-primary-500 transition-colors"
+                class="w-full px-3 py-2 text-sm bg-surface border border-default rounded-lg text-base placeholder:text-faint focus:outline-none focus:border-primary-500 transition-colors"
               />
             </div>
 
             <!-- Related quest -->
             <div>
-              <label class="block text-xs font-medium text-slate-400 mb-1.5">关联任务</label>
+              <label class="block text-xs font-medium text-muted mb-1.5">关联任务</label>
               <input
                 v-model="relatedQuest"
                 type="text"
                 placeholder="输入关联任务名称..."
-                class="w-full px-3 py-2 text-sm bg-surface-900 border border-white/10 rounded-lg text-slate-200 placeholder-slate-500 focus:outline-none focus:border-primary-500 transition-colors"
+                class="w-full px-3 py-2 text-sm bg-surface border border-default rounded-lg text-base placeholder:text-faint focus:outline-none focus:border-primary-500 transition-colors"
               />
             </div>
 
             <!-- Related items -->
             <div v-if="ALL_ITEMS.length > 0">
-              <label class="block text-xs font-medium text-slate-400 mb-2">关联物品</label>
+              <label class="block text-xs font-medium text-muted mb-2">关联物品</label>
               <div class="flex flex-wrap gap-2">
                 <button
                   v-for="item in ALL_ITEMS"
@@ -779,7 +779,7 @@ watch(() => store.pendingMarkerPos, (pos) => {
                   class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs transition-all"
                   :class="selectedItems.includes(item.id)
                     ? 'border-primary-500 bg-primary-500/10 text-primary-300'
-                    : 'border-white/10 text-slate-500 hover:border-white/20 hover:text-slate-300'"
+                    : 'border-default text-faint hover:border-border-strong hover:text-muted'"
                 >
                   <img
                     v-if="item.image"
@@ -794,7 +794,7 @@ watch(() => store.pendingMarkerPos, (pos) => {
 
             <!-- Count (per enemy-clearing type) -->
             <div v-if="enemyClearingTypes.length > 0">
-              <label class="block text-xs font-medium text-slate-400 mb-2">数量 (敌影清剿)</label>
+              <label class="block text-xs font-medium text-muted mb-2">数量 (敌影清剿)</label>
               <div class="space-y-2">
                 <div
                   v-for="ecType in enemyClearingTypes"
@@ -813,7 +813,7 @@ watch(() => store.pendingMarkerPos, (pos) => {
                     type="number"
                     min="0"
                     :placeholder="MARKER_TYPE_CONFIG[ecType].label"
-                    class="flex-1 px-3 py-1.5 text-sm bg-surface-900 border border-white/10 rounded-lg text-slate-200 placeholder-slate-500 focus:outline-none focus:border-primary-500 transition-colors"
+                    class="flex-1 px-3 py-1.5 text-sm bg-surface border border-default rounded-lg text-base placeholder:text-faint focus:outline-none focus:border-primary-500 transition-colors"
                   />
                 </div>
               </div>
@@ -821,10 +821,10 @@ watch(() => store.pendingMarkerPos, (pos) => {
           </div>
 
             <!-- Footer -->
-            <div class="sticky bottom-0 flex gap-3 p-4 border-t border-white/10 bg-surface-800/95 backdrop-blur-xl">
+            <div class="sticky bottom-0 flex gap-3 p-4 border-t border-default bg-overlay/95 backdrop-blur-xl">
             <button
               @click="handleCancel"
-              class="flex-1 py-2.5 rounded-xl text-sm font-medium border border-white/10 text-slate-300 hover:border-white/20 hover:bg-white/5 transition-all"
+              class="flex-1 py-2.5 rounded-xl text-sm font-medium border border-default text-muted hover:border-border-strong hover:bg-elevated transition-all"
             >取消</button>
             <button
               @click="handleSave"

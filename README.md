@@ -81,7 +81,9 @@
 | 前端框架 | Vue 3 (Composition API + `<script setup>`) |
 | 构建工具 | Vite 5 |
 | 状态管理 | Pinia |
-| 样式方案 | Tailwind CSS 3 |
+| 样式方案 | Tailwind CSS 4（CSS-first 配置 + 语义化 token） |
+| 主题系统 | 亮 / 暗 / 跟随系统，基于 CSS 变量 + `.dark` 类切换 |
+| 设计系统 | `src/components/ui/`（Btn / IconButton / Panel / Dialog / Toggle 等） |
 | 地图引擎 | Leaflet + leaflet.markercluster |
 | 编程语言 | TypeScript |
 | 代码托管 | GitHub Pages |
@@ -97,13 +99,24 @@
 │   └── images/                # 标记点图标资源
 ├── src/
 │   ├── App.vue                # 根布局
-│   ├── main.ts                # 应用入口
+│   ├── main.ts                # 应用入口（挂载前应用主题）
 │   ├── components/
 │   │   ├── MapView.vue        # 地图渲染 (Leaflet)
 │   │   ├── SideBar.vue        # 侧栏筛选与搜索
 │   │   ├── MarkerPopup.vue    # 标记详情弹窗
 │   │   ├── LegendPanel.vue    # 图例面板
-│   │   └── CreateMarkerForm.vue  # 用户创建标记表单
+│   │   ├── SettingsPanel.vue  # 设置面板（含主题切换）
+│   │   ├── CreateMarkerForm.vue  # 用户创建标记表单
+│   │   └── ui/                # 设计系统基础组件
+│   │       ├── Btn.vue / IconButton.vue / Panel.vue / Dialog.vue
+│   │       ├── Toggle.vue / TextInput.vue / EmptyState.vue
+│   │       ├── TypePill.vue / SubHeader.vue / AppIcon.vue
+│   │       ├── ConfirmHost.vue  # 全局确认对话框
+│   │       └── icons.ts        # 命名 SVG 图标注册表
+│   ├── composables/
+│   │   ├── useTheme.ts        # 主题状态（亮/暗/系统，持久化）
+│   │   ├── useMediaQuery.ts   # 响应式断点
+│   │   └── useConfirm.ts      # Promise 化确认对话框
 │   ├── stores/
 │   │   └── markerStore.ts     # Pinia 状态管理
 │   ├── data/
@@ -111,11 +124,10 @@
 │   ├── types/
 │   │   └── index.ts           # TypeScript 类型定义
 │   └── assets/
-│       └── main.css           # Tailwind 入口样式
+│       └── main.css           # Tailwind v4 入口 + 设计 token（@theme）
 ├── markers-data.json          # 外部标记数据文件
 ├── index.html                 # HTML 入口
-├── vite.config.ts             # Vite 配置
-└── tailwind.config.js         # Tailwind 配置
+└── vite.config.ts             # Vite 配置
 ```
 
 ---
@@ -146,6 +158,17 @@ npm run preview
 |------|--------|------|------|
 | `EDITOR_ENABLED` | `false` | 控制编辑者模式的显示。开启后侧栏出现编辑按钮，可在地图上添加/编辑/删除标记点，支持导入导出标记数据 | 本地开发时设为 `true`，提交到 GitHub Pages 时保持 `false` |
 | `JSDELIVR_CDN_ENABLED` | `true` | 控制静态资源（图标、图片）是否通过 jsDelivr CDN 加载 | 本地开发时建议设为 `false` 使用本地资源，部署时保持 `true` 以加速访问
+
+### 主题与设计系统
+
+UI 采用中性灰阶（zinc 色阶）配色，支持**亮色 / 暗色 / 跟随系统**三种主题，在设置面板（右下角齿轮）切换，选择会持久化到浏览器。框架严格中性，**选中态和标记类型图标保留各自的彩色**。
+
+维护 UI 时遵循以下约定：
+
+- **改配色 / 加主题**：只改 `src/assets/main.css` 顶部的 `:root` / `.dark` token 表，全局自动生效，无需逐文件改。
+- **改按钮 / 面板等基础样式**：只改 `src/components/ui/` 下对应组件，所有调用处自动同步。
+- **新增 UI 元素**：直接用语义化 class（`bg-surface` / `bg-elevated` / `bg-bg` / `text-base` / `text-muted` / `text-faint` / `border-default`），自动跟随主题反色，**不需要手写 `dark:` 前缀**。
+- **新增图标**：在 `src/components/ui/icons.ts` 注册 path，然后用 `<AppIcon name="..." />`。
 
 ---
 

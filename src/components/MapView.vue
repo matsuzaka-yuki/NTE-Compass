@@ -563,7 +563,7 @@ defineExpose({ flyToMarker })
             transform: 'translate(-50%, calc(-100% - 28px))',
           }"
         >
-          <div class="rounded-lg overflow-hidden border border-white/15 shadow-xl bg-surface-800/90 backdrop-blur-sm">
+          <div class="rounded-lg overflow-hidden border border-border-strong shadow-xl bg-overlay/90 backdrop-blur-sm">
             <img
               :key="hoverPreviewImg"
               :src="hoverPreviewImg"
@@ -582,7 +582,7 @@ defineExpose({ flyToMarker })
             transform: 'translate(-50%, 24px)',
           }"
         >
-          <span class="block px-2.5 py-1 rounded-md text-xs font-medium whitespace-nowrap bg-surface-800/90 backdrop-blur-sm border border-white/10 text-slate-100 shadow-lg">
+          <span class="block px-2.5 py-1 rounded-md text-xs font-medium whitespace-nowrap bg-overlay/90 backdrop-blur-sm border border-default text-base shadow-lg">
             {{ hoveredMarker.name }}
           </span>
         </div>
@@ -595,7 +595,7 @@ defineExpose({ flyToMarker })
     <Transition name="hover-card">
       <div
         v-if="focusedSegment && focusedSegmentColor"
-        class="fixed z-30 left-1/2 flex items-center gap-2 px-3 py-1.5 rounded-lg bg-surface-900/90 backdrop-blur-xl border border-white/10 shadow-lg select-none cursor-pointer hover:bg-surface-800/90 transition-colors"
+        class="fixed z-30 left-1/2 flex items-center gap-2 px-3 py-1.5 rounded-lg bg-surface/90 backdrop-blur-xl border border-default shadow-lg select-none cursor-pointer hover:bg-overlay/90 transition-colors"
         :class="isMobileSegmentNav ? 'top-3' : 'top-4'"
         :style="{ transform: 'translateX(-50%)' }"
         @click="store.focusSegment(store.currentSegmentIndex)"
@@ -604,7 +604,7 @@ defineExpose({ flyToMarker })
           class="w-2.5 h-2.5 rounded-full flex-shrink-0"
           :style="{ backgroundColor: focusedSegmentColor }"
         ></span>
-        <span class="text-xs font-medium text-slate-200 whitespace-nowrap">{{ focusedSegment.name }}</span>
+        <span class="text-xs font-medium text-base whitespace-nowrap">{{ focusedSegment.name }}</span>
       </div>
     </Transition>
   </Teleport>
@@ -613,12 +613,12 @@ defineExpose({ flyToMarker })
   <Teleport to="body">
     <div
       v-if="store.currentRoute && store.currentRoute.segments.length > 0"
-      class="fixed z-30 left-1/2 flex items-center gap-1.5 px-3 py-2 rounded-xl bg-surface-900/90 backdrop-blur-xl border border-white/10 shadow-xl select-none"
+      class="fixed z-30 left-1/2 flex items-center gap-1.5 px-3 py-2 rounded-xl bg-surface/90 backdrop-blur-xl border border-default shadow-xl select-none"
       :class="isMobileSegmentNav ? 'bottom-5' : 'bottom-4'"
       :style="{ transform: 'translateX(-50%)' }"
     >
       <button
-        class="flex-shrink-0 w-7 h-7 flex items-center justify-center rounded-lg text-slate-300 hover:text-white hover:bg-white/10 transition-colors disabled:opacity-30 disabled:cursor-default"
+        class="flex-shrink-0 w-7 h-7 flex items-center justify-center rounded-lg text-muted hover:text-base hover:bg-elevated transition-colors disabled:opacity-30 disabled:cursor-default"
         :disabled="store.currentRoute.segments.length <= 1"
         @click="store.focusPrevSegment()"
       >
@@ -629,11 +629,11 @@ defineExpose({ flyToMarker })
         class="w-2 h-2 rounded-full flex-shrink-0"
         :style="{ backgroundColor: focusedSegmentColor }"
       ></span>
-      <span class="text-xs font-medium text-slate-200 whitespace-nowrap">
+      <span class="text-xs font-medium text-base whitespace-nowrap">
         路段 {{ store.currentSegmentIndex >= 0 ? store.currentSegmentIndex + 1 : '?' }} / {{ store.currentRoute.segments.length }}
       </span>
       <button
-        class="flex-shrink-0 w-7 h-7 flex items-center justify-center rounded-lg text-slate-300 hover:text-white hover:bg-white/10 transition-colors disabled:opacity-30 disabled:cursor-default"
+        class="flex-shrink-0 w-7 h-7 flex items-center justify-center rounded-lg text-muted hover:text-base hover:bg-elevated transition-colors disabled:opacity-30 disabled:cursor-default"
         :disabled="store.currentRoute.segments.length <= 1"
         @click="store.focusNextSegment()"
       >

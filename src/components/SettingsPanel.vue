@@ -2,8 +2,11 @@
 import { ref } from 'vue'
 import { useMarkerStore } from '@/stores/markerStore'
 import { EDITOR_ENABLED } from '@/config'
+import { useTheme, type ThemeMode } from '@/composables/useTheme'
+import { IconButton, Panel, Toggle, AppIcon } from '@/components/ui'
 
 const store = useMarkerStore()
+const { mode, setThemeMode } = useTheme()
 const expanded = ref(false)
 const editHintVisible = ref(false)
 const importResult = ref('')
@@ -48,138 +51,138 @@ function handleExport() {
 async function handleToggleOfflineEdit() {
   store.toggleOfflineEditMode()
 }
+
+const themeOptions: { value: ThemeMode; icon: 'sun' | 'moon' | 'monitor'; label: string }[] = [
+  { value: 'light', icon: 'sun', label: '浅色' },
+  { value: 'dark', icon: 'moon', label: '深色' },
+  { value: 'system', icon: 'monitor', label: '跟随' },
+]
 </script>
 
 <template>
   <div class="fixed bottom-6 right-6 z-20 select-none">
     <!-- Settings gear button -->
-    <button
+    <IconButton
+      icon="gear"
+      size="lg"
+      :active="expanded"
+      :title="'设置'"
       @click="expanded = !expanded"
-      class="w-10 h-10 rounded-xl bg-surface-800/90 backdrop-blur-md border border-white/10 shadow-lg flex items-center justify-center text-slate-300 hover:text-white hover:border-white/20 transition-all"
-      :class="{ 'text-primary-400 border-primary-400/30 bg-primary-500/10': expanded }"
-      title="设置"
-    >
-      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-        <circle cx="12" cy="12" r="3" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
-      </svg>
-    </button>
+    />
 
     <!-- Settings panel -->
     <Transition name="settings">
-      <div
+      <Panel
         v-if="expanded"
-        class="absolute bottom-12 right-0 mb-2 w-52 rounded-xl bg-surface-800/95 backdrop-blur-xl border border-white/10 shadow-2xl p-3 space-y-1.5"
+        radius="xl"
+        class="absolute bottom-12 right-0 mb-2 w-56 space-y-1 p-3"
       >
+        <!-- Theme switcher (segmented) -->
+        <div class="mb-1 flex items-center justify-between gap-1.5">
+          <span class="text-xs text-muted">主题</span>
+          <div class="flex rounded-lg bg-elevated p-0.5">
+            <button
+              v-for="opt in themeOptions"
+              :key="opt.value"
+              :title="opt.label"
+              class="flex h-6 w-7 items-center justify-center rounded-md transition-colors"
+              :class="
+                mode === opt.value
+                  ? 'bg-primary-500 text-white'
+                  : 'text-faint hover:text-base'
+              "
+              @click="setThemeMode(opt.value)"
+            >
+              <AppIcon :name="opt.icon" class="h-3.5 w-3.5" />
+            </button>
+          </div>
+        </div>
+
         <!-- Time toggle -->
-        <button
-          @click="store.showMarkerTime = !store.showMarkerTime"
-          class="w-full flex items-center justify-between px-2 py-1.5 rounded-lg hover:bg-white/5 transition-colors"
-        >
-          <span class="text-xs text-slate-300">时间标记</span>
-          <span class="relative inline-flex w-8 h-5 rounded-full transition-colors" :class="store.showMarkerTime ? 'bg-primary-500' : 'bg-slate-600'">
-            <span class="absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow transition-all" :class="store.showMarkerTime ? 'left-[14px]' : 'left-0.5'" />
-          </span>
-        </button>
+        <div class="flex w-full items-center justify-between rounded-lg px-2 py-1.5 hover:bg-elevated">
+          <span class="text-xs text-muted">时间标记</span>
+          <Toggle v-model="store.showMarkerTime" />
+        </div>
 
         <!-- Weather toggle -->
-        <button
-          @click="store.showMarkerWeather = !store.showMarkerWeather"
-          class="w-full flex items-center justify-between px-2 py-1.5 rounded-lg hover:bg-white/5 transition-colors"
-        >
-          <span class="text-xs text-slate-300">天气标记</span>
-          <span class="relative inline-flex w-8 h-5 rounded-full transition-colors" :class="store.showMarkerWeather ? 'bg-primary-500' : 'bg-slate-600'">
-            <span class="absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow transition-all" :class="store.showMarkerWeather ? 'left-[14px]' : 'left-0.5'" />
-          </span>
-        </button>
+        <div class="flex w-full items-center justify-between rounded-lg px-2 py-1.5 hover:bg-elevated">
+          <span class="text-xs text-muted">天气标记</span>
+          <Toggle v-model="store.showMarkerWeather" />
+        </div>
 
         <!-- Monster count toggle -->
-        <button
-          @click="store.showMarkerCount = !store.showMarkerCount"
-          class="w-full flex items-center justify-between px-2 py-1.5 rounded-lg hover:bg-white/5 transition-colors"
-        >
-          <span class="text-xs text-slate-300">怪物数量</span>
-          <span class="relative inline-flex w-8 h-5 rounded-full transition-colors" :class="store.showMarkerCount ? 'bg-primary-500' : 'bg-slate-600'">
-            <span class="absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow transition-all" :class="store.showMarkerCount ? 'left-[14px]' : 'left-0.5'" />
-          </span>
-        </button>
+        <div class="flex w-full items-center justify-between rounded-lg px-2 py-1.5 hover:bg-elevated">
+          <span class="text-xs text-muted">怪物数量</span>
+          <Toggle v-model="store.showMarkerCount" />
+        </div>
 
         <!-- Divider + Offline edit section (only when EDITOR_ENABLED=false) -->
         <template v-if="!EDITOR_ENABLED">
-        <div class="border-t border-white/10 pt-1.5 mt-1.5">
-          <!-- Offline edit mode toggle -->
-          <div class="relative">
+          <div class="mt-1.5 border-t border-default pt-1.5">
+            <!-- Offline edit mode toggle -->
+            <div class="relative">
+              <div class="flex w-full items-center justify-between rounded-lg px-2 py-1.5 hover:bg-elevated">
+                <span class="flex items-center gap-1">
+                  <span class="text-xs" :class="store.isOfflineEditMode ? 'text-green-600 dark:text-green-300' : 'text-muted'">自定义编辑</span>
+                  <span
+                    class="inline-flex h-3.5 w-3.5 cursor-pointer items-center justify-center rounded-full bg-elevated text-[10px] text-muted leading-none transition-colors hover:bg-surface hover:text-base"
+                    title="关于自定义编辑"
+                    @click.stop="editHintVisible = !editHintVisible"
+                  >?</span>
+                </span>
+                <Toggle :model-value="store.isOfflineEditMode" color="green" @update:model-value="handleToggleOfflineEdit()" />
+              </div>
+
+              <!-- Edit hint tooltip -->
+              <Transition name="hint">
+                <div
+                  v-if="editHintVisible"
+                  class="absolute left-1/2 top-full z-30 mt-1 w-60 -translate-x-1/2 rounded-lg border border-default bg-overlay p-2.5 text-[11px] leading-relaxed text-muted shadow-xl"
+                >
+                  <div class="flex items-start justify-between gap-2">
+                    <p>自定义编辑的内容仅保存在<strong class="text-base">浏览器本地存储</strong>中。为防止缓存清空导致修改丢失，编辑后请<strong class="text-yellow-500 dark:text-yellow-300">及时导出数据</strong>备份。导出的数据也可提交给作者，整合到地图原始数据中。</p>
+                    <button
+                      class="shrink-0 leading-none text-faint transition-colors hover:text-base"
+                      @click.stop="editHintVisible = false"
+                    >✕</button>
+                  </div>
+                </div>
+              </Transition>
+            </div>
+
+            <!-- Export / Import -->
             <button
-              @click="handleToggleOfflineEdit()"
-              class="w-full flex items-center justify-between px-2 py-1.5 rounded-lg hover:bg-white/5 transition-colors"
+              class="flex w-full items-center justify-between rounded-lg px-2 py-1.5 hover:bg-elevated"
+              @click="handleExport()"
             >
-              <span class="flex items-center gap-1">
-                <span class="text-xs" :class="store.isOfflineEditMode ? 'text-green-300' : 'text-slate-300'">自定义编辑</span>
-                <span
-                  @click.stop="editHintVisible = !editHintVisible"
-                  class="inline-flex items-center justify-center w-3.5 h-3.5 rounded-full bg-slate-600/60 text-[10px] text-slate-300 hover:bg-slate-500 hover:text-white cursor-pointer transition-colors leading-none"
-                  title="关于自定义编辑"
-                >?</span>
-              </span>
-              <span class="relative inline-flex w-8 h-5 rounded-full transition-colors" :class="store.isOfflineEditMode ? 'bg-green-500' : 'bg-slate-600'">
-                <span class="absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow transition-all" :class="store.isOfflineEditMode ? 'left-[14px]' : 'left-0.5'" />
-              </span>
+              <span class="text-xs text-muted">导出数据</span>
+              <AppIcon name="download" class="h-4 w-4 text-faint" />
             </button>
 
-            <!-- Edit hint tooltip -->
-            <Transition name="hint">
-              <div
-                v-if="editHintVisible"
-                class="absolute left-1/2 -translate-x-1/2 top-full mt-1 z-30 p-2.5 rounded-lg bg-surface-900/98 backdrop-blur-xl border border-white/10 shadow-xl text-[11px] text-slate-300 leading-relaxed w-60"
-              >
-                <div class="flex items-start justify-between gap-2">
-                  <p>自定义编辑的内容仅保存在<strong class="text-slate-200">浏览器本地存储</strong>中。为防止缓存清空导致修改丢失，编辑后请<strong class="text-yellow-300">及时导出数据</strong>备份。导出的数据也可提交给作者，整合到地图原始数据中。</p>
-                  <button
-                    @click.stop="editHintVisible = false"
-                    class="shrink-0 text-slate-500 hover:text-slate-300 transition-colors leading-none"
-                  >✕</button>
-                </div>
-              </div>
-            </Transition>
+            <button
+              class="flex w-full items-center justify-between rounded-lg px-2 py-1.5 hover:bg-elevated"
+              @click="triggerImport()"
+            >
+              <span class="text-xs text-muted">导入数据</span>
+              <AppIcon name="upload" class="h-4 w-4 text-faint" />
+            </button>
+
+            <input
+              ref="fileInput"
+              type="file"
+              accept=".json"
+              class="hidden"
+              @change="handleImport"
+            />
+
+            <!-- Import/export result toast -->
+            <div
+              v-if="importResult"
+              class="py-1 text-center text-xs text-green-500 dark:text-green-400"
+            >{{ importResult }}</div>
           </div>
-
-          <!-- Export / Import -->
-          <button
-            @click="handleExport()"
-            class="w-full flex items-center justify-between px-2 py-1.5 rounded-lg hover:bg-white/5 transition-colors"
-          >
-            <span class="text-xs text-slate-300">导出数据</span>
-            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-          </button>
-
-          <button
-            @click="triggerImport()"
-            class="w-full flex items-center justify-between px-2 py-1.5 rounded-lg hover:bg-white/5 transition-colors"
-          >
-            <span class="text-xs text-slate-300">导入数据</span>
-            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-            </svg>
-          </button>
-
-          <input
-            ref="fileInput"
-            type="file"
-            accept=".json"
-            class="hidden"
-            @change="handleImport"
-          />
-
-          <!-- Import/export result toast -->
-          <div
-            v-if="importResult"
-            class="text-xs text-green-400 text-center py-1"
-          >{{ importResult }}</div>
-        </div>
         </template>
-      </div>
+      </Panel>
     </Transition>
   </div>
 </template>

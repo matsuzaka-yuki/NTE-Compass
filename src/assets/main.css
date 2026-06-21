@@ -1,24 +1,144 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+/* Dark mode driven by `.dark` class on <html> (toggleable via useTheme). */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+ * Design tokens.
+ *
+ * Two layers:
+ *   1. Raw CSS variables (--bg, --surface, ...) — swapped per theme below.
+ *   2. @theme inline — exposes them as Tailwind utilities
+ *      (bg-surface, text-muted, border-default, etc.) so every component
+ *      inherits the active theme automatically.
+ *
+ * To change the palette or add a theme, edit only the :root / .dark blocks.
+ */
+
+@theme inline {
+  --font-sans: 'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue', sans-serif;
+
+  /* Default responsive breakpoints — Tailwind v4 derives the md:/max-md:
+   * variants from these. They MUST be present or all responsive layout
+   * (md:hidden, md:w-[330px], max-md:hidden, ...) silently stops generating. */
+  --breakpoint-sm: 40rem;
+  --breakpoint-md: 48rem;
+  --breakpoint-lg: 64rem;
+  --breakpoint-xl: 80rem;
+  --breakpoint-2xl: 96rem;
+
+  /* Surfaces (auto-invert per theme) */
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-elevated: var(--elevated);
+  --color-overlay: var(--overlay);
+
+  /* Borders */
+  --color-default: var(--border);
+  --color-border-strong: var(--border-strong);
+
+  /* Text */
+  --color-base: var(--text);
+  --color-muted: var(--text-muted);
+  --color-faint: var(--text-faint);
+
+  /* Indigo accent scale — unchanged across themes */
+  --color-primary-50: #eef2ff;
+  --color-primary-100: #e0e7ff;
+  --color-primary-200: #c7d2fe;
+  --color-primary-300: #a5b4fc;
+  --color-primary-400: #818cf8;
+  --color-primary-500: #6366f1;
+  --color-primary-600: #4f46e5;
+  --color-primary-700: #4338ca;
+  --color-primary-800: #3730a3;
+  --color-primary-900: #312e81;
+
+  /*
+   * Back-compat aliases for the legacy `surface-*` scale used throughout the
+   * not-yet-migrated components. These map the old v3 tokens onto the new
+   * neutral palette so existing `bg-surface-700/800/900` classes keep working
+   * (and auto-invert with the theme). Removed as components migrate to the
+   * semantic `surface`/`elevated`/`bg` tokens.
+   */
+  --color-surface-50: var(--surface);
+  --color-surface-100: var(--surface);
+  --color-surface-200: var(--text);
+  --color-surface-300: var(--text-muted);
+  --color-surface-400: var(--text-muted);
+  --color-surface-500: var(--text-faint);
+  --color-surface-600: var(--elevated);
+  --color-surface-700: var(--elevated);
+  --color-surface-800: var(--surface);
+  --color-surface-900: var(--elevated);
 }
 
-html, body, #app {
-  width: 100%;
-  height: 100vh;
-  overflow: hidden;
-  font-family: 'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue', sans-serif;
-  background: #010101;
+/* ---------- Light theme (default) ---------- */
+:root {
+  color-scheme: light;
+  --bg: #ffffff;
+  --surface: #fafafa;
+  --elevated: #f4f4f5;
+  --overlay: #ffffff;
+
+  --border: rgba(0, 0, 0, 0.08);
+  --border-strong: rgba(0, 0, 0, 0.14);
+
+  --text: #18181b;
+  --text-muted: #71717a;
+  --text-faint: #a1a1aa;
+
+  /* backdrops / scrims */
+  --scrim: rgba(0, 0, 0, 0.5);
 }
 
-/* Leaflet overrides */
+/* ---------- Dark theme ---------- */
+.dark {
+  color-scheme: dark;
+  --bg: #09090b;
+  --surface: #18181b;
+  --elevated: #27272a;
+  --overlay: #1f1f23;
+
+  --border: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.14);
+
+  --text: #fafafa;
+  --text-muted: #a1a1aa;
+  --text-faint: #71717a;
+
+  --scrim: rgba(0, 0, 0, 0.7);
+}
+
+/*
+ * NOTE: do NOT add a bare `* { margin:0; padding:0; box-sizing:border-box }`
+ * reset here. Tailwind v4's Preflight (in @layer base) already does this. A
+ * top-level (unlayered) reset would override ALL utilities — unlayered CSS
+ * wins over @layer utilities regardless of specificity — collapsing every
+ * spacing class (px-4, py-3, space-y-3, …) to 0.
+ */
+
+@layer base {
+  html,
+  body,
+  #app {
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+    font-family: var(--font-sans);
+    background: var(--bg);
+    color: var(--text);
+  }
+}
+
+/* ---------- Leaflet overrides ---------- */
+/*
+ * The map canvas stays dark in BOTH themes: the base image (map-base.webp) is a
+ * dark game map, so the surrounding viewport (pan/zoom bounds, loading state)
+ * must match to avoid white flashes. Do NOT tie this to --bg.
+ */
 .leaflet-container {
-  background: #010101;
+  background: #09090b;
   font-family: inherit;
   touch-action: none;
 }
@@ -29,13 +149,22 @@ html, body, #app {
 }
 
 .leaflet-control-zoom a {
-  background: rgba(15, 23, 42, 0.85) !important;
-  color: #e2e8f0 !important;
-  border-color: rgba(100, 116, 139, 0.3) !important;
+  background: var(--overlay) !important;
+  color: var(--text) !important;
+  border-color: var(--border) !important;
 }
 
 .leaflet-control-zoom a:hover {
-  background: rgba(30, 41, 59, 0.9) !important;
+  background: var(--elevated) !important;
+}
+
+.leaflet-bar a.leaflet-control-geosearch-button,
+.leaflet-control-attribution {
+  background: var(--overlay) !important;
+  color: var(--text-muted) !important;
+}
+.leaflet-control-attribution a {
+  color: var(--text) !important;
 }
 
 .fullscreen-toggle {
@@ -46,9 +175,9 @@ html, body, #app {
   width: 30px;
   height: 30px;
   border-radius: 4px;
-  border: none;
-  background: rgba(15, 23, 42, 0.85);
-  color: #e2e8f0;
+  border: 1px solid var(--border);
+  background: var(--overlay);
+  color: var(--text);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -56,16 +185,19 @@ html, body, #app {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
   padding: 0;
 }
-
 .fullscreen-toggle:hover {
-  background: rgba(30, 41, 59, 0.9);
+  background: var(--elevated);
 }
-
+/* Fullscreen icon tinting — source SVGs are dark. Tint to match the theme so
+ * the icon stays visible on the themed button background. */
 .fullscreen-toggle img {
+  filter: brightness(0);
+}
+.dark .fullscreen-toggle img {
   filter: brightness(0) invert(1);
 }
 
-/* Marker cluster styles */
+/* ---------- Marker cluster (type-tinted, theme-agnostic) ---------- */
 .marker-cluster-small {
   background-color: rgba(99, 102, 241, 0.3) !important;
 }
@@ -91,32 +223,25 @@ html, body, #app {
   font-weight: 600 !important;
 }
 
-/* Scrollbar */
+/* ---------- Scrollbar (hidden, scroll still works) ---------- */
+/* Hide across WebKit (Chrome/Safari/Edge), Firefox, and legacy IE/Presto. */
 ::-webkit-scrollbar {
-  width: 4px;
-  height: 4px;
+  width: 0;
+  height: 0;
+  display: none;
 }
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-::-webkit-scrollbar-thumb {
-  background: rgba(148, 163, 184, 0.35);
-  border-radius: 4px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(148, 163, 184, 0.55);
-}
+::-webkit-scrollbar-track,
+::-webkit-scrollbar-thumb,
 ::-webkit-scrollbar-corner {
   background: transparent;
 }
 
-/* Firefox */
 * {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(148, 163, 184, 0.35) transparent;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
-/* custom marker animation — only on non-mobile devices with hover (mouse) */
+/* ---------- Custom marker hover/found ---------- */
 @media (hover: hover) and (min-width: 768px) {
   .custom-marker:hover > div {
     transform: scale(1.25);

@@ -390,13 +390,13 @@ watch(previewOpen, (open) => {
         >
           <!-- Card body: rounded + overflow clipped -->
           <div
-            class="relative bg-surface-800/95 backdrop-blur-xl border border-white/10 shadow-2xl overflow-hidden"
+            class="relative bg-overlay/95 backdrop-blur-xl border border-default shadow-2xl overflow-hidden"
             :class="isMobileRouteMode ? 'w-[220px] max-w-[80vw] max-h-[65vh] rounded-2xl' : 'w-[280px] max-w-[92vw] max-h-[80vh] rounded-2xl'"
           >
             <!-- Close button -->
             <button
               @click="store.selectMarker(null)"
-              class="absolute z-10 flex items-center justify-center rounded-full bg-surface-700/80 hover:bg-surface-600 text-slate-400 hover:text-white transition-colors"
+              class="absolute z-10 flex items-center justify-center rounded-full bg-elevated/80 hover:bg-surface text-muted hover:text-base transition-colors"
               :class="isMobileRouteMode ? 'top-2 right-2 w-5 h-5' : 'top-3 right-3 w-7 h-7'"
             >
               <svg :class="isMobileRouteMode ? 'w-3 h-3' : 'w-4 h-4'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -409,16 +409,16 @@ watch(previewOpen, (open) => {
               <div
                 v-if="allImages.length > 0"
                 :key="markerImageKey"
-                class="w-full bg-surface-900 overflow-hidden rounded-t-2xl"
+                class="w-full bg-surface overflow-hidden rounded-t-2xl"
               >
             <!-- Single image -->
             <template v-if="allImages.length === 1">
               <!-- Loading skeleton -->
               <div
                 v-if="!imagesReady"
-                class="w-full aspect-video bg-surface-800 animate-pulse flex items-center justify-center"
+                class="w-full aspect-video bg-elevated animate-pulse flex items-center justify-center"
               >
-                <svg class="w-8 h-8 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-8 h-8 text-faint" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3.75 21h16.5A2.25 2.25 0 0022.5 18.75V5.25A2.25 2.25 0 0020.25 3H3.75A2.25 2.25 0 001.5 5.25v13.5A2.25 2.25 0 003.75 21z" />
                 </svg>
               </div>
@@ -459,7 +459,7 @@ watch(previewOpen, (open) => {
                 <div
                   v-for="i in Math.min(allImages.length, 6)"
                   :key="'skeleton-'+i"
-                  :class="isMobileRouteMode ? 'flex-shrink-0 w-16 aspect-video rounded-md bg-surface-800 animate-pulse' : 'flex-shrink-0 w-24 aspect-video rounded-lg bg-surface-800 animate-pulse'"
+                  :class="isMobileRouteMode ? 'flex-shrink-0 w-16 aspect-video rounded-md bg-elevated animate-pulse' : 'flex-shrink-0 w-24 aspect-video rounded-lg bg-elevated animate-pulse'"
                 ></div>
               </div>
               <div
@@ -471,7 +471,7 @@ watch(previewOpen, (open) => {
                 <div
                   v-for="(img, idx) in allImages"
                   :key="idx"
-                  :class="isMobileRouteMode ? 'flex-shrink-0 w-16 aspect-video rounded-md overflow-hidden border border-white/5 cursor-pointer hover:border-white/20 transition-colors' : 'flex-shrink-0 w-24 aspect-video rounded-lg overflow-hidden border border-white/5 cursor-pointer hover:border-white/20 transition-colors'"
+                  :class="isMobileRouteMode ? 'flex-shrink-0 w-16 aspect-video rounded-md overflow-hidden border border-default cursor-pointer hover:border-border-strong transition-colors' : 'flex-shrink-0 w-24 aspect-video rounded-lg overflow-hidden border border-default cursor-pointer hover:border-border-strong transition-colors'"
                   @click="openPreviewAt(idx)"
                 >
                   <img
@@ -502,7 +502,7 @@ watch(previewOpen, (open) => {
 <!-- Description -->
             <p
               v-if="store.selectedMarker.description"
-              :class="isMobileRouteMode ? 'text-[10px] text-slate-300 leading-relaxed max-h-[80px] overflow-y-auto' : 'text-xs text-slate-300 leading-relaxed max-h-[136px] overflow-y-auto'"
+              :class="isMobileRouteMode ? 'text-[10px] text-muted leading-relaxed max-h-[80px] overflow-y-auto' : 'text-xs text-muted leading-relaxed max-h-[136px] overflow-y-auto'"
             >
               {{ store.selectedMarker.description }}
             </p>
@@ -514,7 +514,7 @@ watch(previewOpen, (open) => {
             >
               <span
                 v-if="timeInfo"
-                :class="isMobileRouteMode ? 'inline-flex items-center gap-1 text-[10px] text-slate-300' : 'inline-flex items-center gap-1 text-xs text-slate-300'"
+                :class="isMobileRouteMode ? 'inline-flex items-center gap-1 text-[10px] text-muted' : 'inline-flex items-center gap-1 text-xs text-muted'"
                 :title="'时间：' + timeInfo.label"
               >
                 <span class="text-sm">{{ timeInfo.icon }}</span>
@@ -522,7 +522,7 @@ watch(previewOpen, (open) => {
               </span>
               <span
                 v-if="weatherInfo"
-                :class="isMobileRouteMode ? 'inline-flex items-center gap-1 text-[10px] text-slate-300' : 'inline-flex items-center gap-1 text-xs text-slate-300'"
+                :class="isMobileRouteMode ? 'inline-flex items-center gap-1 text-[10px] text-muted' : 'inline-flex items-center gap-1 text-xs text-muted'"
                 :title="'天气：' + weatherInfo.label"
               >
                 <span class="text-sm">{{ weatherInfo.icon }}</span>
@@ -550,7 +550,7 @@ watch(previewOpen, (open) => {
               <div
                 v-for="item in relatedItems"
                 :key="item.id"
-                :class="isMobileRouteMode ? 'flex items-center gap-0.5 px-1.5 py-0.5 rounded-md bg-white/5 border border-white/10 text-[10px] text-slate-300' : 'flex items-center gap-1 px-2 py-1 rounded-lg bg-white/5 border border-white/10 text-xs text-slate-300'"
+                :class="isMobileRouteMode ? 'flex items-center gap-0.5 px-1.5 py-0.5 rounded-md bg-elevated/60 border border-default text-[10px] text-muted' : 'flex items-center gap-1 px-2 py-1 rounded-lg bg-elevated/60 border border-default text-xs text-muted'"
               >
                 <img
                   v-if="item.image"
@@ -566,7 +566,7 @@ watch(previewOpen, (open) => {
             <!-- Related quest -->
             <div
               v-if="store.selectedMarker.relatedQuest"
-              :class="isMobileRouteMode ? 'text-[10px] text-orange-400 bg-orange-400/10 rounded-lg px-2 py-1' : 'text-xs text-orange-400 bg-orange-400/10 rounded-lg px-3 py-1.5'"
+              :class="isMobileRouteMode ? 'text-[10px] text-orange-600 dark:text-orange-400 bg-orange-500/10 rounded-lg px-2 py-1' : 'text-xs text-orange-600 dark:text-orange-400 bg-orange-500/10 rounded-lg px-3 py-1.5'"
             >
               关联任务：{{ store.selectedMarker.relatedQuest }}
             </div>
@@ -596,7 +596,7 @@ watch(previewOpen, (open) => {
               </button>
               <button
                 @click="store.deleteMarker(store.selectedMarker!.id)"
-                :class="isMobileRouteMode ? 'w-full mt-1 py-1 rounded-lg text-[10px] font-medium transition-all flex items-center justify-center gap-1 bg-red-500/15 text-red-400 border border-red-500/25 hover:bg-red-500/25' : 'w-full mt-1.5 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center justify-center gap-1.5 bg-red-500/15 text-red-400 border border-red-500/25 hover:bg-red-500/25'"
+                :class="isMobileRouteMode ? 'w-full mt-1 py-1 rounded-lg text-[10px] font-medium transition-all flex items-center justify-center gap-1 bg-red-500/15 text-red-500 dark:text-red-400 border border-red-500/25 hover:bg-red-500/25' : 'w-full mt-1.5 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center justify-center gap-1.5 bg-red-500/15 text-red-500 dark:text-red-400 border border-red-500/25 hover:bg-red-500/25'"
               >
                 <svg :class="isMobileRouteMode ? 'w-3.5 h-3.5' : 'w-4 h-4'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -622,7 +622,7 @@ watch(previewOpen, (open) => {
                     :class="isMobileRouteMode ? 'absolute -top-1 -right-1 inline-flex items-center justify-center w-3 h-3 rounded-full bg-red-500 text-white text-[8px] font-bold leading-none' : 'absolute -top-1 -right-1 inline-flex items-center justify-center w-3.5 h-3.5 rounded-full bg-red-500 text-white text-[9px] font-bold leading-none'"
                   >{{ store.selectedMarker.counts[popupPrimaryType] }}</span>
                 </span>
-                <span v-if="popupTypeStats" :class="isMobileRouteMode ? 'text-[10px] text-slate-500 font-mono flex-shrink-0' : 'text-xs text-slate-500 font-mono flex-shrink-0'">
+                <span v-if="popupTypeStats" :class="isMobileRouteMode ? 'text-[10px] text-faint font-mono flex-shrink-0' : 'text-xs text-faint font-mono flex-shrink-0'">
                   {{ popupTypeStats.found }}/{{ popupTypeStats.total }}
                 </span>
               </template>
@@ -660,8 +660,8 @@ watch(previewOpen, (open) => {
                   isMobileRouteMode ? 'ml-auto py-0.5 px-1.5 rounded-md text-[10px]' : 'ml-auto py-1 px-2.5 rounded-lg text-xs',
                   'font-medium transition-all flex items-center gap-1 flex-shrink-0',
                   store.isFound(store.selectedMarker!.id)
-                    ? 'bg-green-500/20 text-green-400 border border-green-500/30 hover:bg-green-500/30'
-                    : 'bg-primary-600/20 text-primary-300 border border-primary-500/30 hover:bg-primary-600/30',
+                    ? 'bg-green-500/15 text-green-600 dark:text-green-400 border border-green-500/30 hover:bg-green-500/25'
+                    : 'bg-primary-500/15 text-primary-600 dark:text-primary-300 border border-primary-500/30 hover:bg-primary-500/25',
                 ]"
               >
                 <svg v-if="store.isFound(store.selectedMarker!.id)" :class="isMobileRouteMode ? 'w-3 h-3' : 'w-3.5 h-3.5'" fill="currentColor" viewBox="0 0 20 20">
@@ -676,7 +676,7 @@ watch(previewOpen, (open) => {
         <!-- Arrow pointing down to the marker (hidden in mobile route mode) -->
         <div
           v-if="!isMobileRouteMode && !isDesktopRouteMode"
-          class="absolute left-1/2 -bottom-1.5 w-3 h-3 bg-surface-800/95 border border-white/10 border-t-transparent border-l-transparent rotate-45 -translate-x-1/2"
+          class="absolute left-1/2 -bottom-1.5 w-3 h-3 bg-overlay/95 border border-default border-t-transparent border-l-transparent rotate-45 -translate-x-1/2"
         ></div>
       </div>
       </div>
@@ -715,14 +715,14 @@ watch(previewOpen, (open) => {
         <div class="absolute top-0 left-0 right-0 flex items-center justify-between px-4 py-3 z-10">
           <span
             v-if="hasMultipleImages && !isDirectPreview"
-            class="text-white/80 text-sm font-mono bg-white/10 rounded-full px-3 py-1"
+            class="text-white/80 text-sm font-mono bg-elevated rounded-full px-3 py-1"
           >
             {{ previewIndex + 1 }} / {{ allImages.length }}
           </span>
           <span v-else></span>
           <button
             @click="closePreview"
-            class="w-10 h-10 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
+            class="w-10 h-10 flex items-center justify-center rounded-full bg-elevated hover:bg-white/20 text-white transition-colors"
           >
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -733,7 +733,7 @@ watch(previewOpen, (open) => {
         <!-- Prev button -->
         <button
           v-if="canGoPrev && !isDirectPreview"
-          class="absolute left-3 top-1/2 -translate-y-1/2 z-10 w-12 h-12 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
+          class="absolute left-3 top-1/2 -translate-y-1/2 z-10 w-12 h-12 flex items-center justify-center rounded-full bg-elevated hover:bg-white/20 text-white transition-colors"
           @click.stop="prevImage"
         >
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -756,7 +756,7 @@ watch(previewOpen, (open) => {
         <!-- Next button -->
         <button
           v-if="canGoNext && !isDirectPreview"
-          class="absolute right-3 top-1/2 -translate-y-1/2 z-10 w-12 h-12 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
+          class="absolute right-3 top-1/2 -translate-y-1/2 z-10 w-12 h-12 flex items-center justify-center rounded-full bg-elevated hover:bg-white/20 text-white transition-colors"
           @click.stop="nextImage"
         >
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -768,7 +768,7 @@ watch(previewOpen, (open) => {
         <div class="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 flex items-center gap-1 bg-black/50 backdrop-blur rounded-full px-2 py-1.5">
           <button
             @click.stop="zoomOut"
-            class="w-9 h-9 flex items-center justify-center rounded-full text-white hover:bg-white/10 transition-colors text-lg font-medium"
+            class="w-9 h-9 flex items-center justify-center rounded-full text-white hover:bg-elevated transition-colors text-lg font-medium"
           >
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
@@ -776,13 +776,13 @@ watch(previewOpen, (open) => {
           </button>
           <button
             @click.stop="resetZoom"
-            class="text-white/80 text-sm font-mono px-3 py-1 hover:text-white transition-colors"
+            class="text-white/80 text-sm font-mono px-3 py-1 hover:text-base transition-colors"
           >
             {{ Math.round(previewScale * 100) }}%
           </button>
           <button
             @click.stop="zoomIn"
-            class="w-9 h-9 flex items-center justify-center rounded-full text-white hover:bg-white/10 transition-colors text-lg font-medium"
+            class="w-9 h-9 flex items-center justify-center rounded-full text-white hover:bg-elevated transition-colors text-lg font-medium"
           >
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />

@@ -6,6 +6,7 @@ import SideBar from './components/SideBar.vue'
 import MarkerPopup from './components/MarkerPopup.vue'
 import SettingsPanel from './components/SettingsPanel.vue'
 import CreateMarkerForm from './components/CreateMarkerForm.vue'
+import { ConfirmHost } from './components/ui'
 import { EDITOR_ENABLED } from './config'
 
 const store = useMarkerStore()
@@ -94,7 +95,7 @@ window.addEventListener('resize', () => {
 </script>
 
 <template>
-  <div class="app-shell relative h-screen w-screen overflow-hidden bg-[#010101]">
+  <div class="app-shell relative h-screen w-screen overflow-hidden bg-bg text-base">
     <!-- Map (full screen) -->
     <MapView />
 
@@ -103,7 +104,7 @@ window.addEventListener('resize', () => {
       <div
         v-if="toast"
         class="fixed top-4 left-1/2 -translate-x-1/2 z-50 px-4 py-2 text-sm font-medium text-center rounded-xl shadow-2xl pointer-events-none"
-        :class="store.isEditorMode ? 'text-primary-200 bg-primary-600/80 border border-primary-400/40' : 'text-slate-200 bg-surface-700/95 border border-white/10'"
+        :class="store.isEditorMode ? 'text-primary-200 bg-primary-600/80 border border-primary-400/40' : 'text-base bg-elevated/95 border border-default'"
       >
         {{ toast }}
       </div>
@@ -113,8 +114,8 @@ window.addEventListener('resize', () => {
     <button
       v-if="EDITOR_ENABLED"
       @click="handleToggleEditorMode()"
-      class="fixed bottom-20 right-6 z-20 w-10 h-10 rounded-xl bg-surface-800/90 backdrop-blur-md border border-white/10 shadow-lg flex items-center justify-center transition-all"
-      :class="store.isEditorMode ? 'text-primary-400 border-primary-400/30 bg-primary-500/10' : 'text-slate-300 hover:text-white hover:border-white/20'"
+      class="fixed bottom-20 right-6 z-20 w-10 h-10 rounded-xl bg-overlay/90 backdrop-blur-md border border-default shadow-lg flex items-center justify-center transition-all"
+      :class="store.isEditorMode ? 'text-primary-400 border-primary-400/30 bg-primary-500/10' : 'text-muted hover:text-base hover:border-border-strong'"
       title="编辑者模式"
     >
       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -125,8 +126,8 @@ window.addEventListener('resize', () => {
     <!-- Mobile route button (top-left) -->
     <button
       @click="store.showRouteView ? store.closeRouteView() : (store.sidebarOpen = true, store.openRouteList())"
-      class="fixed top-3 left-3 z-30 w-9 h-9 rounded-lg bg-surface-800/90 backdrop-blur-md border border-white/10 shadow-lg flex items-center justify-center transition-all md:hidden"
-      :class="store.showRouteView ? 'text-primary-400 border-primary-400/30 bg-primary-500/10' : 'text-slate-300 hover:text-white hover:border-white/20'"
+      class="fixed top-3 left-3 z-30 w-9 h-9 rounded-lg bg-overlay/90 backdrop-blur-md border border-default shadow-lg flex items-center justify-center transition-all md:hidden"
+      :class="store.showRouteView ? 'text-primary-400 border-primary-400/30 bg-primary-500/10' : 'text-muted hover:text-base hover:border-border-strong'"
       title="路线"
     >
       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -137,7 +138,7 @@ window.addEventListener('resize', () => {
     <!-- Sidebar toggle button -->
     <button
       @click="store.toggleSidebar()"
-      class="fixed z-30 w-9 h-9 rounded-lg bg-surface-800/90 backdrop-blur-md border border-white/10 shadow-lg flex items-center justify-center text-slate-300 hover:text-white hover:border-white/20 transition-all top-4 max-md:hidden"
+      class="fixed z-30 w-9 h-9 rounded-lg bg-overlay/90 backdrop-blur-md border border-default shadow-lg flex items-center justify-center text-muted hover:text-base hover:border-border-strong transition-all top-4 max-md:hidden"
       :class="store.sidebarOpen ? 'left-[350px]' : 'left-4'"
     >
       <svg v-if="!store.sidebarOpen" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -205,6 +206,9 @@ window.addEventListener('resize', () => {
     <!-- Create marker form -->
     <CreateMarkerForm />
 
+    <!-- Global confirm dialog host -->
+    <ConfirmHost />
+
     <!-- Data source choice dialog (only when EDITOR_ENABLED=false and localStorage has data) -->
     <Teleport to="body">
       <Transition name="confirm">
@@ -213,20 +217,20 @@ window.addEventListener('resize', () => {
           class="fixed inset-0 z-[200] flex items-center justify-center"
         >
           <div class="absolute inset-0 bg-black/70"></div>
-          <div class="relative bg-surface-800 border border-white/10 rounded-2xl shadow-2xl p-6 w-[360px] max-w-[92vw]">
-            <h3 class="text-base font-medium text-slate-200 text-center mb-2">检测到浏览器存储的数据</h3>
-            <p class="text-sm text-slate-400 text-center mb-5">发现之前保存的标点和路线数据，请选择要使用的数据源：</p>
+          <div class="relative bg-elevated border border-default rounded-2xl shadow-2xl p-6 w-[360px] max-w-[92vw]">
+            <h3 class="text-base font-medium text-base text-center mb-2">检测到浏览器存储的数据</h3>
+            <p class="text-sm text-muted text-center mb-5">发现之前保存的标点和路线数据，请选择要使用的数据源：</p>
             <div class="flex gap-3">
               <button
                 @click="store.chooseDataSource('builtin')"
-                class="flex-1 py-2.5 text-sm font-medium rounded-xl bg-surface-700 text-slate-300 hover:bg-surface-600 transition-colors"
+                class="flex-1 py-2.5 text-sm font-medium rounded-xl bg-elevated text-muted hover:bg-surface transition-colors"
               >使用默认数据</button>
               <button
                 @click="store.chooseDataSource('localstorage')"
                 class="flex-1 py-2.5 text-sm font-medium rounded-xl bg-primary-600 text-white hover:bg-primary-500 transition-colors"
               >使用浏览器数据</button>
             </div>
-            <p class="text-xs text-slate-600 text-center mt-3">选择默认数据将覆盖浏览器存储</p>
+            <p class="text-xs text-faint text-center mt-3">选择默认数据将覆盖浏览器存储</p>
           </div>
         </div>
       </Transition>
