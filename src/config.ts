@@ -3,8 +3,8 @@ export const EDITOR_ENABLED = true
 
 // jsDelivr CDN 加速（GitHub Pages 部署时使用，本地开发可关闭）
 export const JSDELIVR_CDN_ENABLED = false
-const GITHUB_USER = 'Horizony14'
-const GITHUB_REPO = 'map_NTE'
+const GITHUB_USER = 'matsuzaka-yuki'
+const GITHUB_REPO = 'NTE-Compass'
 const GITHUB_BRANCH = 'main'
 
 /** 将相对路径转换为 jsDelivr CDN 地址（关闭 CDN 时原样返回） */

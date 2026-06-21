@@ -220,16 +220,16 @@ const themeOptions: { value: ThemeMode; icon: 'sun' | 'moon' | 'monitor'; label:
     <Dialog :open="aboutOpen" title="NTE · 夜巡" width="380px" @close="aboutOpen = false">
       <div class="space-y-3 text-sm leading-relaxed text-muted">
         <p>
-          <strong class="text-base">异环地图（NTE Map）</strong>是一个为游戏《异环》设计的交互式 Web 地图，帮助玩家快速定位传送点、收集品、任务、打卡点与圣地巡礼地点。
+          <strong class="text-base">NTE · 夜巡</strong>是一个为游戏《异环》设计的交互式 Web 地图，帮助玩家快速定位传送点、收集品、任务、打卡点与圣地巡礼地点。
         </p>
         <div class="space-y-1.5 rounded-lg border border-default bg-elevated/50 p-3 text-xs">
           <div class="flex justify-between">
             <span class="text-faint">作者</span>
-            <span class="text-base">horizony14</span>
+            <span class="text-base">松坂有希</span>
           </div>
           <div class="flex justify-between">
-            <span class="text-faint">联系</span>
-            <span class="text-base">horizony@foxmail.com</span>
+            <span class="text-faint">Bilibili</span>
+            <span class="text-base">@松坂有希</span>
           </div>
           <div class="flex justify-between">
             <span class="text-faint">开源协议</span>
@@ -241,11 +241,11 @@ const themeOptions: { value: ThemeMode; icon: 'sun' | 'moon' | 'monitor'; label:
           </div>
         </div>
         <p class="text-xs text-faint">
-          异环游戏相关的所有素材均为 Perfect World / Hotta Studio 所有，合理使用仅为提供信息参考，与游戏官方无关。标记数据由社区贡献维护，坐标可能存在偏差，请以游戏内实际情况为准。
+          异环游戏相关的所有素材均为 Perfect World / Hotta Studio 所有，合理使用仅为提供信息参考，与游戏官方无关。标记数据由社区贡献维护，坐标可能存在偏差，请以游戏内实际情况为准。本项目基于 Horizony14 的原项目（MIT 协议）开发。
         </p>
         <div class="flex gap-2 pt-1">
           <a
-            href="https://github.com/Horizony14/map_NTE"
+            href="https://github.com/matsuzaka-yuki/NTE-Compass"
             target="_blank"
             rel="noopener"
             class="flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-default py-2 text-xs font-medium text-muted transition-colors hover:bg-elevated hover:text-base"
