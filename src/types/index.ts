@@ -257,6 +257,15 @@ export function getPrimaryType(types: MarkerType[], selectedTypes: Set<MarkerTyp
   return types.find(t => selectedTypes.has(t)) || types[0]
 }
 
+/**
+ * CSS class for a marker type's `<img>` icon. Returns `'icon-light-invert'`
+ * for white-on-dark icons so they get inverted in light mode (see main.css).
+ * Apply to every rendered type icon `<img>`: `:class="iconClass(type)"`.
+ */
+export function iconClass(type: MarkerType): string {
+  return MARKER_TYPE_CONFIG[type].lightInvert ? 'icon-light-invert' : ''
+}
+
 export function getOverlayTypes(types: MarkerType[], selectedTypes: Set<MarkerType>): MarkerType[] {
   const allMatching = types.filter(t => selectedTypes.has(t))
   if (allMatching.length <= 1) return []
@@ -281,7 +290,7 @@ export function getIconUrl(type: MarkerType): string {
 
 export const MARKER_TYPE_CONFIG: Record<
   MarkerType,
-  { label: string; color: string; bgColor: string; icon: string; iconUrl: string }
+  { label: string; color: string; bgColor: string; icon: string; iconUrl: string; lightInvert?: boolean }
 > = {
   phonebooth: {
     label: '电话亭',
@@ -583,6 +592,7 @@ export const MARKER_TYPE_CONFIG: Record<
     bgColor: '#fef3c7',
     icon: 'M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14H7v-2h5v2zm0-4H7v-2h5v2zm0-4H7V7h5v2zm5 8h-3v-2h3v2zm0-4h-3v-2h3v2zm0-4h-3V7h3v2z',
     iconUrl: './images/icons/ywl.png',
+    lightInvert: true,
   },
   bp: {
     label: '波普',
@@ -604,6 +614,7 @@ export const MARKER_TYPE_CONFIG: Record<
     bgColor: '#cffafe',
     icon: 'M12 11v5m0 0l-2-2m2 2l2-2M2 10c2 0 2-1 4-1s2 1 4 1 2-1 4-1 2 1 4 1 2-1 4-1M5 18a7 7 0 0014 0',
     iconUrl: './images/icons/dyd.png',
+    lightInvert: true,
   },
   gwzj: {
     label: '轨外之境',

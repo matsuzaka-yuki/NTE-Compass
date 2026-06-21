@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { useMarkerStore } from '@/stores/markerStore'
-import { MARKER_TYPE_CONFIG, getItemById, TIME_OPTIONS, WEATHER_OPTIONS } from '@/types'
+import { MARKER_TYPE_CONFIG, getItemById, TIME_OPTIONS, WEATHER_OPTIONS, iconClass } from '@/types'
 import { resolveAssetUrl } from '@/config'
 import PanoramaViewer from './PanoramaViewer.vue'
 
@@ -645,7 +645,7 @@ watch(previewOpen, (open) => {
                   <img
                     :src="resolveAssetUrl(MARKER_TYPE_CONFIG[t].iconUrl)"
                     :alt="MARKER_TYPE_CONFIG[t].label"
-                    :class="isMobileRouteMode ? 'w-2.5 h-2.5 rounded-full object-cover' : 'w-3 h-3 rounded-full object-cover'"
+                    :class="[iconClass(t), isMobileRouteMode ? 'w-2.5 h-2.5 rounded-full object-cover' : 'w-3 h-3 rounded-full object-cover']"
                   />
                   {{ MARKER_TYPE_CONFIG[t].label }}
                   <span

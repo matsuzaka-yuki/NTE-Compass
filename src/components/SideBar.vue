@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, nextTick, watch, onMounted, onUnmounted } from 'vue'
 import { useMarkerStore } from '@/stores/markerStore'
-import { MARKER_TYPE_CONFIG, MARKER_CATEGORIES, ENEMY_CLEARING_TYPES, TELEPORT_SUB_TYPES, TELEPORT_BASIC_TYPES, ALL_ITEMS, ALL_MARKER_TYPES, getIconUrl } from '@/types'
+import { MARKER_TYPE_CONFIG, MARKER_CATEGORIES, ENEMY_CLEARING_TYPES, TELEPORT_SUB_TYPES, TELEPORT_BASIC_TYPES, ALL_ITEMS, ALL_MARKER_TYPES, getIconUrl, iconClass } from '@/types'
 import type { MarkerType } from '@/types'
 import { resolveAssetUrl } from '@/config'
 import { AppIcon } from '@/components/ui'
@@ -970,6 +970,7 @@ function getSegmentTotalCounts(markerIds: string[]): number {
                       :src="resolveAssetUrl(MARKER_TYPE_CONFIG[stat.type].iconUrl)"
                       :alt="MARKER_TYPE_CONFIG[stat.type].label"
                       class="w-3.5 h-3.5 rounded-full object-cover flex-shrink-0"
+                      :class="iconClass(stat.type)"
                     />
                     <span>{{ MARKER_TYPE_CONFIG[stat.type].label }}</span>
                     <span class="font-mono text-muted">{{ stat.count }}</span>
@@ -1053,6 +1054,7 @@ function getSegmentTotalCounts(markerIds: string[]): number {
                         :src="resolveAssetUrl(MARKER_TYPE_CONFIG[type].iconUrl)"
                         :alt="MARKER_TYPE_CONFIG[type].label"
                         class="w-3.5 h-3.5 rounded-full object-cover"
+                        :class="iconClass(type)"
                       />
                       {{ MARKER_TYPE_CONFIG[type].label }}
                     </button>
@@ -1071,6 +1073,7 @@ function getSegmentTotalCounts(markerIds: string[]): number {
                           :key="type"
                           :src="resolveAssetUrl(MARKER_TYPE_CONFIG[type].iconUrl)"
                           :alt="MARKER_TYPE_CONFIG[type].label"
+                          :class="[iconClass(type)]"
                           class="w-3.5 h-3.5 rounded-full object-cover border border-overlay"
                           :style="{ marginLeft: i > 0 ? '-6px' : '0' }"
                         />
@@ -1094,6 +1097,7 @@ function getSegmentTotalCounts(markerIds: string[]): number {
                       :src="resolveAssetUrl(MARKER_TYPE_CONFIG[type].iconUrl)"
                       :alt="MARKER_TYPE_CONFIG[type].label"
                       class="w-3.5 h-3.5 rounded-full object-cover"
+                      :class="iconClass(type)"
                     />
                     {{ MARKER_TYPE_CONFIG[type].label }}
                   </button>
@@ -1114,6 +1118,7 @@ function getSegmentTotalCounts(markerIds: string[]): number {
                         :key="type"
                         :src="resolveAssetUrl(MARKER_TYPE_CONFIG[type].iconUrl)"
                         :alt="MARKER_TYPE_CONFIG[type].label"
+                        :class="[iconClass(type)]"
                         class="w-3.5 h-3.5 rounded-full object-cover border border-overlay"
                         :style="{ marginLeft: i > 0 ? '-6px' : '0' }"
                       />
@@ -1155,6 +1160,7 @@ function getSegmentTotalCounts(markerIds: string[]): number {
                 :src="resolveAssetUrl(MARKER_TYPE_CONFIG[item.type].iconUrl)"
                 :alt="MARKER_TYPE_CONFIG[item.type].label"
                 class="w-[18px] h-[18px] rounded-full object-cover flex-shrink-0 max-md:w-6 max-md:h-6"
+                :class="iconClass(item.type)"
               />
               <span class="flex-1 text-sm text-base truncate max-md:text-xs max-md:flex-initial">{{ MARKER_TYPE_CONFIG[item.type].label }}</span>
               <span
@@ -1227,6 +1233,7 @@ function getSegmentTotalCounts(markerIds: string[]): number {
                 :src="resolveAssetUrl(MARKER_TYPE_CONFIG[item.type].iconUrl)"
                 :alt="MARKER_TYPE_CONFIG[item.type].label"
                 class="w-4 h-4 rounded-full object-cover"
+                :class="iconClass(item.type)"
               />
               <span>{{ MARKER_TYPE_CONFIG[item.type].label }}</span>
               <span
@@ -1278,6 +1285,7 @@ function getSegmentTotalCounts(markerIds: string[]): number {
                 :src="resolveAssetUrl(MARKER_TYPE_CONFIG[item.type].iconUrl)"
                 :alt="MARKER_TYPE_CONFIG[item.type].label"
                 class="w-4 h-4 rounded-full object-cover"
+                :class="iconClass(item.type)"
               />
               <span>{{ MARKER_TYPE_CONFIG[item.type].label }}</span>
               <span
@@ -1390,6 +1398,7 @@ function getSegmentTotalCounts(markerIds: string[]): number {
             :src="resolveAssetUrl(MARKER_TYPE_CONFIG[detailType].iconUrl)"
             :alt="MARKER_TYPE_CONFIG[detailType].label"
             class="w-4 h-4 rounded-full object-cover flex-shrink-0"
+            :class="iconClass(detailType)"
           />
           <span class="flex-1 text-sm leading-none font-medium text-base truncate">{{ MARKER_TYPE_CONFIG[detailType].label }}</span>
           <span class="text-xs leading-none font-mono text-faint flex-shrink-0">
@@ -1435,6 +1444,7 @@ function getSegmentTotalCounts(markerIds: string[]): number {
                     :src="resolveAssetUrl(MARKER_TYPE_CONFIG[m.types[0]].iconUrl)"
                     :alt="MARKER_TYPE_CONFIG[m.types[0]].label"
                     class="rounded-full object-cover opacity-50"
+                    :class="iconClass(m.types[0])"
                     :style="isMobile ? { width: `calc(var(--card-img-size) * 0.5)`, height: `calc(var(--card-img-size) * 0.5)` } : { width: '32px', height: '32px' }"
                   />
                 </div>
@@ -1531,6 +1541,7 @@ function getSegmentTotalCounts(markerIds: string[]): number {
             :src="resolveAssetUrl(MARKER_TYPE_CONFIG[type].iconUrl)"
             :alt="MARKER_TYPE_CONFIG[type].label"
             class="w-3.5 h-3.5 rounded-full object-cover"
+            :class="iconClass(type)"
           />
           {{ MARKER_TYPE_CONFIG[type].label }}
         </button>
@@ -1564,6 +1575,7 @@ function getSegmentTotalCounts(markerIds: string[]): number {
             :src="resolveAssetUrl(MARKER_TYPE_CONFIG[type].iconUrl)"
             :alt="MARKER_TYPE_CONFIG[type].label"
             class="w-3.5 h-3.5 rounded-full object-cover"
+            :class="iconClass(type)"
           />
           {{ MARKER_TYPE_CONFIG[type].label }}
         </button>

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, watch, computed } from 'vue'
 import { useMarkerStore } from '@/stores/markerStore'
-import { MARKER_TYPE_CONFIG, ALL_ITEMS, isEnemyClearingType, TIME_OPTIONS, WEATHER_OPTIONS } from '@/types'
+import { MARKER_TYPE_CONFIG, ALL_ITEMS, isEnemyClearingType, TIME_OPTIONS, WEATHER_OPTIONS, iconClass } from '@/types'
 import type { MarkerType, TimeOfDay, Weather } from '@/types'
 import { resolveAssetUrl } from '@/config'
 
@@ -474,6 +474,7 @@ watch(() => store.pendingMarkerPos, (pos) => {
                     :src="resolveAssetUrl(MARKER_TYPE_CONFIG[type].iconUrl)"
                     :alt="MARKER_TYPE_CONFIG[type].label"
                     class="w-8 h-8 object-cover"
+                    :class="iconClass(type)"
                   />
                   <span class="text-xs" :style="{ color: selectedTypes.includes(type) ? MARKER_TYPE_CONFIG[type].color : '#94a3b8' }">
                     {{ MARKER_TYPE_CONFIG[type].label }}
@@ -805,6 +806,7 @@ watch(() => store.pendingMarkerPos, (pos) => {
                     :src="resolveAssetUrl(MARKER_TYPE_CONFIG[ecType].iconUrl)"
                     :alt="MARKER_TYPE_CONFIG[ecType].label"
                     class="w-5 h-5 rounded-full object-cover flex-shrink-0"
+                    :class="iconClass(ecType)"
                     :title="MARKER_TYPE_CONFIG[ecType].label"
                   />
                   <input
