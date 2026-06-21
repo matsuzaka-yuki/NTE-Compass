@@ -9,51 +9,15 @@ import { AppIcon } from '@/components/ui'
 const store = useMarkerStore()
 
 const detailScrollRef = ref<HTMLElement | null>(null)
-const maxDescLines = ref(3)
 const isMobile = ref(window.innerWidth < 768)
 
-let ro: ResizeObserver | null = null
-
-function recalcLines() {
-  const el = detailScrollRef.value
-  if (!el) return
-  const h = el.clientHeight
+// Track viewport breakpoints via resize (replaces the old ResizeObserver that
+// only fired when the detail panel was mounted, leaving isMobile stale).
+function onResize() {
   isMobile.value = window.innerWidth < 768
-  if (isMobile.value) {
-    const gap = 8
-    const padV = 24 // pt-3 + pb-3 = 12px + 12px
-    const cardH = (h - padV - gap) / 2
-    const imgSize = Math.round(Math.max(32, Math.min(64, cardH * 0.55)))
-    const cardW = Math.round(cardH * 2.2)
-    const cardWNarrow = Math.round((cardW - gap) / 2)
-    const fontSize = Math.round(Math.max(10, Math.min(14, cardH * 0.12)))
-    const nameH = Math.round(fontSize * 1.5) + 4
-    const availTextH = cardH - 24 - nameH
-    const lineH = Math.round(fontSize * 1.4)
-    maxDescLines.value = Math.max(1, Math.floor(availTextH / lineH))
-    el.style.setProperty('--card-row-h', `${cardH}px`)
-    el.style.setProperty('--card-img-size', `${imgSize}px`)
-    el.style.setProperty('--card-width', `${cardW}px`)
-    el.style.setProperty('--card-width-narrow', `${cardWNarrow}px`)
-    el.style.setProperty('--card-font-size', `${fontSize}px`)
-  } else {
-    maxDescLines.value = 3
-    el.style.removeProperty('--card-row-h')
-    el.style.removeProperty('--card-img-size')
-    el.style.removeProperty('--card-width')
-    el.style.removeProperty('--card-width-narrow')
-    el.style.removeProperty('--card-font-size')
-  }
 }
-
-onMounted(() => {
-  ro = new ResizeObserver(() => recalcLines())
-  if (detailScrollRef.value) ro.observe(detailScrollRef.value)
-})
-
-onUnmounted(() => {
-  ro?.disconnect()
-})
+onMounted(() => window.addEventListener('resize', onResize))
+onUnmounted(() => window.removeEventListener('resize', onResize))
 
 const markerTypes = Object.keys(MARKER_TYPE_CONFIG) as MarkerType[]
 
@@ -210,17 +174,6 @@ function scrollToCategory(label: string) {
   }
 }
 
-watch([() => store.sidebarOpen, detailType], ([open, type]) => {
-  if (open && type !== null) {
-    nextTick(() => {
-      if (detailScrollRef.value && ro) {
-        ro.observe(detailScrollRef.value)
-        recalcLines()
-      }
-    })
-  }
-})
-
 function toggleSearch() {
   searchExpanded.value = !searchExpanded.value
   if (!searchExpanded.value) {
@@ -326,14 +279,9 @@ const detailMarkers = computed(() => {
 })
 
 const detailMarkerRows = computed(() => {
-  const markers = detailMarkers.value
-  if (!isMobile.value) return [markers]
-  const row1: typeof markers = []
-  const row2: typeof markers = []
-  markers.forEach((m, i) => {
-    (i % 2 === 0 ? row1 : row2).push(m)
-  })
-  return [row1, row2]
+  // Desktop: single vertical column. Mobile: flat list — flex-wrap handles
+  // the reflow, no manual row-splitting needed.
+  return [detailMarkers.value]
 })
 
 function showDetail(type: MarkerType) {
@@ -1408,15 +1356,15 @@ function getSegmentTotalCounts(markerIds: string[]): number {
         </div>
 
         <!-- Marker cards -->
-        <div ref="detailScrollRef" :class="isMobile ? 'flex-1 flex flex-col gap-2 overflow-x-auto overflow-y-hidden px-4 pb-3 pt-3' : 'flex-1 overflow-y-auto px-4 pb-3 space-y-2 pt-3'">
+        <div ref="detailScrollRef" :class="isMobile ? 'flex-1 overflow-y-auto px-4 pb-3 pt-3' : 'flex-1 overflow-y-auto px-4 pb-3 space-y-2 pt-3'">
           <template v-if="detailMarkers.length > 0">
-            <div v-for="(row, ri) in detailMarkerRows" :key="ri" :class="isMobile ? 'flex gap-2 w-max' : 'space-y-2'">
+            <div v-for="(row, ri) in detailMarkerRows" :key="ri" :class="isMobile ? 'flex flex-wrap gap-2' : 'space-y-2'">
               <div
                 v-for="m in row"
                 :key="m.id"
                 @click="scrollToList(m.id)"
-                class="flex gap-3 p-2 rounded-xl cursor-pointer hover:bg-elevated transition-colors border border-default max-md:flex-shrink-0 max-md:overflow-hidden relative"
-                :style="isMobile ? { width: m.description ? 'var(--card-width)' : 'var(--card-width-narrow)', minWidth: m.description ? 'var(--card-width)' : 'var(--card-width-narrow)', height: 'var(--card-row-h)' } : {}"
+                class="flex gap-3 p-2 rounded-xl cursor-pointer hover:bg-elevated transition-colors border border-default relative"
+                :style="isMobile ? { width: m.description ? 'calc(50% - 4px)' : 'calc(33.333% - 6px)' } : {}"
                 :class="[
                   { 'bg-primary-500/10 border-primary-500/30': store.selectedMarkerId === m.id },
                   isMobile && !m.description ? 'flex-col items-center justify-center gap-1' : '',
@@ -1431,7 +1379,7 @@ function getSegmentTotalCounts(markerIds: string[]): number {
                 <!-- Image -->
                 <div v-if="m.image || (m.images && m.images.length > 0)" class="rounded-lg overflow-hidden flex-shrink-0 bg-elevated"
                   :class="{ 'self-center': !isMobile || !!m.description }"
-                  :style="isMobile ? { width: 'var(--card-img-size)', height: 'var(--card-img-size)' } : { width: '64px', height: '64px' }">
+                  :style="isMobile ? { width: '48px', height: '48px' } : { width: '64px', height: '64px' }">
                   <img
                     :src="m.image ? resolveAssetUrl(m.image) : (m.images && m.images[0] ? resolveAssetUrl(m.images[0]) : undefined)"
                     :alt="m.name"
@@ -1440,13 +1388,13 @@ function getSegmentTotalCounts(markerIds: string[]): number {
                 </div>
                 <div v-else class="rounded-lg flex-shrink-0 bg-elevated flex items-center justify-center"
                   :class="{ 'self-center': !isMobile || !!m.description }"
-                  :style="isMobile ? { width: 'var(--card-img-size)', height: 'var(--card-img-size)' } : { width: '64px', height: '64px' }">
+                  :style="isMobile ? { width: '48px', height: '48px' } : { width: '64px', height: '64px' }">
                   <img
                     :src="resolveAssetUrl(MARKER_TYPE_CONFIG[m.types[0]].iconUrl)"
                     :alt="MARKER_TYPE_CONFIG[m.types[0]].label"
                     class="rounded-full object-cover opacity-50"
                     :class="iconClass(m.types[0])"
-                    :style="isMobile ? { width: `calc(var(--card-img-size) * 0.5)`, height: `calc(var(--card-img-size) * 0.5)` } : { width: '32px', height: '32px' }"
+                    :style="isMobile ? { width: '24px', height: '24px' } : { width: '32px', height: '32px' }"
                   />
                 </div>
 
@@ -1455,7 +1403,7 @@ function getSegmentTotalCounts(markerIds: string[]): number {
                   :class="isMobile && !m.description ? 'flex-initial items-center text-center' : ''">
                   <div class="flex items-center gap-2 flex-shrink-0"
                     :class="isMobile && !m.description ? 'flex-col gap-0.5' : ''">
-                    <span class="font-medium truncate" :class="store.isFound(m.id) ? 'text-faint line-through' : 'text-base'" :style="isMobile ? { fontSize: 'var(--card-font-size)' } : { fontSize: '14px' }">
+                    <span class="font-medium truncate" :class="store.isFound(m.id) ? 'text-faint line-through' : 'text-base'" :style="isMobile ? { fontSize: '11px' } : { fontSize: '14px' }">
                       {{ m.name }}
                     </span>
                     <span
@@ -1469,8 +1417,8 @@ function getSegmentTotalCounts(markerIds: string[]): number {
                   </div>
                   <div
                     v-if="m.description"
-                    class="text-faint mt-0.5 overflow-y-auto flex-1 min-h-0"
-                    :style="{ fontSize: isMobile ? 'var(--card-font-size)' : '12px' }"
+                    class="text-faint mt-0.5 overflow-y-auto flex-1 min-h-0 line-clamp-3"
+                    :style="{ fontSize: isMobile ? '11px' : '12px' }"
                   >
                     {{ m.description }}
                   </div>
@@ -1480,7 +1428,7 @@ function getSegmentTotalCounts(markerIds: string[]): number {
             </div>
           </template>
 
-          <div v-else class="flex items-center justify-center gap-2 text-faint max-md:flex-shrink-0 max-md:flex-col max-md:rounded-xl max-md:bg-elevated/60 max-md:border max-md:border-default" :style="isMobile ? { minWidth: '160px', height: 'calc(var(--card-row-h) * 2 + 8px)' } : {}">
+          <div v-else class="flex w-full items-center justify-center gap-2 text-faint py-12">
             <AppIcon name="filter" class="w-7 h-7 opacity-30" stroke="1.5" />
             <span class="text-xs">无匹配</span>
           </div>
