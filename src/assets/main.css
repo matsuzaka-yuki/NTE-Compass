@@ -129,6 +129,10 @@
     background: var(--bg);
     color: var(--text);
   }
+  /* Remove the jarring browser-default tap highlight on touch devices. */
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
 }
 
 /* ---------- Leaflet overrides ---------- */
@@ -184,9 +188,14 @@
   justify-content: center;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
   padding: 0;
+  transition: background 0.15s ease, transform 0.1s ease;
 }
 .fullscreen-toggle:hover {
   background: var(--elevated);
+}
+.fullscreen-toggle:active {
+  background: var(--elevated);
+  transform: scale(0.92);
 }
 /* Fullscreen icon tinting — source SVGs are dark. Tint to match the theme so
  * the icon stays visible on the themed button background. */

@@ -37,7 +37,7 @@ const iconSize = { sm: 'w-4 h-4', md: 'w-5 h-5', lg: 'w-5 h-5' } as const
   <button
     :title="title"
     :disabled="disabled"
-    class="flex items-center justify-center border shadow-lg transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+    class="flex items-center justify-center border shadow-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed active:scale-95"
     :class="[
       sizeClass[size],
       active
@@ -45,8 +45,8 @@ const iconSize = { sm: 'w-4 h-4', md: 'w-5 h-5', lg: 'w-5 h-5' } as const
           ? 'text-amber-500 dark:text-amber-400 bg-amber-500/10 border-amber-500/40'
           : 'text-primary-500 dark:text-primary-400 bg-primary-500/10 border-primary-500/40'
         : accent === 'amber'
-          ? 'text-amber-500 dark:text-amber-400 bg-surface/90 border-default hover:bg-elevated hover:border-border-strong backdrop-blur-md'
-          : 'text-muted bg-surface/90 border-default hover:text-base hover:bg-elevated hover:border-border-strong backdrop-blur-md',
+          ? 'text-amber-500 dark:text-amber-400 bg-surface/90 border-default hover:bg-elevated hover:border-border-strong backdrop-blur-md active:bg-elevated'
+          : 'text-muted bg-surface/90 border-default hover:text-base hover:bg-elevated hover:border-border-strong backdrop-blur-md active:bg-elevated',
     ]"
     v-bind="$attrs"
   >
