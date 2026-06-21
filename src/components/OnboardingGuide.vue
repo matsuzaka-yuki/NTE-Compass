@@ -99,7 +99,7 @@ function skip() {
       />
     </div>
 
-    <!-- Step content -->
+    <!-- Step content (fixed min-height so dialog doesn't jump between steps) -->
     <div class="flex flex-col items-center text-center pb-2">
       <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary-500/10 text-primary-500 dark:text-primary-400 mb-3">
         <AppIcon :name="current.icon" class="h-7 w-7" />
@@ -107,7 +107,7 @@ function skip() {
       <h3 class="text-base font-semibold text-base mb-2 flex items-center gap-1.5">
         {{ current.title }}
       </h3>
-      <p class="text-sm leading-relaxed text-muted">{{ current.body }}</p>
+      <p class="flex min-h-[7.5rem] items-center text-sm leading-relaxed text-muted">{{ current.body }}</p>
     </div>
 
     <!-- Footer: prev / skip / next -->
