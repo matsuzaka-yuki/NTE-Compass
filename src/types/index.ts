@@ -45,6 +45,7 @@ export type MarkerType =
   | 'bp'
   | 'fq'
   | 'dyd'
+  | 'gwzj'
 
 /** 全景图之间的连接（热点） */
 export interface PanoramaLink {
@@ -228,6 +229,7 @@ export const ALL_MARKER_TYPES: MarkerType[] = [
   'bp',
   'fq',
   'dyd',
+  'gwzj',
 ]
 
 export interface CategoryDef {
@@ -237,8 +239,8 @@ export interface CategoryDef {
 
 export const ENEMY_CLEARING_TYPES: MarkerType[] = ['pyz', 'msz', 'fdz', 'dyz', 'tcs', 'lmz', 'sxyx', 'sqn', 'kkj', 'yo', 'gmz', 'cpjfdl', 'nns', 'zyzd', 'bbt', 'cmd', 'fsjfdl', 'fjz', 'wz', 'mrr', 'wlcb', 'dht', 'htyf', 'yr', 'yd', 'wmz', 'bp']
 
-/** 传送点中折叠为一组的子类型（异象巡礼/界域/追猎/魔女之家/粉爪总行） */
-export const TELEPORT_SUB_TYPES: MarkerType[] = ['yxxl', 'yxjy', 'yxqd', 'mnzj', 'fzyh']
+/** 传送点中折叠为一组的子类型（异象巡礼/界域/追猎/魔女之家/粉爪总行/轨外之境） */
+export const TELEPORT_SUB_TYPES: MarkerType[] = ['yxxl', 'yxjy', 'yxqd', 'mnzj', 'fzyh', 'gwzj']
 
 /** 传送点中直接展示的基础类型（电话亭/维特海默塔） */
 export const TELEPORT_BASIC_TYPES: MarkerType[] = ['phonebooth', 'tower']
@@ -262,7 +264,7 @@ export function getOverlayTypes(types: MarkerType[], selectedTypes: Set<MarkerTy
 }
 
 export const MARKER_CATEGORIES: CategoryDef[] = [
-  { label: '传送点', types: ['phonebooth', 'tower', 'yxxl', 'yxjy', 'yxqd', 'mnzj', 'fzyh'] },
+  { label: '传送点', types: ['phonebooth', 'tower', 'yxxl', 'yxjy', 'yxqd', 'mnzj', 'fzyh', 'gwzj'] },
   { label: '收集品', types: ['oraclestone', 'gift21', 'package'] },
   { label: '任务', types: ['anomaly', 'sidequest'] },
   { label: '景点', types: ['checkin', 'pilgrimage', 'qj'] },
@@ -602,5 +604,12 @@ export const MARKER_TYPE_CONFIG: Record<
     bgColor: '#cffafe',
     icon: 'M12 11v5m0 0l-2-2m2 2l2-2M2 10c2 0 2-1 4-1s2 1 4 1 2-1 4-1 2 1 4 1 2-1 4-1M5 18a7 7 0 0014 0',
     iconUrl: './images/icons/dyd.png',
+  },
+  gwzj: {
+    label: '轨外之境',
+    color: '#9333ea',
+    bgColor: '#f3e8ff',
+    icon: 'M12 2C7.58 2 4 5.58 4 10c0 3.5 2.42 6.5 6 7.5V21l2-2 2 2v-3.5c3.58-1 6-4 6-7.5 0-4.42-3.58-8-8-8zm0 2c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6 2.69-6 6-6z',
+    iconUrl: './images/icons/gwzj.png',
   },
 }
