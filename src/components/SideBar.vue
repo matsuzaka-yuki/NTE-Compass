@@ -692,7 +692,7 @@ function getSegmentTotalCounts(markerIds: string[]): number {
           <button
             @click="store.showRouteView ? store.closeRouteView() : store.openRouteList()"
             class="w-7 h-7 flex items-center justify-center rounded-lg transition-colors flex-shrink-0 max-md:hidden"
-            :class="store.showRouteView ? 'text-primary-500 dark:text-primary-400 bg-primary-500/10' : 'text-muted hover:text-base hover:bg-elevated'"
+            :class="store.showRouteView ? 'text-base bg-elevated' : 'text-muted hover:text-base hover:bg-elevated'"
             title="路线"
           >
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

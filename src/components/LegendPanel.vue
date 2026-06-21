@@ -16,7 +16,7 @@ const expanded = ref(false)
     <button
       @click="expanded = !expanded"
       class="w-10 h-10 rounded-xl bg-overlay/90 backdrop-blur-md border border-default shadow-lg flex items-center justify-center text-muted hover:text-base hover:border-border-strong transition-colors active:scale-95"
-      :class="{ 'text-primary-400 border-primary-400/30 bg-primary-500/10': expanded }"
+      :class="{ 'text-base border-border-strong bg-elevated': expanded }"
       title="设置"
     >
       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

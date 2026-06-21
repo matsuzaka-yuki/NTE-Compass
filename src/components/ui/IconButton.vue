@@ -43,7 +43,7 @@ const iconSize = { sm: 'w-4 h-4', md: 'w-5 h-5', lg: 'w-5 h-5' } as const
       active
         ? accent === 'amber'
           ? 'text-amber-500 dark:text-amber-400 bg-amber-500/10 border-amber-500/40'
-          : 'text-primary-500 dark:text-primary-400 bg-primary-500/10 border-primary-500/40'
+          : 'text-base border-border-strong bg-elevated'
         : accent === 'amber'
           ? 'text-amber-500 dark:text-amber-400 bg-surface/90 border-default hover:bg-elevated hover:border-border-strong backdrop-blur-md active:bg-elevated'
           : 'text-muted bg-surface/90 border-default hover:text-base hover:bg-elevated hover:border-border-strong backdrop-blur-md active:bg-elevated',

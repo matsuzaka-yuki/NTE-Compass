@@ -129,7 +129,7 @@ window.addEventListener('resize', () => {
       v-if="EDITOR_ENABLED"
       @click="handleToggleEditorMode()"
       class="fixed bottom-20 right-6 z-20 w-10 h-10 rounded-xl bg-overlay/90 backdrop-blur-md border border-default shadow-lg flex items-center justify-center transition-colors active:scale-95"
-      :class="store.isEditorMode ? 'text-primary-400 border-primary-400/30 bg-primary-500/10' : 'text-muted hover:text-base hover:border-border-strong'"
+      :class="store.isEditorMode ? 'text-base border-border-strong bg-elevated' : 'text-muted hover:text-base hover:border-border-strong'"
       title="编辑者模式"
     >
       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -141,7 +141,7 @@ window.addEventListener('resize', () => {
     <button
       @click="store.showRouteView ? store.closeRouteView() : (store.sidebarOpen = true, store.openRouteList())"
       class="fixed top-3 left-3 z-30 w-9 h-9 rounded-lg bg-overlay/90 backdrop-blur-md border border-default shadow-lg flex items-center justify-center transition-colors active:scale-95 md:hidden"
-      :class="store.showRouteView ? 'text-primary-400 border-primary-400/30 bg-primary-500/10' : 'text-muted hover:text-base hover:border-border-strong'"
+      :class="store.showRouteView ? 'text-base border-border-strong bg-elevated' : 'text-muted hover:text-base hover:border-border-strong'"
       title="路线"
     >
       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
