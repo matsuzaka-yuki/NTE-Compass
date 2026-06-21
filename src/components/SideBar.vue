@@ -716,8 +716,8 @@ function getSegmentTotalCounts(markerIds: string[]): number {
       <div v-if="!store.showRouteView" class="flex-shrink-0 space-y-3" :class="{ 'p-2': !isMobile, 'p-1': isMobile && detailType === null && !showCategoryList && !enemyMobileView && !teleportSubMobileView }">
         <!-- Header -->
         <div class="flex items-center gap-2">
-          <h1 v-if="!searchExpanded" class="flex items-center gap-1.5 select-none whitespace-nowrap truncate max-md:hidden">
-            <span class="inline-block h-2 w-2 rotate-45 rounded-[2px] bg-primary-500 dark:bg-primary-400"></span>
+          <h1 v-if="!searchExpanded" class="flex items-center gap-2 select-none whitespace-nowrap truncate max-md:hidden">
+            <img :src="resolveAssetUrl('./logo.png')" alt="异环地图" class="h-6 w-6 rounded-md object-cover flex-shrink-0" />
             <span class="text-base font-semibold tracking-[0.2em] text-base">NTE&nbsp;MAP</span>
           </h1>
           <div v-if="searchExpanded" class="relative flex-1 min-w-0 max-md:hidden">
