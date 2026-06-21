@@ -14,7 +14,7 @@
   <img src="https://img.shields.io/badge/免登录-即开即用-8b5cf6?style=flat-square" />
 </p>
 <p align="center">
-  <a href="https://github.com/matsuzaka-yuki/NTE-Compass"><img src="https://img.shields.io/badge/在线地图-立即访问-3b82f6?style=for-the-badge" alt="在线地图" /></a>
+  <a href="https://nte.mysqil.com"><img src="https://img.shields.io/badge/在线地图-立即访问-3b82f6?style=for-the-badge" alt="在线地图" /></a>
 </p>
 
 
