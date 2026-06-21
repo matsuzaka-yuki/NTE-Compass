@@ -63,7 +63,7 @@ const themeOptions: { value: ThemeMode; icon: 'sun' | 'moon' | 'monitor'; label:
 </script>
 
 <template>
-  <div class="fixed bottom-6 right-6 z-20 select-none">
+  <div class="fixed bottom-6 right-6 z-40 select-none">
     <!-- Settings gear button -->
     <IconButton
       icon="gear"
@@ -73,7 +73,8 @@ const themeOptions: { value: ThemeMode; icon: 'sun' | 'moon' | 'monitor'; label:
       @click="expanded = !expanded"
     />
 
-    <!-- Click-away backdrop (teleported so it covers the full viewport) -->
+    <!-- Click-away backdrop (teleported so it covers the full viewport).
+         z-20 sits below this container (z-40) so the panel stays clickable. -->
     <Teleport to="body">
       <div
         v-if="expanded"
@@ -87,7 +88,7 @@ const themeOptions: { value: ThemeMode; icon: 'sun' | 'moon' | 'monitor'; label:
       <Panel
         v-if="expanded"
         radius="xl"
-        class="absolute bottom-12 right-0 mb-2 w-56 space-y-1 p-3 z-30"
+        class="absolute bottom-12 right-0 mb-2 w-56 space-y-1 p-3"
       >
         <!-- Theme switcher (segmented) -->
         <div class="mb-1 flex items-center justify-between gap-1.5">
