@@ -1,15 +1,24 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
 import { useMarkerStore } from './stores/markerStore'
+import { useGuide } from './composables/useGuide'
 import MapView from './components/MapView.vue'
 import SideBar from './components/SideBar.vue'
 import MarkerPopup from './components/MarkerPopup.vue'
 import SettingsPanel from './components/SettingsPanel.vue'
 import CreateMarkerForm from './components/CreateMarkerForm.vue'
+import OnboardingGuide from './components/OnboardingGuide.vue'
 import { ConfirmHost } from './components/ui'
 import { EDITOR_ENABLED } from './config'
 
 const store = useMarkerStore()
+
+// Onboarding guide — re-openable from SettingsPanel via shared trigger
+const { requestId } = useGuide()
+const guideForceOpen = ref(false)
+watch(requestId, () => {
+  guideForceOpen.value = true
+})
 
 const toast = ref('')
 let toastTimer: ReturnType<typeof setTimeout> | null = null
@@ -208,6 +217,9 @@ window.addEventListener('resize', () => {
 
     <!-- Global confirm dialog host -->
     <ConfirmHost />
+
+    <!-- New-user onboarding guide (auto on first visit) -->
+    <OnboardingGuide :force-open="guideForceOpen" @close="guideForceOpen = false" />
 
     <!-- Data source choice dialog (only when EDITOR_ENABLED=false and localStorage has data) -->
     <Teleport to="body">

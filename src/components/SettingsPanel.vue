@@ -3,10 +3,12 @@ import { ref } from 'vue'
 import { useMarkerStore } from '@/stores/markerStore'
 import { EDITOR_ENABLED } from '@/config'
 import { useTheme, type ThemeMode } from '@/composables/useTheme'
+import { useGuide } from '@/composables/useGuide'
 import { IconButton, Panel, Toggle, AppIcon, Dialog } from '@/components/ui'
 
 const store = useMarkerStore()
 const { mode, setThemeMode } = useTheme()
+const { openGuide } = useGuide()
 const expanded = ref(false)
 const editHintVisible = ref(false)
 const importResult = ref('')
@@ -184,8 +186,15 @@ const themeOptions: { value: ThemeMode; icon: 'sun' | 'moon' | 'monitor'; label:
           </div>
         </template>
 
-        <!-- About (always visible, bottom) -->
+        <!-- Guide + About (always visible, bottom) -->
         <div class="mt-1.5 border-t border-default pt-1.5">
+          <button
+            class="flex w-full items-center justify-between rounded-lg px-2 py-1.5 hover:bg-elevated"
+            @click="openGuide(); expanded = false"
+          >
+            <span class="text-xs text-muted">新手指南</span>
+            <AppIcon name="book" class="h-4 w-4 text-faint" />
+          </button>
           <button
             class="flex w-full items-center justify-between rounded-lg px-2 py-1.5 hover:bg-elevated"
             @click="aboutOpen = true; expanded = false"
