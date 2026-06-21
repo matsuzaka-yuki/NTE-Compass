@@ -6214,6 +6214,7 @@
     "lng": 0.1454176059298788
   },
   {
+    "id": "user_1781980796376_2",
     "name": "赠礼",
     "types": [
       "gift21",
@@ -6223,8 +6224,7 @@
     "lng": 0.15481378067335683,
     "counts": {
       "bp": 1
-    },
-    "id": "user_1781980796376_2"
+    }
   },
   {
     "id": "user_1781980976285_3",
@@ -6349,5 +6349,100 @@
     "counts": {
       "cmd": 4
     }
+  },
+  {
+    "id": "user_1782028695851_1",
+    "name": "波普",
+    "types": [
+      "gift21",
+      "bp"
+    ],
+    "lat": 0.5969706868000415,
+    "lng": 0.39578694425710437,
+    "images": [
+      "images/uploads/gift21_1.webp"
+    ],
+    "relatedItems": [
+      "ly"
+    ],
+    "counts": {
+      "bp": 1
+    }
+  },
+  {
+    "id": "user_1782028910921_2",
+    "name": "波普",
+    "types": [
+      "gift21",
+      "bp"
+    ],
+    "lat": 0.5490720461702887,
+    "lng": 0.42688251359973034,
+    "images": [
+      "images/uploads/gift21_2.webp"
+    ],
+    "relatedItems": [
+      "ly"
+    ],
+    "counts": {
+      "bp": 1
+    }
+  },
+  {
+    "id": "user_1782029091082_3",
+    "name": "波普",
+    "types": [
+      "gift21",
+      "bp"
+    ],
+    "lat": 0.5046416745821789,
+    "lng": 0.3733183703572119,
+    "images": [
+      "images/uploads/gift21_3.webp"
+    ],
+    "relatedItems": [
+      "ly"
+    ],
+    "counts": {
+      "bp": 1
+    }
+  },
+  {
+    "id": "user_1782029270976_4",
+    "name": "波普",
+    "types": [
+      "gift21",
+      "bp"
+    ],
+    "lat": 0.4593430389863554,
+    "lng": 0.38017565827857197,
+    "images": [
+      "images/uploads/gift21_4.webp"
+    ],
+    "relatedItems": [
+      "ly"
+    ],
+    "counts": {
+      "bp": 1
+    }
+  },
+  {
+    "name": "波普",
+    "types": [
+      "gift21",
+      "bp"
+    ],
+    "lat": 0.4192192642261505,
+    "lng": 0.3842739254586673,
+    "relatedItems": [
+      "ly"
+    ],
+    "counts": {
+      "bp": 1
+    },
+    "images": [
+      "images/uploads/gift21_5.webp"
+    ],
+    "id": "user_1782029458540_5"
   }
 ]
