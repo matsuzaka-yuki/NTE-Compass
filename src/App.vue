@@ -1,15 +1,20 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, defineAsyncComponent, onMounted, ref, watch } from 'vue'
 import { useMarkerStore } from './stores/markerStore'
 import { useGuide } from './composables/useGuide'
 import MapView from './components/MapView.vue'
 import SideBar from './components/SideBar.vue'
 import MarkerPopup from './components/MarkerPopup.vue'
 import SettingsPanel from './components/SettingsPanel.vue'
-import CreateMarkerForm from './components/CreateMarkerForm.vue'
-import OnboardingGuide from './components/OnboardingGuide.vue'
 import { ConfirmHost } from './components/ui'
 import { EDITOR_ENABLED } from './config'
+
+// Lazy-load less-critical components so they (and their deps) are split into
+// separate chunks and only downloaded when needed:
+//   - CreateMarkerForm: only used in editor mode (EDITOR_ENABLED)
+//   - OnboardingGuide: only shown on first visit / manual re-open
+const CreateMarkerForm = defineAsyncComponent(() => import('./components/CreateMarkerForm.vue'))
+const OnboardingGuide = defineAsyncComponent(() => import('./components/OnboardingGuide.vue'))
 
 const store = useMarkerStore()
 

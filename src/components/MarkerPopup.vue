@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, defineAsyncComponent, ref, watch } from 'vue'
 import { useMarkerStore } from '@/stores/markerStore'
 import { MARKER_TYPE_CONFIG, getItemById, TIME_OPTIONS, WEATHER_OPTIONS, iconClass } from '@/types'
 import { resolveAssetUrl } from '@/config'
-import PanoramaViewer from './PanoramaViewer.vue'
+// Lazy-load the panorama viewer so pannellum (~840KB) only downloads when a
+// user actually opens a panorama, not on first paint.
+const PanoramaViewer = defineAsyncComponent(() => import('./PanoramaViewer.vue'))
 
 const store = useMarkerStore()
 

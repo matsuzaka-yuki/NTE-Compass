@@ -569,7 +569,7 @@
   {
     "id": "user_1780903661288_1",
     "name": "海特洛蚊子清除计划",
-    "image": "./images/icons/wz.png",
+    "image": "./images/icons/wz.webp",
     "segments": [
       {
         "id": "user_1780903693870_2",
@@ -786,7 +786,7 @@
   {
     "id": "user_1781982375938_16",
     "name": "特殊路线",
-    "image": "./images/icons/sidequest.png",
+    "image": "./images/icons/sidequest.webp",
     "segments": [
       {
         "id": "user_1781982446518_17",

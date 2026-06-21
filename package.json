@@ -7,23 +7,21 @@
     "dev": "vite",
     "prebuild": "node -e \"const f=require('fs');if(f.existsSync('./markers-data.json'))f.copyFileSync('./markers-data.json','./src/data/markers.json');if(f.existsSync('./routes-data.json'))f.copyFileSync('./routes-data.json','./src/data/routes.json')\"",
     "build": "vue-tsc --noEmit && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "compress:icons": "node scripts/compress-icons.mjs"
   },
   "dependencies": {
     "leaflet": "^1.9.4",
     "leaflet.markercluster": "^1.5.3",
     "pannellum": "^2.5.7",
     "pinia": "^2.1.7",
-    "three": "^0.184.0",
     "vue": "^3.4.21"
   },
   "devDependencies": {
-    "@resvg/resvg-js": "^2.6.2",
     "@tailwindcss/postcss": "^4.1.13",
     "@types/leaflet": "^1.9.8",
     "@types/leaflet.markercluster": "^1.5.4",
     "@types/pannellum": "^2.5.0",
-    "@types/three": "^0.184.1",
     "@vitejs/plugin-vue": "^5.0.4",
     "postcss": "^8.4.38",
     "sharp": "^0.34.5",

@@ -301,4 +301,18 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
+  build: {
+    chunkSizeWarningLimit: 700,
+    rollupOptions: {
+      output: {
+        // Split vendor libs into their own chunks for better caching and
+        // parallel download. Pannellum is also split via the async import of
+        // PanoramaViewer, so it lands in its own chunk automatically.
+        manualChunks: {
+          leaflet: ['leaflet', 'leaflet.markercluster'],
+          vue: ['vue', 'pinia'],
+        },
+      },
+    },
+  },
 })
