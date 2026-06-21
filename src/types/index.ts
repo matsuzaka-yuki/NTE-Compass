@@ -44,6 +44,7 @@ export type MarkerType =
   | 'ywl'
   | 'bp'
   | 'fq'
+  | 'dyd'
 
 /** 全景图之间的连接（热点） */
 export interface PanoramaLink {
@@ -226,6 +227,7 @@ export const ALL_MARKER_TYPES: MarkerType[] = [
   'ywl',
   'bp',
   'fq',
+  'dyd',
 ]
 
 export interface CategoryDef {
@@ -265,7 +267,7 @@ export const MARKER_CATEGORIES: CategoryDef[] = [
   { label: '任务', types: ['anomaly', 'sidequest'] },
   { label: '景点', types: ['checkin', 'pilgrimage', 'qj'] },
   { label: '敌影清剿', types: ['pyz', 'msz', 'fdz', 'dyz', 'tcs', 'lmz', 'sxyx', 'sqn', 'kkj', 'yo', 'gmz', 'cpjfdl', 'nns', 'zyzd', 'bbt', 'cmd', 'fsjfdl', 'fjz', 'wz', 'mrr', 'wlcb', 'dht', 'htyf', 'yr', 'yd', 'wmz', 'bp'] },
-  { label: '其他', types: ['car', 'ywl', 'fq'] },
+  { label: '其他', types: ['car', 'ywl', 'fq', 'dyd'] },
 ]
 
 
@@ -593,5 +595,12 @@ export const MARKER_TYPE_CONFIG: Record<
     bgColor: '#fef9c3',
     icon: 'M12 3l9 7v11h-6v-6H9v6H3V10l9-7zm0 2.5L5 11.5V20h4v-6h6v6h4v-8.5L12 5.5z',
     iconUrl: './images/icons/fq.png',
+  },
+  dyd: {
+    label: '钓鱼点',
+    color: '#0891b2',
+    bgColor: '#cffafe',
+    icon: 'M12 11v5m0 0l-2-2m2 2l2-2M2 10c2 0 2-1 4-1s2 1 4 1 2-1 4-1 2 1 4 1 2-1 4-1M5 18a7 7 0 0014 0',
+    iconUrl: './images/icons/dyd.png',
   },
 }
