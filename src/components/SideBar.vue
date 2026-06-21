@@ -718,7 +718,7 @@ function getSegmentTotalCounts(markerIds: string[]): number {
         <div class="flex items-center gap-2">
           <h1 v-if="!searchExpanded" class="flex items-center gap-2 select-none whitespace-nowrap truncate max-md:hidden">
             <img :src="resolveAssetUrl('./logo.png')" alt="异环地图" class="h-6 w-6 rounded-md object-cover flex-shrink-0" />
-            <span class="text-base font-semibold tracking-[0.2em] text-base">NTE&nbsp;MAP</span>
+            <span class="text-base font-semibold tracking-[0.15em] text-base">NTE · 夜巡</span>
           </h1>
           <div v-if="searchExpanded" class="relative flex-1 min-w-0 max-md:hidden">
             <svg

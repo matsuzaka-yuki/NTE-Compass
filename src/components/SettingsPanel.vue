@@ -198,7 +198,7 @@ const themeOptions: { value: ThemeMode; icon: 'sun' | 'moon' | 'monitor'; label:
     </Transition>
 
     <!-- About dialog -->
-    <Dialog :open="aboutOpen" title="异环地图 NTE Map" width="380px" @close="aboutOpen = false">
+    <Dialog :open="aboutOpen" title="NTE · 夜巡" width="380px" @close="aboutOpen = false">
       <div class="space-y-3 text-sm leading-relaxed text-muted">
         <p>
           <strong class="text-base">异环地图（NTE Map）</strong>是一个为游戏《异环》设计的交互式 Web 地图，帮助玩家快速定位传送点、收集品、任务、打卡点与圣地巡礼地点。
