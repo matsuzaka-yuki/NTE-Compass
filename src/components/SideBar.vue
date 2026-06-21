@@ -278,12 +278,6 @@ const detailMarkers = computed(() => {
   return store.filteredMarkers.filter((m) => m.types.includes(detailType.value!))
 })
 
-const detailMarkerRows = computed(() => {
-  // Desktop: single vertical column. Mobile: flat list — flex-wrap handles
-  // the reflow, no manual row-splitting needed.
-  return [detailMarkers.value]
-})
-
 function showDetail(type: MarkerType) {
   detailType.value = type
   enemyExpanded.value = false
@@ -1356,75 +1350,63 @@ function getSegmentTotalCounts(markerIds: string[]): number {
         </div>
 
         <!-- Marker cards -->
-        <div ref="detailScrollRef" :class="isMobile ? 'flex-1 overflow-y-auto px-4 pb-3 pt-3' : 'flex-1 overflow-y-auto px-4 pb-3 space-y-2 pt-3'">
+        <div ref="detailScrollRef" :class="isMobile ? 'flex-1 overflow-y-auto px-3 pb-3 pt-3 grid grid-cols-2 gap-2 content-start' : 'flex-1 overflow-y-auto px-4 pb-3 space-y-2 pt-3'">
           <template v-if="detailMarkers.length > 0">
-            <div v-for="(row, ri) in detailMarkerRows" :key="ri" :class="isMobile ? 'flex flex-wrap gap-2' : 'space-y-2'">
-              <div
-                v-for="m in row"
-                :key="m.id"
-                @click="scrollToList(m.id)"
-                class="flex gap-3 p-2 rounded-xl cursor-pointer hover:bg-elevated transition-colors border border-default relative"
-                :style="isMobile ? { width: m.description ? 'calc(50% - 4px)' : 'calc(33.333% - 6px)' } : {}"
-                :class="[
-                  { 'bg-primary-500/10 border-primary-500/30': store.selectedMarkerId === m.id },
-                  isMobile && !m.description ? 'flex-col items-center justify-center gap-1' : '',
-                ]"
-              >
-                <!-- Count badge (absolute top-left, mobile only) -->
-                <span
-                  v-if="m.counts && Object.values(m.counts).some(v => v > 0)"
-                  class="md:hidden absolute top-1 left-1 text-[10px] px-1 py-0.5 rounded-full bg-red-500/20 text-red-500 dark:text-red-400 font-mono leading-none z-10"
-                >{{ Object.values(m.counts).reduce((a: number, b: number) => a + b, 0) }}</span>
+            <div
+              v-for="m in detailMarkers"
+              :key="m.id"
+              @click="scrollToList(m.id)"
+              class="flex gap-2 p-2 rounded-xl cursor-pointer hover:bg-elevated transition-colors border border-default relative"
+              :class="{ 'bg-primary-500/10 border-primary-500/30': store.selectedMarkerId === m.id }"
+            >
+              <!-- Count badge (absolute top-right, mobile only) -->
+              <span
+                v-if="isMobile && m.counts && Object.values(m.counts).some(v => v > 0)"
+                class="absolute top-1 right-1 text-[10px] px-1.5 py-0.5 rounded-full bg-red-500/15 text-red-500 dark:text-red-400 font-mono leading-none z-10"
+              >{{ Object.values(m.counts).reduce((a: number, b: number) => a + b, 0) }}</span>
 
-                <!-- Image -->
-                <div v-if="m.image || (m.images && m.images.length > 0)" class="rounded-lg overflow-hidden flex-shrink-0 bg-elevated"
-                  :class="{ 'self-center': !isMobile || !!m.description }"
-                  :style="isMobile ? { width: '48px', height: '48px' } : { width: '64px', height: '64px' }">
-                  <img
-                    :src="m.image ? resolveAssetUrl(m.image) : (m.images && m.images[0] ? resolveAssetUrl(m.images[0]) : undefined)"
-                    :alt="m.name"
-                    class="w-full h-full object-cover"
-                  />
-                </div>
-                <div v-else class="rounded-lg flex-shrink-0 bg-elevated flex items-center justify-center"
-                  :class="{ 'self-center': !isMobile || !!m.description }"
-                  :style="isMobile ? { width: '48px', height: '48px' } : { width: '64px', height: '64px' }">
-                  <img
-                    :src="resolveAssetUrl(MARKER_TYPE_CONFIG[m.types[0]].iconUrl)"
-                    :alt="MARKER_TYPE_CONFIG[m.types[0]].label"
-                    class="rounded-full object-cover opacity-50"
-                    :class="iconClass(m.types[0])"
-                    :style="isMobile ? { width: '24px', height: '24px' } : { width: '32px', height: '32px' }"
-                  />
-                </div>
-
-                <!-- Info -->
-                <div class="flex-1 min-w-0 flex flex-col overflow-hidden"
-                  :class="isMobile && !m.description ? 'flex-initial items-center text-center' : ''">
-                  <div class="flex items-center gap-2 flex-shrink-0"
-                    :class="isMobile && !m.description ? 'flex-col gap-0.5' : ''">
-                    <span class="font-medium truncate" :class="store.isFound(m.id) ? 'text-faint line-through' : 'text-base'" :style="isMobile ? { fontSize: '11px' } : { fontSize: '14px' }">
-                      {{ m.name }}
-                    </span>
-                    <span
-                      v-if="store.isFound(m.id)"
-                      class="text-xs px-1.5 py-0.5 rounded-full bg-green-500/15 text-green-600 dark:text-green-400 flex-shrink-0"
-                    >已标记</span>
-                    <span
-                      v-if="m.counts && Object.values(m.counts).some(v => v > 0)"
-                      class="max-md:hidden text-xs px-1.5 py-0.5 rounded-full bg-red-500/15 text-red-500 dark:text-red-400 flex-shrink-0 font-mono"
-                    >{{ Object.values(m.counts).reduce((a: number, b: number) => a + b, 0) }}</span>
-                  </div>
-                  <div
-                    v-if="m.description"
-                    class="text-faint mt-0.5 overflow-y-auto flex-1 min-h-0 line-clamp-3"
-                    :style="{ fontSize: isMobile ? '11px' : '12px' }"
-                  >
-                    {{ m.description }}
-                  </div>
-                </div>
-
+              <!-- Image -->
+              <div v-if="m.image || (m.images && m.images.length > 0)" class="rounded-lg overflow-hidden flex-shrink-0 bg-elevated self-start"
+                :style="isMobile ? { width: '44px', height: '44px' } : { width: '64px', height: '64px' }">
+                <img
+                  :src="m.image ? resolveAssetUrl(m.image) : (m.images && m.images[0] ? resolveAssetUrl(m.images[0]) : undefined)"
+                  :alt="m.name"
+                  class="w-full h-full object-cover"
+                />
               </div>
+              <div v-else class="rounded-lg flex-shrink-0 bg-elevated flex items-center justify-center self-start"
+                :style="isMobile ? { width: '44px', height: '44px' } : { width: '64px', height: '64px' }">
+                <img
+                  :src="resolveAssetUrl(MARKER_TYPE_CONFIG[m.types[0]].iconUrl)"
+                  :alt="MARKER_TYPE_CONFIG[m.types[0]].label"
+                  class="rounded-full object-cover opacity-50"
+                  :class="iconClass(m.types[0])"
+                  :style="isMobile ? { width: '22px', height: '22px' } : { width: '32px', height: '32px' }"
+                />
+              </div>
+
+              <!-- Info -->
+              <div class="flex-1 min-w-0 flex flex-col overflow-hidden">
+                <span class="font-medium truncate" :class="store.isFound(m.id) ? 'text-faint line-through' : 'text-base'" :style="isMobile ? { fontSize: '11px' } : { fontSize: '14px' }">
+                  {{ m.name }}
+                </span>
+                <span
+                  v-if="store.isFound(m.id)"
+                  class="mt-0.5 self-start text-[10px] px-1.5 py-0.5 rounded-full bg-green-500/15 text-green-600 dark:text-green-400 flex-shrink-0"
+                >已标记</span>
+                <span
+                  v-if="!isMobile && m.counts && Object.values(m.counts).some(v => v > 0)"
+                  class="mt-0.5 self-start text-[10px] px-1.5 py-0.5 rounded-full bg-red-500/15 text-red-500 dark:text-red-400 flex-shrink-0 font-mono"
+                >{{ Object.values(m.counts).reduce((a: number, b: number) => a + b, 0) }}</span>
+                <div
+                  v-if="m.description"
+                  class="text-faint mt-0.5 line-clamp-2"
+                  :style="{ fontSize: isMobile ? '10px' : '12px' }"
+                >
+                  {{ m.description }}
+                </div>
+              </div>
+
             </div>
           </template>
 
