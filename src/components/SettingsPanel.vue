@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import { useMarkerStore } from '@/stores/markerStore'
 import { EDITOR_ENABLED } from '@/config'
 import { useTheme, type ThemeMode } from '@/composables/useTheme'
-import { IconButton, Panel, Toggle, AppIcon } from '@/components/ui'
+import { IconButton, Panel, Toggle, AppIcon, Dialog } from '@/components/ui'
 
 const store = useMarkerStore()
 const { mode, setThemeMode } = useTheme()
@@ -12,6 +12,7 @@ const editHintVisible = ref(false)
 const importResult = ref('')
 let importResultTimer: ReturnType<typeof setTimeout> | null = null
 const fileInput = ref<HTMLInputElement | null>(null)
+const aboutOpen = ref(false)
 
 function triggerImport() {
   fileInput.value?.click()
@@ -182,8 +183,66 @@ const themeOptions: { value: ThemeMode; icon: 'sun' | 'moon' | 'monitor'; label:
             >{{ importResult }}</div>
           </div>
         </template>
+
+        <!-- About (always visible, bottom) -->
+        <div class="mt-1.5 border-t border-default pt-1.5">
+          <button
+            class="flex w-full items-center justify-between rounded-lg px-2 py-1.5 hover:bg-elevated"
+            @click="aboutOpen = true; expanded = false"
+          >
+            <span class="text-xs text-muted">关于</span>
+            <AppIcon name="info" class="h-4 w-4 text-faint" />
+          </button>
+        </div>
       </Panel>
     </Transition>
+
+    <!-- About dialog -->
+    <Dialog :open="aboutOpen" title="异环地图 NTE Map" width="380px" @close="aboutOpen = false">
+      <div class="space-y-3 text-sm leading-relaxed text-muted">
+        <p>
+          <strong class="text-base">异环地图（NTE Map）</strong>是一个为游戏《异环》设计的交互式 Web 地图，帮助玩家快速定位传送点、收集品、任务、打卡点与圣地巡礼地点。
+        </p>
+        <div class="space-y-1.5 rounded-lg border border-default bg-elevated/50 p-3 text-xs">
+          <div class="flex justify-between">
+            <span class="text-faint">作者</span>
+            <span class="text-base">horizony14</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-faint">联系</span>
+            <span class="text-base">horizony@foxmail.com</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-faint">开源协议</span>
+            <span class="text-base">MIT</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-faint">技术栈</span>
+            <span class="text-base">Vue 3 · Leaflet · Tailwind v4</span>
+          </div>
+        </div>
+        <p class="text-xs text-faint">
+          异环游戏相关的所有素材均为 Perfect World / Hotta Studio 所有，合理使用仅为提供信息参考，与游戏官方无关。标记数据由社区贡献维护，坐标可能存在偏差，请以游戏内实际情况为准。
+        </p>
+        <div class="flex gap-2 pt-1">
+          <a
+            href="https://github.com/Horizony14/map_NTE"
+            target="_blank"
+            rel="noopener"
+            class="flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-default py-2 text-xs font-medium text-muted transition-colors hover:bg-elevated hover:text-base"
+          >
+            <AppIcon name="externalLink" class="h-3.5 w-3.5" />
+            GitHub
+          </a>
+          <button
+            class="flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-primary-600 py-2 text-xs font-medium text-white transition-colors hover:bg-primary-500"
+            @click="aboutOpen = false"
+          >
+            关闭
+          </button>
+        </div>
+      </div>
+    </Dialog>
   </div>
 </template>
 

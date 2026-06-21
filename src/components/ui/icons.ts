@@ -30,6 +30,7 @@ export const ICONS = {
   moon: 'M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z',
   monitor: 'M9.75 17L9 20l-2 1m8-4l-.75 3L14 21M4 5h16a1 1 0 011 1v10a1 1 0 01-1 1H4a1 1 0 01-1-1V6a1 1 0 011-1z',
   drag: 'M4 8h16M4 16h16',
+  externalLink: 'M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14',
 } as const
 
 export type IconName = keyof typeof ICONS

@@ -999,7 +999,7 @@ function getSegmentTotalCounts(markerIds: string[]): number {
           <div class="flex items-center justify-between gap-2 mb-2">
             <div class="flex items-baseline gap-1.5 min-w-0">
               <span class="text-sm font-semibold text-base tabular-nums">{{ progressSummary.found }}<span class="text-faint">/{{ progressSummary.total }}</span></span>
-              <span class="text-[11px] text-faint truncate">已收集</span>
+              <span class="text-[11px] text-faint truncate max-md:hidden">已收集</span>
             </div>
             <div class="flex items-center gap-0.5">
               <!-- Unfound-only toggle -->
@@ -1009,8 +1009,8 @@ function getSegmentTotalCounts(markerIds: string[]): number {
                 :class="store.filterMode === 'unfound' ? 'bg-primary-500/15 text-primary-600 dark:text-primary-400' : 'text-muted hover:text-base hover:bg-elevated'"
                 title="仅显示未收集"
               >
-                <AppIcon name="check" class="h-3 w-3" />
-                <span class="max-md:hidden">未收集</span>
+                <AppIcon name="filter" class="h-3 w-3" />
+                <span>未收集</span>
               </button>
               <!-- Select all / invert -->
               <button
@@ -1019,7 +1019,7 @@ function getSegmentTotalCounts(markerIds: string[]): number {
                 :title="allSelected ? '反选' : '全选'"
               >
                 <AppIcon :name="allSelected ? 'check' : 'plus'" class="h-3 w-3" />
-                <span class="max-md:hidden">{{ allSelected ? '反选' : '全选' }}</span>
+                <span>{{ allSelected ? '反选' : '全选' }}</span>
               </button>
               <!-- Reset (destructive, set apart) -->
               <button
