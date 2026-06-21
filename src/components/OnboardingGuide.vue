@@ -6,7 +6,7 @@
  * `forceOpen` 由设置面板手动触发。分步介绍核心功能。
  */
 import { computed, ref, watch } from 'vue'
-import { Dialog, Btn, AppIcon } from '@/components/ui'
+import { Dialog, Btn, AppIcon, type IconName } from '@/components/ui'
 
 const props = defineProps<{ forceOpen?: boolean }>()
 const emit = defineEmits<{ (e: 'close'): void }>()
@@ -29,42 +29,35 @@ watch(
 )
 
 interface GuideStep {
-  icon: string
+  icon: IconName
   title: string
   body: string
-  /** 可选插图（emoji 或资源路径） */
-  emoji?: string
 }
 
 const steps: GuideStep[] = [
   {
     icon: 'filter',
     title: '筛选标记',
-    emoji: '🎯',
     body: '侧栏按分类（传送点 / 收集品 / 任务 / 景点 / 敌影清剿）勾选想看的类型。点分类标签可一键全选/取消该分类。顶部进度条实时显示已收集数量。',
   },
   {
     icon: 'search',
     title: '搜索定位',
-    emoji: '🔍',
     body: '点侧栏顶部搜索图标，输入关键词即可模糊搜索全部标记点。移动端点左上角放大镜展开搜索栏。',
   },
   {
     icon: 'check',
     title: '收集追踪',
-    emoji: '✅',
     body: '点击地图上的标记，在弹窗里点「标记找到」记录进度。进度自动保存到浏览器，下次打开无需重标。工具栏的「未收集」可一键只看还没找的。',
   },
   {
     icon: 'route',
     title: '路线规划',
-    emoji: '🗺️',
     body: '侧栏点路线图标（桌面端右上）进入路线视图。编辑模式下可创建路线、添加路段、拖拽排序。点「开刷」进入刷怪模式，按组快速导航。',
   },
   {
     icon: 'sun',
     title: '主题与设置',
-    emoji: '🎨',
     body: '右下角齿轮打开设置：切换浅色/深色/跟随系统主题，控制时间/天气/怪物数量显示，导出导入数据。以后想再看这份指南，也在设置里点「新手指南」。',
   },
 ]
@@ -109,7 +102,7 @@ function skip() {
     <!-- Step content -->
     <div class="flex flex-col items-center text-center pb-2">
       <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary-500/10 text-primary-500 dark:text-primary-400 mb-3">
-        <span class="text-2xl">{{ current.emoji }}</span>
+        <AppIcon :name="current.icon" class="h-7 w-7" />
       </div>
       <h3 class="text-base font-semibold text-base mb-2 flex items-center gap-1.5">
         {{ current.title }}
