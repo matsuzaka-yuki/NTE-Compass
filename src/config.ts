@@ -1,5 +1,5 @@
-// 拉到本地后改为 true 即可开启编辑功能
-export const EDITOR_ENABLED = true
+// 编辑者模式（本地开发时设为 true，部署时设为 false）
+export const EDITOR_ENABLED = false
 
 // jsDelivr CDN 加速（GitHub Pages 部署时使用，本地开发可关闭）
 export const JSDELIVR_CDN_ENABLED = false
