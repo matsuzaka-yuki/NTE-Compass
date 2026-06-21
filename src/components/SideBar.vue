@@ -1360,6 +1360,7 @@ function getSegmentTotalCounts(markerIds: string[]): number {
                         :src="resolveAssetUrl(t.config.iconUrl)"
                         :alt="t.config.label"
                         class="w-8 h-8 rounded-full object-cover"
+                        :class="iconClass(t.type)"
                       />
                     </div>
                     <span

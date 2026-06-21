@@ -257,7 +257,8 @@
 
 /* ---------- White-on-dark icons: invert in light mode only ---------- */
 /* Some marker PNGs (e.g. 钓鱼点/异闻录) are pure white, designed for the dark
- * map. In light mode they vanish on a light background — invert them. */
-:root:not(.dark) .icon-light-invert {
-  filter: invert(1);
+ * map. In light mode they vanish on a light background — invert them.
+ * !important guards against cascade/layer ordering issues on mobile. */
+:root:not(.dark) img.icon-light-invert {
+  filter: invert(1) !important;
 }
