@@ -73,12 +73,21 @@ const themeOptions: { value: ThemeMode; icon: 'sun' | 'moon' | 'monitor'; label:
       @click="expanded = !expanded"
     />
 
+    <!-- Click-away backdrop (teleported so it covers the full viewport) -->
+    <Teleport to="body">
+      <div
+        v-if="expanded"
+        class="fixed inset-0 z-20"
+        @click="expanded = false"
+      />
+    </Teleport>
+
     <!-- Settings panel -->
     <Transition name="settings">
       <Panel
         v-if="expanded"
         radius="xl"
-        class="absolute bottom-12 right-0 mb-2 w-56 space-y-1 p-3"
+        class="absolute bottom-12 right-0 mb-2 w-56 space-y-1 p-3 z-30"
       >
         <!-- Theme switcher (segmented) -->
         <div class="mb-1 flex items-center justify-between gap-1.5">
