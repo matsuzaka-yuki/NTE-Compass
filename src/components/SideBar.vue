@@ -894,7 +894,7 @@ function getSegmentTotalCounts(markerIds: string[]): number {
             v-if="store.isAddingSegment"
             class="flex-shrink-0 flex items-center gap-2 px-4 py-2 bg-amber-500/10 border-b border-amber-500/20"
           >
-            <span class="text-xs text-amber-300 flex-1">
+            <span class="text-xs text-amber-600 dark:text-amber-300 flex-1">
               已选 {{ store.segmentTempMarkerIds.length }} 个标点
             </span>
             <button

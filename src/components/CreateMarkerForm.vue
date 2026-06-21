@@ -411,7 +411,7 @@ watch(() => store.pendingMarkerPos, (pos) => {
           <div class="max-h-[88vh] overflow-y-auto">
             <!-- Header -->
             <div class="sticky top-0 z-10 flex items-center justify-between p-4 border-b border-default bg-overlay/95 backdrop-blur-xl">
-            <h2 class="text-base font-bold text-white">{{ isEditing ? '编辑标记点' : '新建标记点' }}</h2>
+            <h2 class="text-base font-bold text-base">{{ isEditing ? '编辑标记点' : '新建标记点' }}</h2>
             <button
               @click="handleCancel"
               class="w-7 h-7 flex items-center justify-center rounded-full bg-elevated/80 hover:bg-surface text-muted hover:text-base transition-colors"
@@ -492,7 +492,7 @@ watch(() => store.pendingMarkerPos, (pos) => {
                   @click="time = time === opt.value ? undefined : opt.value"
                   class="flex items-center justify-center gap-2 p-2.5 rounded-lg border transition-all text-sm"
                   :class="time === opt.value
-                    ? 'border-amber-400/60 bg-amber-400/10 text-amber-200'
+                    ? 'border-amber-400/60 bg-amber-400/10 text-amber-600 dark:text-amber-300'
                     : 'border-default hover:border-border-strong bg-surface/50 text-muted'"
                 >
                   <span class="text-lg">{{ opt.icon }}</span>
@@ -512,10 +512,10 @@ watch(() => store.pendingMarkerPos, (pos) => {
                   class="flex items-center justify-center gap-1.5 p-2.5 rounded-lg border transition-all text-sm"
                   :class="weather === opt.value
                     ? opt.value === 'sunny'
-                      ? 'border-amber-400/60 bg-amber-400/10 text-amber-200'
+                      ? 'border-amber-400/60 bg-amber-400/10 text-amber-600 dark:text-amber-300'
                       : opt.value === 'rainy'
-                      ? 'border-blue-400/60 bg-blue-400/10 text-blue-200'
-                      : 'border-cyan-300/60 bg-cyan-300/10 text-cyan-200'
+                      ? 'border-blue-400/60 bg-blue-400/10 text-blue-600 dark:text-blue-300'
+                      : 'border-cyan-300/60 bg-cyan-300/10 text-cyan-600 dark:text-cyan-300'
                     : 'border-default hover:border-border-strong bg-surface/50 text-muted'"
                 >
                   <span class="text-lg">{{ opt.icon }}</span>
@@ -720,7 +720,7 @@ watch(() => store.pendingMarkerPos, (pos) => {
                       :key="audio.path"
                       @click="selectAudioFile(audio)"
                       class="flex items-center gap-2 w-full px-3 py-2 rounded-lg text-left transition-all"
-                      :class="audioFile === audio.path ? 'bg-cyan-500/20 text-cyan-300' : 'text-muted hover:bg-elevated hover:text-muted'"
+                      :class="audioFile === audio.path ? 'bg-cyan-500/20 text-cyan-600 dark:text-cyan-300' : 'text-muted hover:bg-elevated hover:text-muted'"
                     >
                       <svg class="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
@@ -778,7 +778,7 @@ watch(() => store.pendingMarkerPos, (pos) => {
                   @click="selectedItems.includes(item.id) ? selectedItems = selectedItems.filter(id => id !== item.id) : selectedItems = [...selectedItems, item.id]"
                   class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs transition-all"
                   :class="selectedItems.includes(item.id)
-                    ? 'border-primary-500 bg-primary-500/10 text-primary-300'
+                    ? 'border-primary-500 bg-primary-500/10 text-primary-600 dark:text-primary-300'
                     : 'border-default text-faint hover:border-border-strong hover:text-muted'"
                 >
                   <img
