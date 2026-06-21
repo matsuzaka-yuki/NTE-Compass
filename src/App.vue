@@ -128,7 +128,7 @@ window.addEventListener('resize', () => {
     <button
       v-if="EDITOR_ENABLED"
       @click="handleToggleEditorMode()"
-      class="fixed bottom-20 right-6 z-20 w-10 h-10 rounded-xl bg-overlay/90 backdrop-blur-md border border-default shadow-lg flex items-center justify-center transition-all"
+      class="fixed bottom-20 right-6 z-20 w-10 h-10 rounded-xl bg-overlay/90 backdrop-blur-md border border-default shadow-lg flex items-center justify-center transition-colors active:scale-95"
       :class="store.isEditorMode ? 'text-primary-400 border-primary-400/30 bg-primary-500/10' : 'text-muted hover:text-base hover:border-border-strong'"
       title="编辑者模式"
     >
@@ -140,7 +140,7 @@ window.addEventListener('resize', () => {
     <!-- Mobile route button (top-left) -->
     <button
       @click="store.showRouteView ? store.closeRouteView() : (store.sidebarOpen = true, store.openRouteList())"
-      class="fixed top-3 left-3 z-30 w-9 h-9 rounded-lg bg-overlay/90 backdrop-blur-md border border-default shadow-lg flex items-center justify-center transition-all md:hidden"
+      class="fixed top-3 left-3 z-30 w-9 h-9 rounded-lg bg-overlay/90 backdrop-blur-md border border-default shadow-lg flex items-center justify-center transition-colors active:scale-95 md:hidden"
       :class="store.showRouteView ? 'text-primary-400 border-primary-400/30 bg-primary-500/10' : 'text-muted hover:text-base hover:border-border-strong'"
       title="路线"
     >
@@ -152,7 +152,7 @@ window.addEventListener('resize', () => {
     <!-- Sidebar toggle button -->
     <button
       @click="store.toggleSidebar()"
-      class="fixed z-30 w-9 h-9 rounded-lg bg-overlay/90 backdrop-blur-md border border-default shadow-lg flex items-center justify-center text-muted hover:text-base hover:border-border-strong transition-all top-4 max-md:hidden"
+      class="fixed z-30 w-9 h-9 rounded-lg bg-overlay/90 backdrop-blur-md border border-default shadow-lg flex items-center justify-center text-muted hover:text-base hover:border-border-strong transition-colors active:scale-95 top-4 max-md:hidden"
       :class="store.sidebarOpen ? 'left-[350px]' : 'left-4'"
     >
       <svg v-if="!store.sidebarOpen" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -171,7 +171,7 @@ window.addEventListener('resize', () => {
     >
       <button
         @click="handleFarmingButtonClick()"
-        class="w-9 h-9 rounded-lg bg-amber-500/20 backdrop-blur-md border border-amber-500/40 shadow-lg flex items-center justify-center text-amber-400 hover:text-amber-300 hover:bg-amber-500/30 hover:border-amber-400/60 transition-all"
+        class="w-9 h-9 rounded-lg bg-amber-500/20 backdrop-blur-md border border-amber-500/40 shadow-lg flex items-center justify-center text-amber-400 hover:text-amber-300 hover:bg-amber-500/30 hover:border-amber-400/60 transition-colors active:scale-95"
         title="开刷"
       >
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
@@ -189,7 +189,7 @@ window.addEventListener('resize', () => {
       <button
         @click="store.farmingPrevPair()"
         :disabled="!store.farmingCanGoPrev"
-        class="w-9 h-9 rounded-lg bg-amber-500/20 backdrop-blur-md border border-amber-500/40 shadow-lg flex items-center justify-center text-amber-400 hover:text-amber-300 hover:bg-amber-500/30 hover:border-amber-400/60 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+        class="w-9 h-9 rounded-lg bg-amber-500/20 backdrop-blur-md border border-amber-500/40 shadow-lg flex items-center justify-center text-amber-400 hover:text-amber-300 hover:bg-amber-500/30 hover:border-amber-400/60 disabled:opacity-30 disabled:cursor-not-allowed transition-colors active:scale-95"
         title="上一组"
       >
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
@@ -199,7 +199,7 @@ window.addEventListener('resize', () => {
       <button
         @click="store.farmingNextPair()"
         :disabled="!store.farmingCanGoNext"
-        class="w-9 h-9 rounded-lg bg-amber-500/20 backdrop-blur-md border border-amber-500/40 shadow-lg flex items-center justify-center text-amber-400 hover:text-amber-300 hover:bg-amber-500/30 hover:border-amber-400/60 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+        class="w-9 h-9 rounded-lg bg-amber-500/20 backdrop-blur-md border border-amber-500/40 shadow-lg flex items-center justify-center text-amber-400 hover:text-amber-300 hover:bg-amber-500/30 hover:border-amber-400/60 disabled:opacity-30 disabled:cursor-not-allowed transition-colors active:scale-95"
         title="下一组"
       >
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">

@@ -15,7 +15,7 @@ const expanded = ref(false)
     <!-- Toggle button -->
     <button
       @click="expanded = !expanded"
-      class="w-10 h-10 rounded-xl bg-overlay/90 backdrop-blur-md border border-default shadow-lg flex items-center justify-center text-muted hover:text-base hover:border-border-strong transition-all"
+      class="w-10 h-10 rounded-xl bg-overlay/90 backdrop-blur-md border border-default shadow-lg flex items-center justify-center text-muted hover:text-base hover:border-border-strong transition-colors active:scale-95"
       :class="{ 'text-primary-400 border-primary-400/30 bg-primary-500/10': expanded }"
       title="设置"
     >
@@ -43,7 +43,7 @@ const expanded = ref(false)
             <span class="text-xs text-muted">时间标记</span>
             <span
               class="inline-flex w-8 h-[18px] rounded-full transition-colors"
-              :class="store.showMarkerTime ? 'bg-primary-500' : 'bg-slate-600'"
+              :class="store.showMarkerTime ? 'bg-primary-500' : 'bg-faint/30'"
             >
               <span
                 class="w-3.5 h-3.5 rounded-full bg-white shadow transition-transform mt-px ml-px"
@@ -60,7 +60,7 @@ const expanded = ref(false)
             <span class="text-xs text-muted">天气标记</span>
             <span
               class="inline-flex w-8 h-[18px] rounded-full transition-colors"
-              :class="store.showMarkerWeather ? 'bg-primary-500' : 'bg-slate-600'"
+              :class="store.showMarkerWeather ? 'bg-primary-500' : 'bg-faint/30'"
             >
               <span
                 class="w-3.5 h-3.5 rounded-full bg-white shadow transition-transform mt-px ml-px"
@@ -77,7 +77,7 @@ const expanded = ref(false)
             <span class="text-xs text-muted">怪物数量</span>
             <span
               class="inline-flex w-8 h-[18px] rounded-full transition-colors"
-              :class="store.showMarkerCount ? 'bg-primary-500' : 'bg-slate-600'"
+              :class="store.showMarkerCount ? 'bg-primary-500' : 'bg-faint/30'"
             >
               <span
                 class="w-3.5 h-3.5 rounded-full bg-white shadow transition-transform mt-px ml-px"
