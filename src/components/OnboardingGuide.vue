@@ -7,6 +7,7 @@
  */
 import { computed, ref, watch } from 'vue'
 import { Dialog, Btn, AppIcon, type IconName } from '@/components/ui'
+import { resolveAssetUrl } from '@/config'
 
 const props = defineProps<{ forceOpen?: boolean }>()
 const emit = defineEmits<{ (e: 'close'): void }>()
@@ -29,12 +30,19 @@ watch(
 )
 
 interface GuideStep {
-  icon: IconName
+  icon?: IconName
   title: string
   body: string
+  /** Welcome step renders the logo instead of an icon. */
+  welcome?: boolean
 }
 
 const steps: GuideStep[] = [
+  {
+    title: '欢迎使用 NTE · 夜巡',
+    body: '本工具由 Bilibili @松坂有希 开发，可以帮助你快速定位传送点、收集品与任务，规划刷怪路线，追踪收集进度，轻松探索异环大地图。',
+    welcome: true,
+  },
   {
     icon: 'filter',
     title: '筛选标记',
@@ -101,8 +109,14 @@ function skip() {
 
     <!-- Step content (fixed min-height so dialog doesn't jump between steps) -->
     <div class="flex flex-col items-center text-center pb-2">
-      <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary-500/10 text-primary-500 dark:text-primary-400 mb-3">
-        <AppIcon :name="current.icon" class="h-7 w-7" />
+      <img
+        v-if="current.welcome"
+        :src="resolveAssetUrl('./logo.png')"
+        alt="NTE · 夜巡"
+        class="h-16 w-16 rounded-2xl object-cover mb-3 shadow-lg"
+      />
+      <div v-else class="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary-500/10 text-primary-500 dark:text-primary-400 mb-3">
+        <AppIcon :name="current.icon!" class="h-7 w-7" />
       </div>
       <h3 class="text-base font-semibold text-base mb-2 flex items-center gap-1.5">
         {{ current.title }}
