@@ -1153,7 +1153,7 @@ function getSegmentTotalCounts(markerIds: string[]): number {
           <template v-for="item in flatVisibleTypes" :key="item.type">
             <div
               @click="showDetail(item.type)"
-              class="flex items-center gap-3 px-3 py-2 cursor-pointer rounded-lg hover:bg-elevated active:bg-elevated transition-colors border-b border-default select-none max-md:flex-shrink-0 max-md:flex-col max-md:gap-1 max-md:px-2 max-md:py-1.5 max-md:rounded-lg max-md:bg-elevated/60 max-md:border-b-0 max-md:min-w-[60px] max-md:text-center max-md:hover:bg-elevated max-md:relative"
+              class="flex items-center gap-3 px-3 py-2 cursor-pointer rounded-lg hover:bg-elevated active:bg-elevated transition-colors border-b border-default select-none max-md:flex-shrink-0 max-md:flex-col max-md:gap-1 max-md:px-2.5 max-md:py-1.5 max-md:rounded-lg max-md:bg-elevated/60 max-md:border-b-0 max-md:min-w-[52px] max-md:text-center max-md:hover:bg-elevated max-md:relative"
               :class="{ 'opacity-50': item.foundCount === item.totalCount && item.totalCount > 0 }"
             >
               <img
@@ -1162,7 +1162,7 @@ function getSegmentTotalCounts(markerIds: string[]): number {
                 class="w-[18px] h-[18px] rounded-full object-cover flex-shrink-0 max-md:w-6 max-md:h-6"
                 :class="iconClass(item.type)"
               />
-              <span class="flex-1 text-sm text-base truncate max-md:text-xs max-md:flex-initial">{{ MARKER_TYPE_CONFIG[item.type].label }}</span>
+              <span class="flex-1 text-sm text-base truncate max-md:text-xs max-md:flex-initial max-md:whitespace-nowrap">{{ MARKER_TYPE_CONFIG[item.type].label }}</span>
               <span
                 v-if="item.foundCount === item.totalCount && item.totalCount > 0"
                 class="flex items-center justify-center w-4 h-4 rounded-full bg-green-500/15 text-green-600 dark:text-green-400 flex-shrink-0 max-md:hidden"
