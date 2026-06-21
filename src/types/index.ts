@@ -43,6 +43,7 @@ export type MarkerType =
   | 'wmz'
   | 'ywl'
   | 'bp'
+  | 'fq'
 
 /** 全景图之间的连接（热点） */
 export interface PanoramaLink {
@@ -224,6 +225,7 @@ export const ALL_MARKER_TYPES: MarkerType[] = [
   'wmz',
   'ywl',
   'bp',
+  'fq',
 ]
 
 export interface CategoryDef {
@@ -263,7 +265,7 @@ export const MARKER_CATEGORIES: CategoryDef[] = [
   { label: '任务', types: ['anomaly', 'sidequest'] },
   { label: '景点', types: ['checkin', 'pilgrimage', 'qj'] },
   { label: '敌影清剿', types: ['pyz', 'msz', 'fdz', 'dyz', 'tcs', 'lmz', 'sxyx', 'sqn', 'kkj', 'yo', 'gmz', 'cpjfdl', 'nns', 'zyzd', 'bbt', 'cmd', 'fsjfdl', 'fjz', 'wz', 'mrr', 'wlcb', 'dht', 'htyf', 'yr', 'yd', 'wmz', 'bp'] },
-  { label: '其他', types: ['car', 'ywl'] },
+  { label: '其他', types: ['car', 'ywl', 'fq'] },
 ]
 
 
@@ -584,5 +586,12 @@ export const MARKER_TYPE_CONFIG: Record<
     bgColor: '#e0f2fe',
     icon: 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z',
     iconUrl: './images/icons/bp.png',
+  },
+  fq: {
+    label: '房产',
+    color: '#a16207',
+    bgColor: '#fef9c3',
+    icon: 'M12 3l9 7v11h-6v-6H9v6H3V10l9-7zm0 2.5L5 11.5V20h4v-6h6v6h4v-8.5L12 5.5z',
+    iconUrl: './images/icons/fq.png',
   },
 }

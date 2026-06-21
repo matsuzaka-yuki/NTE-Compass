@@ -6427,6 +6427,7 @@
     }
   },
   {
+    "id": "user_1782029458540_5",
     "name": "波普",
     "types": [
       "gift21",
@@ -6434,6 +6435,36 @@
     ],
     "lat": 0.4192192642261505,
     "lng": 0.3842739254586673,
+    "images": [
+      "images/uploads/gift21_5.webp"
+    ],
+    "relatedItems": [
+      "ly"
+    ],
+    "counts": {
+      "bp": 1
+    }
+  },
+  {
+    "id": "user_1782030043561_1",
+    "name": "维纳公寓",
+    "types": [
+      "fq"
+    ],
+    "lat": 0.5257495304198332,
+    "lng": 0.32353873964513846,
+    "images": [
+      "images/uploads/fq_1.webp"
+    ]
+  },
+  {
+    "name": "波普",
+    "types": [
+      "gift21",
+      "bp"
+    ],
+    "lat": 0.5094236967176405,
+    "lng": 0.2947520935378563,
     "relatedItems": [
       "ly"
     ],
@@ -6441,8 +6472,8 @@
       "bp": 1
     },
     "images": [
-      "images/uploads/gift21_5.webp"
+      "images/uploads/gift21_6.webp"
     ],
-    "id": "user_1782029458540_5"
+    "id": "user_1782030273259_2"
   }
 ]
