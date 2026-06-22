@@ -7308,6 +7308,123 @@
     "lng": 0.427829
   },
   {
+    "id": "sidequest-001",
+    "name": "支线任务 #001",
+    "types": [
+      "sidequest"
+    ],
+    "lat": 0.464366,
+    "lng": 0.418847
+  },
+  {
+    "id": "sidequest-002",
+    "name": "支线任务 #002",
+    "types": [
+      "sidequest"
+    ],
+    "lat": 0.623821,
+    "lng": 0.512467
+  },
+  {
+    "id": "sidequest-003",
+    "name": "支线任务 #003",
+    "types": [
+      "sidequest"
+    ],
+    "lat": 0.515981,
+    "lng": 0.597606
+  },
+  {
+    "id": "sidequest-005",
+    "name": "支线任务 #005",
+    "types": [
+      "sidequest"
+    ],
+    "lat": 0.454636,
+    "lng": 0.425938
+  },
+  {
+    "id": "sidequest-006",
+    "name": "支线任务 #006",
+    "types": [
+      "sidequest"
+    ],
+    "lat": 0.45402,
+    "lng": 0.340237
+  },
+  {
+    "id": "sidequest-007",
+    "name": "支线任务 #007",
+    "types": [
+      "sidequest"
+    ],
+    "lat": 0.461281,
+    "lng": 0.443386
+  },
+  {
+    "id": "sidequest-008",
+    "name": "支线任务 #008",
+    "types": [
+      "sidequest"
+    ],
+    "lat": 0.474303,
+    "lng": 0.337258
+  },
+  {
+    "id": "sidequest-009",
+    "name": "支线任务 #009",
+    "types": [
+      "sidequest"
+    ],
+    "lat": 0.417744,
+    "lng": 0.372789
+  },
+  {
+    "id": "sidequest-011",
+    "name": "支线任务 #011",
+    "types": [
+      "sidequest"
+    ],
+    "lat": 0.445299,
+    "lng": 0.400634
+  },
+  {
+    "id": "sidequest-012",
+    "name": "支线任务 #012",
+    "types": [
+      "sidequest"
+    ],
+    "lat": 0.47271,
+    "lng": 0.427563
+  },
+  {
+    "id": "sidequest-017",
+    "name": "支线任务 #017",
+    "types": [
+      "sidequest"
+    ],
+    "lat": 0.470486,
+    "lng": 0.370422
+  },
+  {
+    "id": "sidequest-019",
+    "name": "支线任务 #019",
+    "types": [
+      "sidequest"
+    ],
+    "lat": 0.691873,
+    "lng": 0.435467
+  },
+  {
+    "id": "sidequest-020",
+    "name": "支线任务 #020",
+    "types": [
+      "sidequest"
+    ],
+    "lat": 0.658284,
+    "lng": 0.503597
+  },
+  {
     "id": "user_1778678098980_1",
     "name": "电话亭",
     "types": [
