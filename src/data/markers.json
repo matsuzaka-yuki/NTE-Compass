@@ -7068,6 +7068,7 @@
     "time": "night"
   },
   {
+    "id": "user_1782135051301_1",
     "name": "食为天",
     "types": [
       "shop"
@@ -7079,7 +7080,21 @@
       "images/uploads/shop_9.webp",
       "images/uploads/shop_10.webp",
       "images/uploads/shop_11.webp"
+    ]
+  },
+  {
+    "name": "夏日重现",
+    "types": [
+      "pilgrimage"
     ],
-    "id": "user_1782135051301_1"
+    "lat": 0.19679228689703962,
+    "lng": 0.1517669374991042,
+    "description": "向阳岛的这个地方是动漫《夏日重现》的经典小岛打卡点位,可以来这里和朋友一起打卡",
+    "images": [
+      "images/uploads/pilgrimage_108.webp",
+      "images/uploads/pilgrimage_109.webp",
+      "images/uploads/pilgrimage_110.webp"
+    ],
+    "id": "user_1782135807258_2"
   }
 ]
