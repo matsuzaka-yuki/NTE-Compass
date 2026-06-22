@@ -548,9 +548,7 @@ function getSegmentTotalCounts(markerIds: string[]): number {
     @click="store.sidebarOpen = true"
     class="fixed bottom-6 left-6 z-30 w-10 h-10 rounded-xl bg-overlay/90 backdrop-blur-md border border-default shadow-lg flex items-center justify-center text-muted hover:text-base hover:border-border-strong transition-colors active:scale-95 md:hidden"
   >
-    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-    </svg>
+    <AppIcon name="menu" class="w-5 h-5" stroke="2" />
   </button>
 
   <!-- Backdrop (mobile) -->
@@ -575,9 +573,7 @@ function getSegmentTotalCounts(markerIds: string[]): number {
         class="absolute left-2 z-30 w-9 h-9 rounded-lg bg-overlay/90 backdrop-blur-md border border-default shadow-lg flex items-center justify-center text-muted hover:text-base hover:border-border-strong transition-colors active:scale-95 md:hidden"
         style="top: -2.75rem;"
       >
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-        </svg>
+        <AppIcon name="close" class="w-5 h-5" stroke="2" />
       </button>
 
       <!-- Mobile farming button: above close button when sidebar open (mobile only) -->
@@ -591,9 +587,7 @@ function getSegmentTotalCounts(markerIds: string[]): number {
           class="w-9 h-9 rounded-lg bg-amber-500/20 backdrop-blur-md border border-amber-500/40 shadow-lg flex items-center justify-center text-amber-400 hover:text-amber-300 hover:bg-amber-500/30 hover:border-amber-400/60 transition-colors active:scale-95"
           title="开刷"
         >
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
-          </svg>
+          <AppIcon name="bolt" class="w-5 h-5" />
         </button>
       </div>
 
@@ -609,9 +603,7 @@ function getSegmentTotalCounts(markerIds: string[]): number {
           class="w-9 h-9 rounded-lg bg-amber-500/20 backdrop-blur-md border border-amber-500/40 shadow-lg flex items-center justify-center text-amber-400 hover:text-amber-300 hover:bg-amber-500/30 hover:border-amber-400/60 disabled:opacity-30 disabled:cursor-not-allowed transition-colors active:scale-95"
           title="上一组"
         >
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M18 15l-6-6-6 6" />
-          </svg>
+          <AppIcon name="chevronUp" class="w-5 h-5" />
         </button>
         <button
           @click="store.farmingNextPair()"
@@ -619,9 +611,7 @@ function getSegmentTotalCounts(markerIds: string[]): number {
           class="w-9 h-9 rounded-lg bg-amber-500/20 backdrop-blur-md border border-amber-500/40 shadow-lg flex items-center justify-center text-amber-400 hover:text-amber-300 hover:bg-amber-500/30 hover:border-amber-400/60 disabled:opacity-30 disabled:cursor-not-allowed transition-colors active:scale-95"
           title="下一组"
         >
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M6 9l6 6 6-6" />
-          </svg>
+          <AppIcon name="chevronDown" class="w-5 h-5" />
         </button>
       </div>
 
@@ -632,9 +622,7 @@ function getSegmentTotalCounts(markerIds: string[]): number {
         class="absolute right-2 z-30 w-9 h-9 rounded-lg bg-overlay/90 backdrop-blur-md border border-default shadow-lg flex items-center justify-center text-muted hover:text-base hover:border-border-strong transition-colors active:scale-95 md:hidden"
         style="top: -2.75rem;"
       >
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-        </svg>
+        <AppIcon name="search" class="w-5 h-5" stroke="2" />
       </button>
 
       <!-- Mobile search bar (expanded) -->
@@ -644,12 +632,7 @@ function getSegmentTotalCounts(markerIds: string[]): number {
         style="top: -2.75rem; left: 3.25rem; right: 0.5rem; height: 2.25rem;"
       >
         <div class="relative w-full h-full">
-          <svg
-            class="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted pointer-events-none"
-            fill="none" stroke="currentColor" viewBox="0 0 24 24"
-          >
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
+          <AppIcon name="search" class="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted pointer-events-none" stroke="2" />
           <input
             v-model="store.searchQuery"
             type="text"
@@ -663,9 +646,7 @@ function getSegmentTotalCounts(markerIds: string[]): number {
             class="absolute right-1.5 top-1/2 -translate-y-1/2 w-4 h-4 flex items-center justify-center text-muted hover:text-base transition-colors"
             title="关闭"
           >
-            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-            </svg>
+            <AppIcon name="close" class="w-3 h-3" stroke="2" />
           </button>
         </div>
       </div>
@@ -679,12 +660,7 @@ function getSegmentTotalCounts(markerIds: string[]): number {
             <span class="text-base font-semibold tracking-[0.15em] text-base">NTE · 夜巡</span>
           </h1>
           <div v-if="searchExpanded" class="relative flex-1 min-w-0 max-md:hidden">
-            <svg
-              class="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted pointer-events-none"
-              fill="none" stroke="currentColor" viewBox="0 0 24 24"
-            >
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
+            <AppIcon name="search" class="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted pointer-events-none" stroke="2" />
             <input
               v-model="store.searchQuery"
               type="text"
@@ -698,9 +674,7 @@ function getSegmentTotalCounts(markerIds: string[]): number {
               class="absolute right-1.5 top-1/2 -translate-y-1/2 w-4 h-4 flex items-center justify-center text-muted hover:text-base transition-colors"
               title="关闭"
             >
-              <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-              </svg>
+              <AppIcon name="close" class="w-3 h-3" stroke="2" />
             </button>
           </div>
           <div v-else class="flex-1 min-w-0 max-md:hidden" />
@@ -711,9 +685,7 @@ function getSegmentTotalCounts(markerIds: string[]): number {
             :class="store.showRouteView ? 'text-base bg-elevated' : 'text-muted hover:text-base hover:bg-elevated'"
             title="路线"
           >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
-            </svg>
+            <AppIcon name="route" class="w-4 h-4" stroke="2" />
           </button>
           <button
             v-if="!searchExpanded"
@@ -721,9 +693,7 @@ function getSegmentTotalCounts(markerIds: string[]): number {
             class="w-7 h-7 flex items-center justify-center text-muted hover:text-base hover:bg-elevated rounded-lg transition-colors flex-shrink-0 max-md:hidden"
             title="搜索"
           >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
+            <AppIcon name="search" class="w-4 h-4" stroke="2" />
           </button>
         </div>
       </div>
@@ -737,9 +707,7 @@ function getSegmentTotalCounts(markerIds: string[]): number {
               @click="store.closeRouteView()"
               class="w-6 h-6 flex items-center justify-center text-muted hover:text-base hover:bg-elevated rounded-md transition-colors flex-shrink-0"
             >
-              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-              </svg>
+              <AppIcon name="back" class="w-3.5 h-3.5" stroke="2" />
             </button>
             <span class="flex-1 text-sm leading-none font-medium text-base truncate">路线</span>
             <button
@@ -748,9 +716,7 @@ function getSegmentTotalCounts(markerIds: string[]): number {
               class="w-6 h-6 flex items-center justify-center text-muted hover:text-primary-400 hover:bg-elevated rounded-md transition-colors flex-shrink-0"
               title="创建路线"
             >
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-              </svg>
+              <AppIcon name="plus" class="w-4 h-4" stroke="2" />
             </button>
           </div>
 
@@ -765,9 +731,7 @@ function getSegmentTotalCounts(markerIds: string[]): number {
                 <div class="w-10 h-10 rounded-lg overflow-hidden flex-shrink-0 bg-elevated">
                   <img v-if="route.image" :src="route.image" class="w-full h-full object-cover" />
                   <div v-else class="w-full h-full flex items-center justify-center">
-                    <svg class="w-5 h-5 text-faint" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
-                    </svg>
+                    <AppIcon name="route" class="w-5 h-5 text-faint" stroke="2" />
                   </div>
                 </div>
                 <div class="flex-1 min-w-0">
@@ -779,20 +743,14 @@ function getSegmentTotalCounts(markerIds: string[]): number {
                   @click.stop="handleDeleteRoute(route.id)"
                   class="w-6 h-6 flex items-center justify-center text-faint hover:text-red-400 rounded transition-colors flex-shrink-0"
                 >
-                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                  </svg>
+                  <AppIcon name="trash" class="w-3.5 h-3.5" stroke="2" />
                 </button>
-                <svg class="w-3.5 h-3.5 text-faint flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
-                </svg>
+                <AppIcon name="chevronRight" class="w-3.5 h-3.5 text-faint flex-shrink-0" />
               </div>
             </template>
 
             <div v-else class="flex flex-col items-center justify-center gap-2 text-faint py-12">
-              <svg class="w-10 h-10 opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
-              </svg>
+              <AppIcon name="route" class="w-10 h-10 opacity-30" stroke="1.5" />
               <span class="text-xs">暂无路线</span>
               <span v-if="store.isAnyEditMode" class="text-xs text-faint">点击右上角 + 创建路线</span>
             </div>
@@ -806,9 +764,7 @@ function getSegmentTotalCounts(markerIds: string[]): number {
               @click="handleBackToRouteList()"
               class="w-6 h-6 flex items-center justify-center text-muted hover:text-base hover:bg-elevated rounded-md transition-colors flex-shrink-0"
             >
-              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-              </svg>
+              <AppIcon name="back" class="w-3.5 h-3.5" stroke="2" />
             </button>
             <div v-if="store.currentRoute?.image" class="w-5 h-5 rounded overflow-hidden flex-shrink-0 bg-elevated">
               <img :src="store.currentRoute.image" class="w-full h-full object-cover" />
@@ -820,9 +776,7 @@ function getSegmentTotalCounts(markerIds: string[]): number {
               class="w-6 h-6 flex items-center justify-center text-muted hover:text-base hover:bg-elevated rounded-md transition-colors flex-shrink-0"
               title="编辑路线"
             >
-              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-              </svg>
+              <AppIcon name="edit" class="w-3.5 h-3.5" stroke="2" />
             </button>
             <button
               v-if="!store.isAddingSegment"
@@ -831,9 +785,7 @@ function getSegmentTotalCounts(markerIds: string[]): number {
               :class="store.routeMarkerFilterIds ? 'text-amber-600 dark:text-amber-400 bg-amber-500/10' : 'text-muted hover:text-base hover:bg-elevated'"
               :title="store.routeMarkerFilterIds ? '显示全部标点' : '仅显示路线标点'"
             >
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-              </svg>
+              <AppIcon name="filter" class="w-4 h-4" stroke="2" />
             </button>
             <button
               v-if="store.isAnyEditMode && !store.isAddingSegment"
@@ -841,9 +793,7 @@ function getSegmentTotalCounts(markerIds: string[]): number {
               class="w-6 h-6 flex items-center justify-center text-muted hover:text-primary-400 hover:bg-elevated rounded-md transition-colors flex-shrink-0"
               title="添加路段"
             >
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-              </svg>
+              <AppIcon name="plus" class="w-4 h-4" stroke="2" />
             </button>
           </div>
 
@@ -886,9 +836,7 @@ function getSegmentTotalCounts(markerIds: string[]): number {
                     title="拖动排序"
                     @click.stop
                   >
-                    <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M8 6h2v2H8V6zm6 0h2v2h-2V6zM8 11h2v2H8v-2zm6 0h2v2h-2v-2zm-6 5h2v2H8v-2zm6 0h2v2h-2v-2z"/>
-                    </svg>
+                    <AppIcon name="dragGrid" class="w-3 h-3" />
                   </button>
                   <span
                     class="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold text-white flex-shrink-0"
@@ -904,18 +852,14 @@ function getSegmentTotalCounts(markerIds: string[]): number {
                     @click.stop="openEditSegmentDialog(segment.id)"
                     class="w-5 h-5 flex items-center justify-center text-faint hover:text-base rounded transition-colors flex-shrink-0"
                   >
-                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                    </svg>
+                    <AppIcon name="edit" class="w-3 h-3" stroke="2" />
                   </button>
                   <button
                     v-if="store.isAnyEditMode"
                     @click.stop="handleDeleteSegment(segment.id)"
                     class="w-5 h-5 flex items-center justify-center text-faint hover:text-red-400 rounded transition-colors flex-shrink-0"
                   >
-                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                    </svg>
+                    <AppIcon name="trash" class="w-3 h-3" stroke="2" />
                   </button>
                 </div>
                 <div class="flex flex-wrap gap-1.5 mt-1">
@@ -938,9 +882,7 @@ function getSegmentTotalCounts(markerIds: string[]): number {
             </template>
 
             <div v-else-if="!store.isAddingSegment" class="flex flex-col items-center justify-center gap-2 text-faint py-12">
-              <svg class="w-10 h-10 opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 10V3L4 14h7v7l9-11h-7z" />
-              </svg>
+              <AppIcon name="bolt" class="w-10 h-10 opacity-30" stroke="1.5" />
               <span class="text-xs">暂无路段</span>
               <span v-if="store.isAnyEditMode" class="text-xs text-faint">点击右上角 + 添加路段</span>
             </div>
@@ -1155,13 +1097,7 @@ function getSegmentTotalCounts(markerIds: string[]): number {
                 v-if="item.monsterSum"
                     class="text-xs px-1.5 py-0.5 rounded-full bg-red-500/15 text-red-500 dark:text-red-400 flex-shrink-0 font-mono max-md:absolute max-md:top-0 max-md:right-0 max-md:text-[10px] max-md:px-1 max-md:py-px max-md:z-10"
               >{{ item.monsterSum }}</span>
-              <svg
-                class="w-3.5 h-3.5 text-faint flex-shrink-0 max-md:hidden"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-              >
-                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
-              </svg>
+              <AppIcon name="chevronRight" class="w-3.5 h-3.5 text-faint flex-shrink-0 max-md:hidden" />
             </div>
           </template>
 
@@ -1183,9 +1119,7 @@ function getSegmentTotalCounts(markerIds: string[]): number {
             @click="closeEnemyMobile()"
             class="w-6 h-6 flex items-center justify-center text-muted hover:text-base hover:bg-elevated rounded-md transition-colors flex-shrink-0"
           >
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-            </svg>
+            <AppIcon name="back" class="w-3.5 h-3.5" stroke="2" />
           </button>
           <span class="flex-1 text-sm leading-none font-medium text-base truncate">敌影清剿</span>
           <span class="text-xs leading-none font-mono text-faint flex-shrink-0">
@@ -1235,9 +1169,7 @@ function getSegmentTotalCounts(markerIds: string[]): number {
             @click="closeTeleportSubMobile()"
             class="w-6 h-6 flex items-center justify-center text-muted hover:text-base hover:bg-elevated rounded-md transition-colors flex-shrink-0"
           >
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-            </svg>
+            <AppIcon name="back" class="w-3.5 h-3.5" stroke="2" />
           </button>
           <span class="flex-1 text-sm leading-none font-medium text-base truncate">传送点 · 异象/特殊</span>
           <span class="text-xs leading-none font-mono text-faint flex-shrink-0">
@@ -1287,9 +1219,7 @@ function getSegmentTotalCounts(markerIds: string[]): number {
             @click="closeCategoryList()"
             class="w-6 h-6 flex items-center justify-center text-muted hover:text-base hover:bg-elevated rounded-md transition-colors flex-shrink-0"
           >
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-            </svg>
+            <AppIcon name="back" class="w-3.5 h-3.5" stroke="2" />
           </button>
           <span class="flex-1 text-sm leading-none font-medium text-base truncate">分类列表</span>
         </div>
@@ -1366,9 +1296,7 @@ function getSegmentTotalCounts(markerIds: string[]): number {
             @click="backToList()"
             class="w-6 h-6 flex items-center justify-center text-muted hover:text-base hover:bg-elevated rounded-md transition-colors flex-shrink-0"
           >
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-            </svg>
+            <AppIcon name="back" class="w-3.5 h-3.5" stroke="2" />
           </button>
           <img
             :src="resolveAssetUrl(MARKER_TYPE_CONFIG[detailType].iconUrl)"
