@@ -3,7 +3,7 @@ import { ref, computed, watch, onMounted, onUnmounted, nextTick } from 'vue'
 import L from 'leaflet'
 import 'leaflet.markercluster'
 import { useMarkerStore } from '@/stores/markerStore'
-import { MARKER_TYPE_CONFIG, getPrimaryType, getOverlayTypes, isEnemyClearingType } from '@/types'
+import { MARKER_TYPE_CONFIG, getPrimaryType, getOverlayTypes, isEnemyClearingType, ENEMY_CLEARING_TYPES } from '@/types'
 import type { MarkerData } from '@/types'
 import { resolveAssetUrl } from '@/config'
 
@@ -211,6 +211,35 @@ function buildRouteArrows() {
   }
 
   if (store.currentRoute) {
+    // 全怪路线模式：每段起始怪用虚线连接最近的传送点
+    const isAutoRoute = store.autoRouteStartId !== null
+    if (isAutoRoute) {
+      // 收集所有传送点
+      const teleports = store.markers.filter(m =>
+        m.types.some(t => ['phonebooth', 'tower', 'mnzj', 'fzyh'].includes(t))
+      )
+      for (const segment of store.currentRoute.segments) {
+        const firstMarker = store.getMarkerById(segment.markerIds[0])
+        if (!firstMarker || teleports.length === 0) continue
+        // 找最近的传送点
+        let nearestTp: MarkerData | null = null
+        let minD = Infinity
+        for (const tp of teleports) {
+          const dy = firstMarker.lat - tp.lat
+          const dx = firstMarker.lng - tp.lng
+          const d = Math.sqrt(dx * dx + dy * dy)
+          if (d < minD) { minD = d; nearestTp = tp }
+        }
+        if (nearestTp) {
+          // 虚线连接（不含箭头，用 polyline 直接画）
+          L.polyline(
+            [[firstMarker.lat, firstMarker.lng], [nearestTp.lat, nearestTp.lng]],
+            { color: '#6366f1', weight: 1.5, opacity: 0.5, dashArray: '4 6' }
+          ).addTo(arrowLayerGroup)
+        }
+      }
+    }
+
     let colorIdx = 0
     for (const segment of store.currentRoute.segments) {
       const color = segmentColors[colorIdx % segmentColors.length]

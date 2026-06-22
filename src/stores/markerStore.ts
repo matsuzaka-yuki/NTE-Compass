@@ -659,8 +659,8 @@ export const useMarkerStore = defineStore('markers', () => {
   }
 
   /** 自动生成全怪最优路线（最近邻+传送优化），返回标记数 */
-  function generateAllEnemyRoute(): number {
-    const { orderedIds, startId } = generateOptimalRoute(markers.value, selectedTypes.value)
+  function generateAllEnemyRoute(useTeleportStart = false): number {
+    const { orderedIds, startId } = generateOptimalRoute(markers.value, selectedTypes.value, useTeleportStart)
     if (orderedIds.length === 0) return 0
 
     const segs = segmentRoute(orderedIds, markers.value)

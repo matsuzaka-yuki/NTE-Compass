@@ -49,11 +49,13 @@ function nearestTeleport(from: Point, teleports: Point[]): Point | null {
  *
  * @param markers 所有标记（从中筛选敌人和传送点）
  * @param selectedTypes 当前选中的类型（只考虑选中的敌人类型）
+ * @param useTeleportStart 如果 true，起点选最近的4大传送点而非起始怪
  * @returns 排序后的标记 ID 列表 + 起始点 ID
  */
 export function generateOptimalRoute(
   markers: MarkerData[],
-  selectedTypes: Set<MarkerType>
+  selectedTypes: Set<MarkerType>,
+  useTeleportStart = false
 ): { orderedIds: string[]; startId: string | null } {
   // 收集敌人标记
   const enemies: Point[] = markers
@@ -75,24 +77,50 @@ export function generateOptimalRoute(
   const visited = new Set<string>()
   const result: string[] = []
 
-  // 起始点：选最靠近中心的标记（或第一个）
+  // 敌人重心
   const cx = enemies.reduce((s, p) => s + p.lng, 0) / enemies.length
   const cy = enemies.reduce((s, p) => s + p.lat, 0) / enemies.length
-  let current: Point = { id: '', lat: cy, lng: cx, name: 'center' }
+  const center: Point = { id: '', lat: cy, lng: cx, name: 'center' }
 
-  // 找离中心最近的标记作为起点
-  let startIdx = 0
-  let startDist = Infinity
-  enemies.forEach((p, i) => {
-    const d = dist(current, p)
-    if (d < startDist) {
-      startDist = d
-      startIdx = i
+  let current: Point
+
+  if (useTeleportStart && teleports.length > 0) {
+    // 找离敌人重心最近的4大传送点作为起点
+    // 按类型分组，每类取最近的
+    const teleportByType = new Map<string, { point: Point; d: number }>()
+    for (const tp of teleports) {
+      const m = markers.find(mk => mk.id === tp.id)
+      if (!m) continue
+      for (const t of m.types) {
+        if (!TELEPORT_TYPES.includes(t)) continue
+        const d = dist(center, tp)
+        const existing = teleportByType.get(t)
+        if (!existing || d < existing.d) {
+          teleportByType.set(t, { point: tp, d })
+        }
+      }
     }
-  })
-  current = enemies[startIdx]
-  visited.add(current.id)
-  result.push(current.id)
+    // 从各类型最近的传送点中，选离重心最近的
+    const candidates = [...teleportByType.values()].sort((a, b) => a.d - b.d)
+    current = candidates[0]?.point ?? enemies[0]
+    // 传送点加入路线起点
+    result.push(current.id)
+    visited.add(current.id)
+  } else {
+    // 原逻辑：选离中心最近的敌人标记作为起点
+    let startIdx = 0
+    let startDist = Infinity
+    enemies.forEach((p, i) => {
+      const d = dist(center, p)
+      if (d < startDist) {
+        startDist = d
+        startIdx = i
+      }
+    })
+    current = enemies[startIdx]
+    visited.add(current.id)
+    result.push(current.id)
+  }
 
   // 距离阈值：超过这个距离考虑传送
   const avgDist = enemies.length > 1
