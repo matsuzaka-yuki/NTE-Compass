@@ -391,7 +391,8 @@ function handleRouteClick(routeId: string) {
 }
 
 function handleGenerateAllEnemyRoute() {
-  showAutoRouteDialog = true
+  autoRouteError.value = ''
+  showAutoRouteDialog.value = true
 }
 
 function confirmGenerateAllEnemyRoute() {
