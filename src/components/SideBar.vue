@@ -4,7 +4,7 @@ import { useMarkerStore } from '@/stores/markerStore'
 import { MARKER_TYPE_CONFIG, MARKER_CATEGORIES, ENEMY_CLEARING_TYPES, TELEPORT_SUB_TYPES, TELEPORT_BASIC_TYPES, iconClass } from '@/types'
 import type { MarkerType } from '@/types'
 import { resolveAssetUrl } from '@/config'
-import { AppIcon } from '@/components/ui'
+import { AppIcon, Dialog, Btn } from '@/components/ui'
 import RouteDialogs from './sidebar/RouteDialogs.vue'
 
 const routeDialogsRef = ref<InstanceType<typeof RouteDialogs> | null>(null)
@@ -29,6 +29,8 @@ const allSelected = computed(() => markerTypes.every((t) => store.selectedTypes.
 const detailType = ref<MarkerType | null>(null)
 const showCategoryList = ref(false)
 const showBookmarkView = ref(false)
+const showAutoRouteDialog = ref(false)
+const autoRouteError = ref('')
 const categoryScrollRef = ref<HTMLElement | null>(null)
 const searchExpanded = ref(false)
 
@@ -389,9 +391,16 @@ function handleRouteClick(routeId: string) {
 }
 
 function handleGenerateAllEnemyRoute() {
+  showAutoRouteDialog = true
+}
+
+function confirmGenerateAllEnemyRoute() {
+  showAutoRouteDialog.value = false
   const count = store.generateAllEnemyRoute()
   if (count === 0) {
-    // 没有可用的敌人标记
+    autoRouteError.value = '当前筛选条件下没有敌人清剿标记，请先勾选怪物类型'
+  } else {
+    autoRouteError.value = ''
   }
 }
 
@@ -1476,6 +1485,28 @@ function getSegmentTotalCounts(markerIds: string[]): number {
 
   <!-- Route & segment dialogs (extracted to RouteDialogs.vue) -->
   <RouteDialogs ref="routeDialogsRef" />
+
+  <!-- Auto-route info dialog -->
+  <Dialog :open="showAutoRouteDialog" title="生成全怪路线" width="360px" @close="showAutoRouteDialog = false">
+    <div class="space-y-3 text-sm text-muted leading-relaxed">
+      <p>将根据当前筛选的敌人清剿标记，自动生成一条最优刷怪路线：</p>
+      <ul class="space-y-1.5 text-xs">
+        <li class="flex gap-2"><span class="text-primary-500">·</span> 使用最近邻算法排序所有标记</li>
+        <li class="flex gap-2"><span class="text-primary-500">·</span> 远距离优先走最近的传送点（电话亭/塔/粉爪/魔女之家）</li>
+        <li class="flex gap-2"><span class="text-primary-500">·</span> 按地理位置自动分段</li>
+        <li class="flex gap-2"><span class="text-primary-500">·</span> 起始点会高亮标记</li>
+      </ul>
+      <p class="text-xs text-faint">该路线为临时生成，关闭后不保留。请先在筛选中勾选想刷的怪物类型。</p>
+      <p v-if="autoRouteError" class="text-xs text-red-500 dark:text-red-400">{{ autoRouteError }}</p>
+    </div>
+    <template #footer>
+      <Btn variant="ghost" size="sm" @click="showAutoRouteDialog = false">取消</Btn>
+      <Btn variant="primary" size="sm" @click="confirmGenerateAllEnemyRoute()">
+        <AppIcon name="bolt" class="h-3.5 w-3.5" />
+        生成路线
+      </Btn>
+    </template>
+  </Dialog>
 </template>
 
 <style scoped>
