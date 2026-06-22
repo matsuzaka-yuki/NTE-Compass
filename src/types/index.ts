@@ -46,6 +46,7 @@ export type MarkerType =
   | 'fq'
   | 'dyd'
   | 'gwzj'
+  | 'shop'
 
 /** 全景图之间的连接（热点） */
 export interface PanoramaLink {
@@ -230,6 +231,7 @@ export const ALL_MARKER_TYPES: MarkerType[] = [
   'fq',
   'dyd',
   'gwzj',
+  'shop',
 ]
 
 export interface CategoryDef {
@@ -278,7 +280,7 @@ export const MARKER_CATEGORIES: CategoryDef[] = [
   { label: '任务', types: ['anomaly', 'sidequest'] },
   { label: '景点', types: ['checkin', 'pilgrimage', 'qj'] },
   { label: '敌影清剿', types: ['pyz', 'msz', 'fdz', 'dyz', 'tcs', 'lmz', 'sxyx', 'sqn', 'kkj', 'yo', 'gmz', 'cpjfdl', 'nns', 'zyzd', 'bbt', 'cmd', 'fsjfdl', 'fjz', 'wz', 'mrr', 'wlcb', 'dht', 'htyf', 'yr', 'yd', 'wmz', 'bp'] },
-  { label: '其他', types: ['car', 'ywl', 'fq', 'dyd'] },
+  { label: '其他', types: ['car', 'ywl', 'fq', 'dyd', 'shop'] },
 ]
 
 
@@ -622,5 +624,12 @@ export const MARKER_TYPE_CONFIG: Record<
     bgColor: '#f3e8ff',
     icon: 'M12 2C7.58 2 4 5.58 4 10c0 3.5 2.42 6.5 6 7.5V21l2-2 2 2v-3.5c3.58-1 6-4 6-7.5 0-4.42-3.58-8-8-8zm0 2c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6 2.69-6 6-6z',
     iconUrl: './images/icons/gwzj.webp',
+  },
+  shop: {
+    label: '购物点',
+    color: '#db2777',
+    bgColor: '#fce7f3',
+    icon: 'M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z',
+    iconUrl: './images/icons/shop.webp',
   },
 }

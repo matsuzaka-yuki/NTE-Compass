@@ -294,7 +294,9 @@ function markersApiPlugin() {
 export default defineConfig({
   base: './',
   server: {
-    host: '0.0.0.0',
+    host: true,
+    port: 3000,
+    strictPort: false,
   },
   plugins: [
     vue(),
