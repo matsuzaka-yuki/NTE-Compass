@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import { computed, ref, nextTick, watch, onMounted, onUnmounted } from 'vue'
 import { useMarkerStore } from '@/stores/markerStore'
-import { MARKER_TYPE_CONFIG, MARKER_CATEGORIES, ENEMY_CLEARING_TYPES, TELEPORT_SUB_TYPES, TELEPORT_BASIC_TYPES, ALL_ITEMS, ALL_MARKER_TYPES, getIconUrl, iconClass } from '@/types'
+import { MARKER_TYPE_CONFIG, MARKER_CATEGORIES, ENEMY_CLEARING_TYPES, TELEPORT_SUB_TYPES, TELEPORT_BASIC_TYPES, iconClass } from '@/types'
 import type { MarkerType } from '@/types'
 import { resolveAssetUrl } from '@/config'
 import { AppIcon } from '@/components/ui'
+import RouteDialogs from './sidebar/RouteDialogs.vue'
+
+const routeDialogsRef = ref<InstanceType<typeof RouteDialogs> | null>(null)
 
 const store = useMarkerStore()
 
@@ -315,115 +318,6 @@ function scrollToList(id: string) {
   store.selectMarker(id)
 }
 
-// ---- Route state ----
-const routeImageOptions = computed(() => {
-  const images: { url: string; label: string }[] = []
-  const seen = new Set<string>()
-
-  // 从 public/images/icons/ 目录读取图标
-  for (const type of ALL_MARKER_TYPES) {
-    const cfg = MARKER_TYPE_CONFIG[type]
-    const url = getIconUrl(type)
-    if (!seen.has(url)) {
-      seen.add(url)
-      images.push({ url, label: cfg.label })
-    }
-  }
-
-  for (const item of ALL_ITEMS) {
-    if (item.image && !seen.has(item.image)) {
-      seen.add(item.image)
-      images.push({ url: resolveAssetUrl(item.image), label: item.name })
-    }
-  }
-
-  for (const m of store.markers) {
-    const img = m.images?.[0] || m.image
-    if (img && !seen.has(img)) {
-      seen.add(img)
-      const url = img.startsWith('data:') ? img : resolveAssetUrl('./' + img)
-      images.push({ url, label: m.name })
-    }
-  }
-
-  return images
-})
-
-const showCreateRouteDialog = ref(false)
-const newRouteName = ref('')
-const newRouteImage = ref('')
-
-const showCreateSegmentDialog = ref(false)
-const newSegmentName = ref('')
-
-const showEditRouteDialog = ref(false)
-const editRouteName = ref('')
-const editRouteImage = ref('')
-
-const showEditSegmentDialog = ref(false)
-const editSegmentName = ref('')
-const editingSegmentId = ref<string | null>(null)
-
-function openCreateRouteDialog() {
-  newRouteName.value = ''
-  newRouteImage.value = routeImageOptions.value[0]?.url ?? ''
-  showCreateRouteDialog.value = true
-}
-
-function confirmCreateRoute() {
-  const name = newRouteName.value.trim()
-  if (!name) return
-  store.addRoute(name, newRouteImage.value || undefined)
-  showCreateRouteDialog.value = false
-}
-
-function openCreateSegmentDialog() {
-  newSegmentName.value = ''
-  showCreateSegmentDialog.value = true
-}
-
-function confirmCreateSegment() {
-  const name = newSegmentName.value.trim()
-  if (!name) return
-  store.finishAddSegment(name)
-  showCreateSegmentDialog.value = false
-}
-
-function openEditRouteDialog() {
-  if (!store.currentRoute) return
-  editRouteName.value = store.currentRoute.name
-  editRouteImage.value = store.currentRoute.image ?? ''
-  showEditRouteDialog.value = true
-}
-
-function confirmEditRoute() {
-  const name = editRouteName.value.trim()
-  if (!name || !store.currentRouteId) return
-  store.updateRoute(store.currentRouteId, {
-    name,
-    image: editRouteImage.value || undefined,
-  })
-  showEditRouteDialog.value = false
-}
-
-function openEditSegmentDialog(segmentId: string) {
-  const route = store.currentRoute
-  if (!route) return
-  const seg = route.segments.find(s => s.id === segmentId)
-  if (!seg) return
-  editingSegmentId.value = segmentId
-  editSegmentName.value = seg.name
-  showEditSegmentDialog.value = true
-}
-
-function confirmEditSegment() {
-  const name = editSegmentName.value.trim()
-  if (!name || !editingSegmentId.value) return
-  store.updateSegment(editingSegmentId.value, { name })
-  showEditSegmentDialog.value = false
-  editingSegmentId.value = null
-}
-
 // Segment drag-and-drop
 const dragIdx = ref<number | null>(null)
 
@@ -461,7 +355,7 @@ function handleAddSegmentClick() {
 
 function handleFinishSegmentClick() {
   if (store.segmentTempMarkerIds.length < 2) return
-  openCreateSegmentDialog()
+  routeDialogsRef.value?.openCreateSegmentDialog()
 }
 
 function handleCancelSegmentClick() {
@@ -712,7 +606,7 @@ function getSegmentTotalCounts(markerIds: string[]): number {
             <span class="flex-1 text-sm leading-none font-medium text-base truncate">路线</span>
             <button
               v-if="store.isAnyEditMode"
-              @click="openCreateRouteDialog()"
+              @click="routeDialogsRef?.openCreateRouteDialog()"
               class="w-6 h-6 flex items-center justify-center text-muted hover:text-primary-400 hover:bg-elevated rounded-md transition-colors flex-shrink-0"
               title="创建路线"
             >
@@ -772,7 +666,7 @@ function getSegmentTotalCounts(markerIds: string[]): number {
             <span class="flex-1 text-sm leading-none font-medium text-base truncate">{{ store.currentRoute?.name ?? '' }}</span>
             <button
               v-if="store.isAnyEditMode"
-              @click="openEditRouteDialog()"
+              @click="routeDialogsRef?.openEditRouteDialog()"
               class="w-6 h-6 flex items-center justify-center text-muted hover:text-base hover:bg-elevated rounded-md transition-colors flex-shrink-0"
               title="编辑路线"
             >
@@ -849,7 +743,7 @@ function getSegmentTotalCounts(markerIds: string[]): number {
                   >{{ getSegmentTotalCounts(segment.markerIds) }}</span>
                   <button
                     v-if="store.isAnyEditMode"
-                    @click.stop="openEditSegmentDialog(segment.id)"
+                    @click.stop="routeDialogsRef?.openEditSegmentDialog(segment.id)"
                     class="w-5 h-5 flex items-center justify-center text-faint hover:text-base rounded transition-colors flex-shrink-0"
                   >
                     <AppIcon name="edit" class="w-3 h-3" stroke="2" />
@@ -1475,199 +1369,8 @@ function getSegmentTotalCounts(markerIds: string[]): number {
     </div>
   </Teleport>
 
-  <!-- Create route dialog -->
-  <Teleport to="body">
-    <Transition name="confirm">
-      <div
-        v-if="showCreateRouteDialog"
-        class="fixed inset-0 z-[100] flex items-center justify-center"
-        @click.self="showCreateRouteDialog = false"
-      >
-        <div class="absolute inset-0 bg-black/60"></div>
-        <div class="relative bg-elevated border border-default rounded-2xl shadow-2xl p-5 w-[380px] max-w-[92vw] max-h-[85vh] flex flex-col">
-          <h3 class="text-sm font-medium text-base mb-4">创建路线</h3>
-          <div class="mb-3">
-            <label class="block text-xs text-muted mb-1.5">路线名称</label>
-            <input
-              v-model="newRouteName"
-              type="text"
-              placeholder="输入路线名称"
-              class="w-full px-3 py-2 text-sm bg-elevated border border-default rounded-lg text-base placeholder:text-faint focus:outline-none focus:border-primary-500 transition-colors"
-              @keydown.enter="confirmCreateRoute()"
-            />
-          </div>
-          <div class="flex-1 min-h-0 mb-4">
-            <label class="block text-xs text-muted mb-1.5">选择路线图片</label>
-            <div v-if="routeImageOptions.length > 0" class="grid grid-cols-5 gap-2 max-h-[240px] overflow-y-auto">
-              <div
-                v-for="(img, idx) in routeImageOptions"
-                :key="idx"
-                @click="newRouteImage = img.url"
-                class="aspect-square rounded-lg overflow-hidden cursor-pointer border-2 transition-colors bg-elevated"
-                :class="newRouteImage === img.url ? 'border-primary-500' : 'border-transparent hover:border-border-strong'"
-                :title="img.label"
-              >
-                <img :src="img.url" class="w-full h-full object-cover" />
-              </div>
-            </div>
-            <div v-else class="text-xs text-faint py-4 text-center">暂无可用图片</div>
-          </div>
-          <div class="flex gap-3 flex-shrink-0">
-            <button
-              @click="showCreateRouteDialog = false"
-              class="flex-1 py-2 text-xs font-medium rounded-lg bg-elevated text-muted hover:bg-surface transition-colors"
-            >取消</button>
-            <button
-              @click="confirmCreateRoute()"
-              :disabled="!newRouteName.trim()"
-              class="flex-1 py-2 text-xs font-medium rounded-lg bg-primary-600 text-white hover:bg-primary-500 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-            >创建</button>
-          </div>
-        </div>
-      </div>
-    </Transition>
-  </Teleport>
-
-  <!-- Create segment dialog -->
-  <Teleport to="body">
-    <Transition name="confirm">
-      <div
-        v-if="showCreateSegmentDialog"
-        class="fixed inset-0 z-[100] flex items-center justify-center"
-        @click.self="showCreateSegmentDialog = false"
-      >
-        <div class="absolute inset-0 bg-black/60"></div>
-        <div class="relative bg-elevated border border-default rounded-2xl shadow-2xl p-5 w-[380px] max-w-[92vw] max-h-[85vh] flex flex-col">
-          <h3 class="text-sm font-medium text-base mb-4">新建路段</h3>
-          <div class="mb-3">
-            <label class="block text-xs text-muted mb-1.5">路段名称</label>
-            <input
-              v-model="newSegmentName"
-              type="text"
-              placeholder="输入路段名称"
-              class="w-full px-3 py-2 text-sm bg-elevated border border-default rounded-lg text-base placeholder:text-faint focus:outline-none focus:border-primary-500 transition-colors"
-              @keydown.enter="confirmCreateSegment()"
-            />
-          </div>
-          <div class="mb-4">
-            <label class="block text-xs text-muted mb-1.5">连接标点 ({{ store.segmentTempMarkerIds.length }} 个)</label>
-            <div class="max-h-[160px] overflow-y-auto space-y-1">
-              <div
-                v-for="(mid, idx) in store.segmentTempMarkerIds"
-                :key="mid"
-                class="flex items-center gap-2 px-2 py-1 rounded bg-elevated text-xs text-muted"
-              >
-                <span class="w-4 h-4 rounded-full bg-amber-500 flex items-center justify-center text-[9px] font-bold text-white flex-shrink-0">{{ idx + 1 }}</span>
-                <span class="truncate">{{ getMarkerName(mid) }}</span>
-              </div>
-              <div v-if="store.segmentTempMarkerIds.length === 0" class="text-xs text-faint py-2 text-center">无标点</div>
-            </div>
-          </div>
-          <div class="flex gap-3 flex-shrink-0">
-            <button
-              @click="showCreateSegmentDialog = false"
-              class="flex-1 py-2 text-xs font-medium rounded-lg bg-elevated text-muted hover:bg-surface transition-colors"
-            >取消</button>
-            <button
-              @click="confirmCreateSegment()"
-              :disabled="!newSegmentName.trim() || store.segmentTempMarkerIds.length < 2"
-              class="flex-1 py-2 text-xs font-medium rounded-lg bg-amber-500 text-white hover:bg-amber-400 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-            >保存</button>
-          </div>
-        </div>
-      </div>
-    </Transition>
-  </Teleport>
-
-  <!-- Edit route dialog -->
-  <Teleport to="body">
-    <Transition name="confirm">
-      <div
-        v-if="showEditRouteDialog"
-        class="fixed inset-0 z-[100] flex items-center justify-center"
-        @click.self="showEditRouteDialog = false"
-      >
-        <div class="absolute inset-0 bg-black/60"></div>
-        <div class="relative bg-elevated border border-default rounded-2xl shadow-2xl p-5 w-[380px] max-w-[92vw] max-h-[85vh] flex flex-col">
-          <h3 class="text-sm font-medium text-base mb-4">编辑路线</h3>
-          <div class="mb-3">
-            <label class="block text-xs text-muted mb-1.5">路线名称</label>
-            <input
-              v-model="editRouteName"
-              type="text"
-              placeholder="输入路线名称"
-              class="w-full px-3 py-2 text-sm bg-elevated border border-default rounded-lg text-base placeholder:text-faint focus:outline-none focus:border-primary-500 transition-colors"
-              @keydown.enter="confirmEditRoute()"
-            />
-          </div>
-          <div class="flex-1 min-h-0 mb-4">
-            <label class="block text-xs text-muted mb-1.5">选择路线图片</label>
-            <div v-if="routeImageOptions.length > 0" class="grid grid-cols-5 gap-2 max-h-[240px] overflow-y-auto">
-              <div
-                v-for="(img, idx) in routeImageOptions"
-                :key="idx"
-                @click="editRouteImage = img.url"
-                class="aspect-square rounded-lg overflow-hidden cursor-pointer border-2 transition-colors bg-elevated"
-                :class="editRouteImage === img.url ? 'border-primary-500' : 'border-transparent hover:border-border-strong'"
-                :title="img.label"
-              >
-                <img :src="img.url" class="w-full h-full object-cover" />
-              </div>
-            </div>
-            <div v-else class="text-xs text-faint py-4 text-center">暂无可用图片</div>
-          </div>
-          <div class="flex gap-3 flex-shrink-0">
-            <button
-              @click="showEditRouteDialog = false"
-              class="flex-1 py-2 text-xs font-medium rounded-lg bg-elevated text-muted hover:bg-surface transition-colors"
-            >取消</button>
-            <button
-              @click="confirmEditRoute()"
-              :disabled="!editRouteName.trim()"
-              class="flex-1 py-2 text-xs font-medium rounded-lg bg-primary-600 text-white hover:bg-primary-500 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-            >保存</button>
-          </div>
-        </div>
-      </div>
-    </Transition>
-  </Teleport>
-
-  <!-- Edit segment dialog -->
-  <Teleport to="body">
-    <Transition name="confirm">
-      <div
-        v-if="showEditSegmentDialog"
-        class="fixed inset-0 z-[100] flex items-center justify-center"
-        @click.self="showEditSegmentDialog = false"
-      >
-        <div class="absolute inset-0 bg-black/60"></div>
-        <div class="relative bg-elevated border border-default rounded-2xl shadow-2xl p-5 w-[320px] max-w-[92vw]">
-          <h3 class="text-sm font-medium text-base mb-4">编辑路段</h3>
-          <div class="mb-4">
-            <label class="block text-xs text-muted mb-1.5">路段名称</label>
-            <input
-              v-model="editSegmentName"
-              type="text"
-              placeholder="输入路段名称"
-              class="w-full px-3 py-2 text-sm bg-elevated border border-default rounded-lg text-base placeholder:text-faint focus:outline-none focus:border-primary-500 transition-colors"
-              @keydown.enter="confirmEditSegment()"
-            />
-          </div>
-          <div class="flex gap-3">
-            <button
-              @click="showEditSegmentDialog = false"
-              class="flex-1 py-2 text-xs font-medium rounded-lg bg-elevated text-muted hover:bg-surface transition-colors"
-            >取消</button>
-            <button
-              @click="confirmEditSegment()"
-              :disabled="!editSegmentName.trim()"
-              class="flex-1 py-2 text-xs font-medium rounded-lg bg-primary-600 text-white hover:bg-primary-500 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-            >保存</button>
-          </div>
-        </div>
-      </div>
-    </Transition>
-  </Teleport>
+  <!-- Route & segment dialogs (extracted to RouteDialogs.vue) -->
+  <RouteDialogs ref="routeDialogsRef" />
 </template>
 
 <style scoped>
