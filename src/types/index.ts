@@ -46,6 +46,7 @@ export type MarkerType =
   | 'fq'
   | 'dyd'
   | 'gwzj'
+  | 'lostwallet'
   | 'shop'
 
 /** 全景图之间的连接（热点） */
@@ -231,6 +232,7 @@ export const ALL_MARKER_TYPES: MarkerType[] = [
   'fq',
   'dyd',
   'gwzj',
+  'lostwallet',
   'shop',
 ]
 
@@ -276,7 +278,7 @@ export function getOverlayTypes(types: MarkerType[], selectedTypes: Set<MarkerTy
 
 export const MARKER_CATEGORIES: CategoryDef[] = [
   { label: '传送点', types: ['phonebooth', 'tower', 'yxxl', 'yxjy', 'yxqd', 'mnzj', 'fzyh', 'gwzj'] },
-  { label: '收集品', types: ['oraclestone', 'gift21', 'package'] },
+  { label: '收集品', types: ['oraclestone', 'gift21', 'package', 'lostwallet'] },
   { label: '任务', types: ['anomaly', 'sidequest'] },
   { label: '景点', types: ['checkin', 'pilgrimage', 'qj'] },
   { label: '敌影清剿', types: ['pyz', 'msz', 'fdz', 'dyz', 'tcs', 'lmz', 'sxyx', 'sqn', 'kkj', 'yo', 'gmz', 'cpjfdl', 'nns', 'zyzd', 'bbt', 'cmd', 'fsjfdl', 'fjz', 'wz', 'mrr', 'wlcb', 'dht', 'htyf', 'yr', 'yd', 'wmz', 'bp'] },
@@ -624,6 +626,13 @@ export const MARKER_TYPE_CONFIG: Record<
     bgColor: '#f3e8ff',
     icon: 'M12 2C7.58 2 4 5.58 4 10c0 3.5 2.42 6.5 6 7.5V21l2-2 2 2v-3.5c3.58-1 6-4 6-7.5 0-4.42-3.58-8-8-8zm0 2c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6 2.69-6 6-6z',
     iconUrl: './images/icons/gwzj.webp',
+  },
+  lostwallet: {
+    label: '丢失的钱包',
+    color: '#a855f7',
+    bgColor: '#f3e8ff',
+    icon: 'M21 7h-3V5a2 2 0 00-2-2H8a2 2 0 00-2 2v2H3v12a2 2 0 002 2h14a2 2 0 002-2V7zM8 5h8v2H8V5zm11 14H5v-7h14v7zm0-9H5V9h14v1z',
+    iconUrl: './images/icons/lostwallet.webp',
   },
   shop: {
     label: '购物点',
