@@ -6996,6 +6996,7 @@
     ]
   },
   {
+    "id": "user_1782133143013_1",
     "name": "2-Four便利店",
     "types": [
       "shop"
@@ -7006,7 +7007,20 @@
     "images": [
       "images/uploads/shop_3.webp",
       "images/uploads/shop_4.webp"
+    ]
+  },
+  {
+    "name": "A.R.P.T.S酒馆",
+    "types": [
+      "shop"
     ],
-    "id": "user_1782133143013_1"
+    "lat": 0.6408794120083627,
+    "lng": 0.5313281117857439,
+    "description": "这个店铺可以买到暴力加输出的高级酒,但是成本相对高",
+    "images": [
+      "images/uploads/shop_5.webp",
+      "images/uploads/shop_6.webp"
+    ],
+    "id": "user_1782133321025_2"
   }
 ]
