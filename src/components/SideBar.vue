@@ -273,6 +273,22 @@ const progressSummary = computed(() => {
   return { found, total }
 })
 
+// Progress ring geometry (0–1 around a 36px circle).
+const progressRing = computed(() => {
+  const { found, total } = progressSummary.value
+  if (total === 0) return { ratio: 0, pct: 0, dash: 0, gap: 100 }
+  const ratio = Math.min(1, found / total)
+  const pct = Math.round(ratio * 100)
+  const circumference = 2 * Math.PI * 15 // r=15
+  return {
+    ratio,
+    pct,
+    dash: ratio * circumference,
+    gap: circumference,
+    complete: ratio >= 1,
+  }
+})
+
 const detailMarkers = computed(() => {
   if (!detailType.value) return []
   return store.filteredMarkers.filter((m) => m.types.includes(detailType.value!))
@@ -939,9 +955,26 @@ function getSegmentTotalCounts(markerIds: string[]): number {
         <div>
           <!-- Toolbar: progress summary (left) + icon actions (right) -->
           <div class="flex items-center justify-between gap-2 mb-2">
-            <div class="flex items-baseline gap-1.5 min-w-0">
-              <span class="text-sm font-semibold text-base tabular-nums">{{ progressSummary.found }}<span class="text-faint">/{{ progressSummary.total }}</span></span>
-              <span class="text-[11px] text-faint truncate max-md:hidden">已收集</span>
+            <div class="flex items-center gap-2 min-w-0">
+              <!-- Progress ring -->
+              <svg class="h-9 w-9 shrink-0" viewBox="0 0 36 36">
+                <circle cx="18" cy="18" r="15" fill="none" stroke="currentColor" stroke-width="3" class="text-default" opacity="0.4" />
+                <circle
+                  cx="18" cy="18" r="15" fill="none" stroke-width="3" stroke-linecap="round"
+                  :stroke="progressRing.complete ? '#22c55e' : 'currentColor'"
+                  :class="progressRing.complete ? '' : 'text-primary-500'"
+                  stroke-dasharray="100 100"
+                  :stroke-dashoffset="100 - progressRing.dash"
+                  pathLength="100"
+                  transform="rotate(-90 18 18)"
+                  style="transition: stroke-dashoffset 0.5s ease;"
+                />
+                <text x="18" y="21" text-anchor="middle" class="fill-current text-[8px] font-semibold" :class="progressRing.complete ? 'text-green-500' : 'text-base'">{{ progressRing.pct }}%</text>
+              </svg>
+              <div class="flex flex-col leading-tight min-w-0">
+                <span class="text-sm font-semibold text-base tabular-nums">{{ progressSummary.found }}<span class="text-faint">/{{ progressSummary.total }}</span></span>
+                <span class="text-[11px] text-faint truncate max-md:hidden">{{ progressRing.complete ? '已全部收集' : '已收集' }}</span>
+              </div>
             </div>
             <div class="flex items-center gap-0.5">
               <!-- Unfound-only toggle -->

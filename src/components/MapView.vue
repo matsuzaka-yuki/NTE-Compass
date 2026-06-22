@@ -534,6 +534,10 @@ onMounted(async () => {
 
   buildMarkers()
 
+  // Map + markers fully initialized — let the loading screen fade out.
+  // Defer one frame so the browser actually paints the map first.
+  requestAnimationFrame(() => emit('ready'))
+
   document.addEventListener('fullscreenchange', onFullscreenChange)
 })
 
@@ -544,6 +548,8 @@ onUnmounted(() => {
     map = null
   }
 })
+
+const emit = defineEmits<{ (e: 'ready'): void }>()
 
 defineExpose({ flyToMarker })
 </script>
@@ -687,5 +693,15 @@ defineExpose({ flyToMarker })
 .highlight-circle {
   background: transparent !important;
   border: none !important;
+}
+.highlight-circle svg {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: marker-pulse 1.8s ease-out infinite;
+}
+@keyframes marker-pulse {
+  0% { transform: scale(0.85); opacity: 1; }
+  70% { transform: scale(1.7); opacity: 0; }
+  100% { transform: scale(1.7); opacity: 0; }
 }
 </style>

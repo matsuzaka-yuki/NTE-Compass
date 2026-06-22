@@ -1,8 +1,10 @@
 <script setup lang="ts">
-import { computed, defineAsyncComponent, onMounted, ref, watch } from 'vue'
+import { computed, defineAsyncComponent, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useMarkerStore } from './stores/markerStore'
 import { useGuide } from './composables/useGuide'
+import { useTheme } from './composables/useTheme'
 import MapView from './components/MapView.vue'
+import LoadingScreen from './components/LoadingScreen.vue'
 import SideBar from './components/SideBar.vue'
 import MarkerPopup from './components/MarkerPopup.vue'
 import SettingsPanel from './components/SettingsPanel.vue'
@@ -17,6 +19,7 @@ const CreateMarkerForm = defineAsyncComponent(() => import('./components/CreateM
 const OnboardingGuide = defineAsyncComponent(() => import('./components/OnboardingGuide.vue'))
 
 const store = useMarkerStore()
+const { isDark, setThemeMode } = useTheme()
 
 // Onboarding guide — re-openable from SettingsPanel via shared trigger
 const { requestId } = useGuide()
@@ -24,6 +27,29 @@ const guideForceOpen = ref(false)
 watch(requestId, () => {
   guideForceOpen.value = true
 })
+
+// First-paint loading screen — hidden once MapView emits 'ready'.
+const loading = ref(true)
+function onMapReady() {
+  loading.value = false
+}
+
+// Desktop keyboard shortcuts (ignored while typing in an input).
+function onKeydown(e: KeyboardEvent) {
+  const el = e.target as HTMLElement
+  if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.isContentEditable) {
+    // Allow Esc to blur/close even from inputs
+    if (e.key === 'Escape') (el as HTMLElement).blur()
+    return
+  }
+  if (e.key === 'Escape') {
+    if (store.selectedMarkerId) store.selectMarker(null)
+    else store.sidebarOpen = false
+  } else if (e.key === 't' || e.key === 'T') {
+    const next = isDark.value ? 'light' : 'dark'
+    setThemeMode(next)
+  }
+}
 
 const toast = ref('')
 let toastTimer: ReturnType<typeof setTimeout> | null = null
@@ -44,7 +70,9 @@ async function handleToggleEditorMode() {
 
 onMounted(() => {
   store.initData()
+  window.addEventListener('keydown', onKeydown)
 })
+onUnmounted(() => window.removeEventListener('keydown', onKeydown))
 
 watch(() => store.isOfflineEditMode, (val, oldVal) => {
   if (oldVal !== undefined) {
@@ -111,7 +139,10 @@ window.addEventListener('resize', () => {
 <template>
   <div class="app-shell relative h-screen w-screen overflow-hidden bg-bg text-base">
     <!-- Map (full screen) -->
-    <MapView />
+    <MapView @ready="onMapReady" />
+
+    <!-- First-paint loading screen -->
+    <LoadingScreen :visible="loading" />
 
     <!-- Editor mode toast -->
     <Transition name="toast">
