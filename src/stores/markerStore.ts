@@ -5,6 +5,7 @@ import { migrateMarker, ALL_MARKER_TYPES, ALL_ITEMS } from '@/types'
 import markersRaw from '@/data/markers.json'
 import routesRaw from '@/data/routes.json'
 import { EDITOR_ENABLED } from '@/config'
+import { encodeProgress, decodeProgress } from '@/composables/useShareCode'
 
 const STORAGE_KEY = 'isekai-map-found'
 const OFFLINE_MARKERS_KEY = 'isekai-map-offline-markers'
@@ -179,6 +180,20 @@ export const useMarkerStore = defineStore('markers', () => {
   function resetProgress() {
     foundIds.value = new Set()
     localStorage.removeItem(STORAGE_KEY)
+  }
+
+  /** 生成进度分享码 */
+  function shareProgress(): string {
+    return encodeProgress(foundIds.value, markers.value)
+  }
+
+  /** 从分享码导入进度。返回导入的标记数，-1 表示失败。 */
+  function importProgress(code: string): number {
+    const decoded = decodeProgress(code, markers.value)
+    if (!decoded) return -1
+    foundIds.value = decoded
+    saveFound(decoded)
+    return decoded.size
   }
 
   // ---- filters ----
@@ -806,6 +821,8 @@ export const useMarkerStore = defineStore('markers', () => {
     isFound,
     toggleFound,
     resetProgress,
+    shareProgress,
+    importProgress,
     toggleType,
     selectAllTypes,
     deselectAllTypes,

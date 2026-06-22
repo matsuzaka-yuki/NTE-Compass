@@ -16,6 +16,50 @@ let importResultTimer: ReturnType<typeof setTimeout> | null = null
 const fileInput = ref<HTMLInputElement | null>(null)
 const aboutOpen = ref(false)
 
+// Progress share/import
+const shareDialogOpen = ref(false)
+const shareCode = ref('')
+const shareCodeCopied = ref(false)
+const importCodeInput = ref('')
+const importCodeError = ref('')
+
+function generateShareCode() {
+  shareCode.value = store.shareProgress()
+  shareCodeCopied.value = false
+  importCodeInput.value = ''
+  importCodeError.value = ''
+  shareDialogOpen.value = true
+}
+
+async function copyShareCode() {
+  try {
+    await navigator.clipboard.writeText(shareCode.value)
+    shareCodeCopied.value = true
+    setTimeout(() => { shareCodeCopied.value = false }, 2000)
+  } catch {
+    // fallback: select the text
+    shareCodeCopied.value = false
+  }
+}
+
+function importFromCode() {
+  const code = importCodeInput.value.trim()
+  if (!code) {
+    importCodeError.value = '请粘贴分享码'
+    return
+  }
+  const result = store.importProgress(code)
+  if (result < 0) {
+    importCodeError.value = '分享码无效或数据不匹配'
+  } else {
+    importCodeError.value = ''
+    importResult.value = `导入成功：${result} 个已收集标记`
+    if (importResultTimer) clearTimeout(importResultTimer)
+    importResultTimer = setTimeout(() => { importResult.value = '' }, 3000)
+    shareDialogOpen.value = false
+  }
+}
+
 function triggerImport() {
   fileInput.value?.click()
 }
@@ -193,6 +237,15 @@ const themeOptions: { value: ThemeMode; icon: 'sun' | 'moon' | 'monitor'; label:
               v-if="importResult"
               class="py-1 text-center text-xs text-green-500 dark:text-green-400"
             >{{ importResult }}</div>
+
+            <!-- Progress share/import -->
+            <button
+              class="flex w-full items-center justify-between rounded-lg px-2 py-1.5 hover:bg-elevated"
+              @click="generateShareCode()"
+            >
+              <span class="text-xs text-muted">进度分享码</span>
+              <AppIcon name="externalLink" class="h-4 w-4 text-faint" />
+            </button>
           </div>
         </template>
 
@@ -259,6 +312,47 @@ const themeOptions: { value: ThemeMode; icon: 'sun' | 'moon' | 'monitor'; label:
           >
             关闭
           </button>
+        </div>
+      </div>
+    </Dialog>
+
+    <!-- Progress share/import dialog -->
+    <Dialog :open="shareDialogOpen" title="进度分享码" width="380px" @close="shareDialogOpen = false">
+      <div class="space-y-4">
+        <!-- Share section -->
+        <div>
+          <p class="mb-2 text-xs text-muted">你的收集进度已编码为分享码，复制后可在其他设备导入：</p>
+          <div class="flex gap-2">
+            <input
+              :value="shareCode"
+              readonly
+              class="flex-1 rounded-lg border border-default bg-surface px-3 py-2 text-xs text-base"
+              @click="($event.target as HTMLInputElement).select()"
+            />
+            <button
+              class="shrink-0 rounded-lg bg-primary-600 px-3 py-2 text-xs font-medium text-white transition-colors hover:bg-primary-500"
+              @click="copyShareCode()"
+            >{{ shareCodeCopied ? '已复制' : '复制' }}</button>
+          </div>
+        </div>
+
+        <!-- Divider -->
+        <div class="border-t border-default"></div>
+
+        <!-- Import section -->
+        <div>
+          <p class="mb-2 text-xs text-muted">粘贴分享码导入其他设备的进度：</p>
+          <textarea
+            v-model="importCodeInput"
+            placeholder="粘贴 v1:... 格式的分享码"
+            rows="3"
+            class="w-full rounded-lg border border-default bg-surface px-3 py-2 text-xs text-base placeholder:text-faint focus:border-primary-500 focus:outline-none"
+          ></textarea>
+          <p v-if="importCodeError" class="mt-1 text-xs text-red-500 dark:text-red-400">{{ importCodeError }}</p>
+          <button
+            class="mt-2 w-full rounded-lg bg-primary-600 py-2 text-xs font-medium text-white transition-colors hover:bg-primary-500"
+            @click="importFromCode()"
+          >导入进度</button>
         </div>
       </div>
     </Dialog>
