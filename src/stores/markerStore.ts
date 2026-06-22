@@ -6,6 +6,7 @@ import markersRaw from '@/data/markers.json'
 import routesRaw from '@/data/routes.json'
 import { EDITOR_ENABLED } from '@/config'
 import { encodeProgress, decodeProgress } from '@/composables/useShareCode'
+import { generateOptimalRoute, segmentRoute } from '@/composables/useAutoRoute'
 
 const STORAGE_KEY = 'isekai-map-found'
 const BOOKMARK_KEY = 'isekai-map-bookmarks'
@@ -649,6 +650,39 @@ export const useMarkerStore = defineStore('markers', () => {
     return route
   }
 
+  /** 自动生成全怪最优路线（最近邻+传送优化），返回标记数 */
+  function generateAllEnemyRoute(): number {
+    const { orderedIds, startId } = generateOptimalRoute(markers.value, selectedTypes.value)
+    if (orderedIds.length === 0) return 0
+
+    const segs = segmentRoute(orderedIds, markers.value)
+    const segments: RouteSegment[] = segs.map((s, i) => ({
+      id: generateId(),
+      name: s.name,
+      markerIds: s.markerIds,
+    }))
+
+    // 删除旧的全怪路线（同名）
+    routes.value = routes.value.filter(r => r.name !== '全怪路线')
+
+    const route: RouteData = {
+      id: generateId(),
+      name: '全怪路线',
+      image: undefined,
+      segments,
+    }
+    routes.value = [...routes.value, route]
+    persistRouteData()
+
+    // 自动打开路线详情
+    showRouteView.value = true
+    currentRouteId.value = route.id
+    currentSegmentIndex.value = 0
+    focusMarkerIds.value = [startId!]
+
+    return orderedIds.length
+  }
+
   function updateRoute(routeId: string, data: Partial<Pick<RouteData, 'name' | 'image'>>) {
     const idx = routes.value.findIndex(r => r.id === routeId)
     if (idx === -1) return
@@ -916,6 +950,7 @@ export const useMarkerStore = defineStore('markers', () => {
     openRouteDetail,
     closeRouteView,
     addRoute,
+    generateAllEnemyRoute,
     updateRoute,
     updateSegment,
     reorderSegments,

@@ -388,6 +388,13 @@ function handleRouteClick(routeId: string) {
   store.openRouteDetail(routeId)
 }
 
+function handleGenerateAllEnemyRoute() {
+  const count = store.generateAllEnemyRoute()
+  if (count === 0) {
+    // 没有可用的敌人标记
+  }
+}
+
 function handleBackToRouteList() {
   store.clearRouteMarkerFilter()
   store.currentRouteId = null
@@ -646,6 +653,14 @@ function getSegmentTotalCounts(markerIds: string[]): number {
               <AppIcon name="back" class="w-3.5 h-3.5" stroke="2" />
             </button>
             <span class="flex-1 text-sm leading-none font-medium text-base truncate">路线</span>
+            <button
+              @click="handleGenerateAllEnemyRoute()"
+              class="flex items-center gap-1 h-6 px-2 rounded-md text-[11px] text-amber-500 dark:text-amber-400 hover:bg-amber-500/10 transition-colors flex-shrink-0"
+              title="自动生成全怪最优路线"
+            >
+              <AppIcon name="bolt" class="h-3 w-3" stroke="2" />
+              全怪路线
+            </button>
             <button
               v-if="store.isAnyEditMode"
               @click="routeDialogsRef?.openCreateRouteDialog()"
