@@ -7038,6 +7038,7 @@
     ]
   },
   {
+    "id": "user_1782134258203_4",
     "name": "茂藏家 豆腐店",
     "types": [
       "pilgrimage",
@@ -7050,7 +7051,20 @@
       "images/uploads/pilgrimage_105.webp",
       "images/uploads/pilgrimage_106.webp",
       "images/uploads/pilgrimage_107.webp"
+    ]
+  },
+  {
+    "name": "游乐园全景",
+    "types": [
+      "checkin"
     ],
-    "id": "user_1782134258203_4"
+    "lat": 0.4713430047385714,
+    "lng": 0.5917699765833698,
+    "description": "在这个地方可以直接看到美丽的游乐园全景,可以和朋友一起来打卡",
+    "images": [
+      "images/uploads/checkin_2.webp"
+    ],
+    "time": "night",
+    "id": "user_1782134603389_5"
   }
 ]
