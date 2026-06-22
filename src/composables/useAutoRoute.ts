@@ -100,12 +100,22 @@ export function generateOptimalRoute(
         }
       }
     }
-    // 从各类型最近的传送点中，选离重心最近的
+    // 从各类型最近的传送点中，选离重心最近的，仅作贪心遍历的起始位置
     const candidates = [...teleportByType.values()].sort((a, b) => a.d - b.d)
     current = candidates[0]?.point ?? enemies[0]
-    // 传送点加入路线起点
-    result.push(current.id)
-    visited.add(current.id)
+    // 不将传送点加入 result/visited — 它不是清剿目标，只是位置参考
+    // 从传送点出发，先找最近的敌人作为路线的第一个标记
+    let firstEnemy: Point | null = null
+    let firstDist = Infinity
+    for (const e of enemies) {
+      const d = dist(current, e)
+      if (d < firstDist) { firstDist = d; firstEnemy = e }
+    }
+    if (firstEnemy) {
+      current = firstEnemy
+      visited.add(firstEnemy.id)
+      result.push(firstEnemy.id)
+    }
   } else {
     // 原逻辑：选离中心最近的敌人标记作为起点
     let startIdx = 0

@@ -31,7 +31,6 @@ const showCategoryList = ref(false)
 const showBookmarkView = ref(false)
 const showAutoRouteDialog = ref(false)
 const autoRouteError = ref('')
-const autoRouteUseTeleport = ref(false)
 const categoryScrollRef = ref<HTMLElement | null>(null)
 const searchExpanded = ref(false)
 
@@ -398,7 +397,7 @@ function handleGenerateAllEnemyRoute() {
 
 function confirmGenerateAllEnemyRoute() {
   showAutoRouteDialog.value = false
-  const count = store.generateAllEnemyRoute(autoRouteUseTeleport.value)
+  const count = store.generateAllEnemyRoute(store.autoRouteUseTeleport)
   if (count === 0) {
     autoRouteError.value = '当前筛选条件下没有敌人清剿标记，请先勾选怪物类型'
     showAutoRouteDialog.value = true
@@ -1503,7 +1502,7 @@ function getSegmentTotalCounts(markerIds: string[]): number {
       <!-- Teleport start toggle -->
       <div
         class="flex items-center justify-between rounded-lg border border-border-strong bg-elevated px-3 py-2.5 cursor-pointer select-none"
-        @click="autoRouteUseTeleport = !autoRouteUseTeleport"
+        @click="store.autoRouteUseTeleport = !store.autoRouteUseTeleport"
       >
         <div class="flex items-center gap-1.5">
           <AppIcon name="bolt" class="h-3.5 w-3.5 text-amber-500" stroke="2" />
@@ -1512,8 +1511,8 @@ function getSegmentTotalCounts(markerIds: string[]): number {
             <span class="text-[11px] text-faint">从最近的电话亭/塔/粉爪/魔女之家出发</span>
           </div>
         </div>
-        <div class="relative w-9 h-5 rounded-full transition-colors flex-shrink-0" :class="autoRouteUseTeleport ? 'bg-primary-500' : 'bg-faint/40'">
-          <div class="absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform" :class="{ 'translate-x-4': autoRouteUseTeleport }"></div>
+        <div class="relative w-9 h-5 rounded-full transition-colors flex-shrink-0" :class="store.autoRouteUseTeleport ? 'bg-primary-500' : 'bg-faint/40'">
+          <div class="absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform" :class="{ 'translate-x-4': store.autoRouteUseTeleport }"></div>
         </div>
       </div>
       <p v-if="autoRouteError" class="text-xs text-red-500 dark:text-red-400">{{ autoRouteError }}</p>

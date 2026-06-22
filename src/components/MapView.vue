@@ -15,7 +15,6 @@ let markerClusterGroup: L.MarkerClusterGroup | null = null
 let arrowLayerGroup: L.LayerGroup | null = null
 let tempHighlightLayer: L.LayerGroup | null = null
 let focusedHighlightLayer: L.LayerGroup | null = null
-let startPointLayer: L.LayerGroup | null = null
 let defaultZoom = 5
 let isFlying = false
 let moveendRaf = 0
@@ -211,14 +210,15 @@ function buildRouteArrows() {
   }
 
   if (store.currentRoute) {
-    // 全怪路线模式：每段起始怪用虚线连接最近的传送点
-    const isAutoRoute = store.autoRouteStartId !== null
+    // 全怪路线模式 + 以传送点为起点：每段起始怪用虚线连接最近的传送点
+    const isAutoRoute = store.currentRouteId === '__auto__' && store.autoRouteUseTeleport
     if (isAutoRoute) {
       // 收集所有传送点
       const teleports = store.markers.filter(m =>
         m.types.some(t => ['phonebooth', 'tower', 'mnzj', 'fzyh'].includes(t))
       )
-      for (const segment of store.currentRoute.segments) {
+      for (let si = 0; si < store.currentRoute.segments.length; si++) {
+        const segment = store.currentRoute.segments[si]
         const firstMarker = store.getMarkerById(segment.markerIds[0])
         if (!firstMarker || teleports.length === 0) continue
         // 找最近的传送点
@@ -231,10 +231,11 @@ function buildRouteArrows() {
           if (d < minD) { minD = d; nearestTp = tp }
         }
         if (nearestTp) {
-          // 虚线连接（不含箭头，用 polyline 直接画）
+          // 虚线连接，使用该路段对应颜色
+          const segColor = segmentColors[si % segmentColors.length]
           L.polyline(
             [[firstMarker.lat, firstMarker.lng], [nearestTp.lat, nearestTp.lng]],
-            { color: '#6366f1', weight: 1.5, opacity: 0.5, dashArray: '4 6' }
+            { color: segColor, weight: 1.5, opacity: 0.5, dashArray: '4 6' }
           ).addTo(arrowLayerGroup)
         }
       }
@@ -286,8 +287,8 @@ function updateFocusedHighlights() {
   if (!focusedHighlightLayer) return
   focusedHighlightLayer.clearLayers()
 
-  // 全怪路线模式：只高亮当前路段的第一个标记（入口），起点由独立 startPointLayer 高亮
-  if (store.autoRouteStartId) {
+  // 全怪路线模式：只高亮当前路段的第一个标记（入口），使用路段对应颜色
+  if (store.currentRouteId === '__auto__') {
     const ids = store.focusMarkerIds
     if (ids.length === 0) return
     const firstId = ids[0]
@@ -460,33 +461,6 @@ watch(
   }
 )
 
-// Auto-route start point highlight (distinct from segment highlights)
-function updateStartPoint() {
-  if (!startPointLayer) return
-  startPointLayer.clearLayers()
-  const id = store.autoRouteStartId
-  if (!id) return
-  const m = store.getMarkerById(id)
-  if (!m) return
-  // Distinct large primary-colored ring with "起点" label
-  const icon = L.divIcon({
-    className: 'start-point-marker',
-    html: `<div style="position:relative;width:50px;height:50px">
-      <svg width="50" height="50" viewBox="0 0 50 50" style="position:absolute;top:0;left:0">
-        <circle cx="25" cy="25" r="20" fill="#6366f1" fill-opacity="0.15" stroke="#6366f1" stroke-width="2.5" stroke-opacity="0.9"/>
-        <circle cx="25" cy="25" r="20" fill="none" stroke="#6366f1" stroke-width="2" class="start-pulse"/>
-      </svg>
-      <span style="position:absolute;top:-18px;left:50%;transform:translateX(-50%);font-size:10px;font-weight:600;white-space:nowrap;color:#6366f1;background:rgba(0,0,0,0.6);padding:1px 6px;border-radius:4px">起点</span>
-    </div>`,
-    iconSize: [50, 50],
-    iconAnchor: [25, 25],
-  })
-  const marker = L.marker([m.lat, m.lng], { icon, interactive: false, zIndexOffset: 1000 })
-  startPointLayer.addLayer(marker)
-}
-
-watch(() => store.autoRouteStartId, () => updateStartPoint(), { immediate: true })
-
 watch(
   () => store.selectedMarkerId,
   (id) => {
@@ -563,7 +537,6 @@ onMounted(async () => {
 
   tempHighlightLayer = L.layerGroup().addTo(map)
   focusedHighlightLayer = L.layerGroup().addTo(map)
-  startPointLayer = L.layerGroup().addTo(map)
 
   map.addLayer(markerClusterGroup)
 
@@ -780,19 +753,5 @@ defineExpose({ flyToMarker })
   0% { transform: scale(0.85); opacity: 1; }
   70% { transform: scale(1.7); opacity: 0; }
   100% { transform: scale(1.7); opacity: 0; }
-}
-.start-point-marker {
-  background: transparent !important;
-  border: none !important;
-}
-.start-pulse {
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: start-ring 2s ease-out infinite;
-}
-@keyframes start-ring {
-  0% { transform: scale(0.9); opacity: 0.9; }
-  60% { transform: scale(1.8); opacity: 0; }
-  100% { transform: scale(1.8); opacity: 0; }
 }
 </style>

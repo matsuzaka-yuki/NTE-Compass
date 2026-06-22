@@ -610,6 +610,8 @@ export const useMarkerStore = defineStore('markers', () => {
   const autoRoute = ref<RouteData | null>(null)
   // 全怪路线起始点（独立高亮，不被 focusSegment 覆盖）
   const autoRouteStartId = ref<string | null>(null)
+  // 全怪路线是否以传送点为起点（控制虚线显示）
+  const autoRouteUseTeleport = ref(false)
 
   const currentRoute = computed(() => {
     if (!currentRouteId.value) return null
@@ -646,6 +648,7 @@ export const useMarkerStore = defineStore('markers', () => {
     focusMarkerIds.value = []
     autoRoute.value = null
     autoRouteStartId.value = null
+    autoRouteUseTeleport.value = false
     stopFarmingMode()
   }
 
@@ -682,7 +685,10 @@ export const useMarkerStore = defineStore('markers', () => {
     showRouteView.value = true
     currentRouteId.value = '__auto__'
     currentSegmentIndex.value = 0
-    autoRouteStartId.value = startId
+    // 多路段路线不需要独立起点标记，由路段入口高亮即可
+    autoRouteStartId.value = null
+    // 记录是否以传送点为起点（控制虚线显示）
+    autoRouteUseTeleport.value = useTeleportStart
     focusMarkerIds.value = [startId!]
 
     return orderedIds.length
@@ -973,6 +979,7 @@ export const useMarkerStore = defineStore('markers', () => {
     // map focus
     focusMarkerIds,
     autoRouteStartId,
+    autoRouteUseTeleport,
     requestFocusMarkers,
     // route marker filter
     routeMarkerFilterIds,
