@@ -7024,6 +7024,7 @@
     ]
   },
   {
+    "id": "user_1782133583933_3",
     "name": "噗卡糖果店",
     "types": [
       "shop"
@@ -7034,7 +7035,22 @@
     "images": [
       "images/uploads/shop_7.webp",
       "images/uploads/shop_8.webp"
+    ]
+  },
+  {
+    "name": "茂藏家 豆腐店",
+    "types": [
+      "pilgrimage",
+      "shop"
     ],
-    "id": "user_1782133583933_3"
+    "lat": 0.46299901641182944,
+    "lng": 0.4274562194269442,
+    "description": "复现自重野秀一的漫画集《头文字D》，主要讲述了藤原拓海代替父亲藤原文太每天运送豆腐而无意中成长为一个“飘移”高手并打败了中里毅、须藤京一等赛车高手。而这时，藤原拓海的恋爱出现了危机。最终藤原拓海决定加入赛车队，开始一个真正赛车手的生活\n这个店铺同时也销售着便宜实惠的回血道具",
+    "images": [
+      "images/uploads/pilgrimage_105.webp",
+      "images/uploads/pilgrimage_106.webp",
+      "images/uploads/pilgrimage_107.webp"
+    ],
+    "id": "user_1782134258203_4"
   }
 ]
