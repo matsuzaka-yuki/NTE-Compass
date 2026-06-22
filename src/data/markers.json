@@ -7083,6 +7083,7 @@
     ]
   },
   {
+    "id": "user_1782135807258_2",
     "name": "夏日重现",
     "types": [
       "pilgrimage"
@@ -7094,7 +7095,24 @@
       "images/uploads/pilgrimage_108.webp",
       "images/uploads/pilgrimage_109.webp",
       "images/uploads/pilgrimage_110.webp"
+    ]
+  },
+  {
+    "name": "妖刀",
+    "types": [
+      "yd"
     ],
-    "id": "user_1782135807258_2"
+    "lat": 0.5628487503585315,
+    "lng": 0.5058751598535971,
+    "relatedItems": [
+      "sf"
+    ],
+    "counts": {
+      "yd": 1
+    },
+    "images": [
+      "images/uploads/yd_12.webp"
+    ],
+    "id": "user_1782136084501_3"
   }
 ]
