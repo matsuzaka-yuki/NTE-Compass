@@ -7010,6 +7010,7 @@
     ]
   },
   {
+    "id": "user_1782133321025_2",
     "name": "A.R.P.T.S酒馆",
     "types": [
       "shop"
@@ -7020,7 +7021,20 @@
     "images": [
       "images/uploads/shop_5.webp",
       "images/uploads/shop_6.webp"
+    ]
+  },
+  {
+    "name": "噗卡糖果店",
+    "types": [
+      "shop"
     ],
-    "id": "user_1782133321025_2"
+    "lat": 0.44911247861007847,
+    "lng": 0.4138803883809206,
+    "description": "海特洛市最受欢迎的糖果品牌线下门店，现在购买最新款「噗卡巧克力」还可参与绘莉最新人偶戏门票抽选！",
+    "images": [
+      "images/uploads/shop_7.webp",
+      "images/uploads/shop_8.webp"
+    ],
+    "id": "user_1782133583933_3"
   }
 ]
