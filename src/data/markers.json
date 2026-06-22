@@ -6982,6 +6982,7 @@
     "lng": 0.501448497702588
   },
   {
+    "id": "user_1782131989428_1",
     "name": "国王粗点心",
     "types": [
       "shop"
@@ -6992,7 +6993,20 @@
     "images": [
       "images/uploads/shop_1.webp",
       "images/uploads/shop_2.webp"
+    ]
+  },
+  {
+    "name": "2-Four便利店",
+    "types": [
+      "shop"
     ],
-    "id": "user_1782131989428_1"
+    "lat": 0.6408451284617355,
+    "lng": 0.5208275548945255,
+    "description": "价格很实惠的便利店,卖很多不错的饮品和食物!",
+    "images": [
+      "images/uploads/shop_3.webp",
+      "images/uploads/shop_4.webp"
+    ],
+    "id": "user_1782133143013_1"
   }
 ]
