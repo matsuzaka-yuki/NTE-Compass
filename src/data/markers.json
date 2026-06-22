@@ -5652,6 +5652,1662 @@
     "lng": 0.419642
   },
   {
+    "id": "oracle-stone-001",
+    "name": "谕石 #001",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.20174,
+    "lng": 0.152467
+  },
+  {
+    "id": "oracle-stone-002",
+    "name": "谕石 #002",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.171573,
+    "lng": 0.238491
+  },
+  {
+    "id": "oracle-stone-005",
+    "name": "谕石 #005",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.148633,
+    "lng": 0.163074
+  },
+  {
+    "id": "oracle-stone-007",
+    "name": "谕石 #007",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.163444,
+    "lng": 0.199636
+  },
+  {
+    "id": "oracle-stone-011",
+    "name": "谕石 #011",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.648091,
+    "lng": 0.493021
+  },
+  {
+    "id": "oracle-stone-012",
+    "name": "谕石 #012",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.636745,
+    "lng": 0.507309
+  },
+  {
+    "id": "oracle-stone-013",
+    "name": "谕石 #013",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.62072,
+    "lng": 0.478658
+  },
+  {
+    "id": "oracle-stone-014",
+    "name": "谕石 #014",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.615382,
+    "lng": 0.519413
+  },
+  {
+    "id": "oracle-stone-015",
+    "name": "谕石 #015",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.619688,
+    "lng": 0.555277
+  },
+  {
+    "id": "oracle-stone-017",
+    "name": "谕石 #017",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.716809,
+    "lng": 0.509652
+  },
+  {
+    "id": "oracle-stone-018",
+    "name": "谕石 #018",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.617886,
+    "lng": 0.450418
+  },
+  {
+    "id": "oracle-stone-019",
+    "name": "谕石 #019",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.613654,
+    "lng": 0.430415
+  },
+  {
+    "id": "oracle-stone-020",
+    "name": "谕石 #020",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.626038,
+    "lng": 0.415577
+  },
+  {
+    "id": "oracle-stone-021",
+    "name": "谕石 #021",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.650435,
+    "lng": 0.381143
+  },
+  {
+    "id": "oracle-stone-022",
+    "name": "谕石 #022",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.747273,
+    "lng": 0.429644
+  },
+  {
+    "id": "oracle-stone-023",
+    "name": "谕石 #023",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.736314,
+    "lng": 0.468087
+  },
+  {
+    "id": "oracle-stone-024",
+    "name": "谕石 #024",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.675859,
+    "lng": 0.403012
+  },
+  {
+    "id": "oracle-stone-025",
+    "name": "谕石 #025",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.661789,
+    "lng": 0.444936
+  },
+  {
+    "id": "oracle-stone-026",
+    "name": "谕石 #026",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.67518,
+    "lng": 0.463525
+  },
+  {
+    "id": "oracle-stone-027",
+    "name": "谕石 #027",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.666779,
+    "lng": 0.493487
+  },
+  {
+    "id": "oracle-stone-028",
+    "name": "谕石 #028",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.638792,
+    "lng": 0.542809
+  },
+  {
+    "id": "oracle-stone-029",
+    "name": "谕石 #029",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.624409,
+    "lng": 0.576499
+  },
+  {
+    "id": "oracle-stone-030",
+    "name": "谕石 #030",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.642353,
+    "lng": 0.56446
+  },
+  {
+    "id": "oracle-stone-031",
+    "name": "谕石 #031",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.659079,
+    "lng": 0.557059
+  },
+  {
+    "id": "oracle-stone-032",
+    "name": "谕石 #032",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.642386,
+    "lng": 0.602159
+  },
+  {
+    "id": "oracle-stone-033",
+    "name": "谕石 #033",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.629371,
+    "lng": 0.593329
+  },
+  {
+    "id": "oracle-stone-035",
+    "name": "谕石 #035",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.57077,
+    "lng": 0.622681
+  },
+  {
+    "id": "oracle-stone-037",
+    "name": "谕石 #037",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.681747,
+    "lng": 0.431736
+  },
+  {
+    "id": "oracle-stone-038",
+    "name": "谕石 #038",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.69885,
+    "lng": 0.435863
+  },
+  {
+    "id": "oracle-stone-039",
+    "name": "谕石 #039",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.712395,
+    "lng": 0.421207
+  },
+  {
+    "id": "oracle-stone-040",
+    "name": "谕石 #040",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.648516,
+    "lng": 0.627772
+  },
+  {
+    "id": "oracle-stone-041",
+    "name": "谕石 #041",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.642584,
+    "lng": 0.619239
+  },
+  {
+    "id": "oracle-stone-042",
+    "name": "谕石 #042",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.660226,
+    "lng": 0.610799
+  },
+  {
+    "id": "oracle-stone-043",
+    "name": "谕石 #043",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.659476,
+    "lng": 0.591097
+  },
+  {
+    "id": "oracle-stone-044",
+    "name": "谕石 #044",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.671926,
+    "lng": 0.582237
+  },
+  {
+    "id": "oracle-stone-045",
+    "name": "谕石 #045",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.65582,
+    "lng": 0.531199
+  },
+  {
+    "id": "oracle-stone-046",
+    "name": "谕石 #046",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.669557,
+    "lng": 0.527217
+  },
+  {
+    "id": "oracle-stone-047",
+    "name": "谕石 #047",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.682497,
+    "lng": 0.520125
+  },
+  {
+    "id": "oracle-stone-048",
+    "name": "谕石 #048",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.692258,
+    "lng": 0.508523
+  },
+  {
+    "id": "oracle-stone-049",
+    "name": "谕石 #049",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.696266,
+    "lng": 0.482959
+  },
+  {
+    "id": "oracle-stone-050",
+    "name": "谕石 #050",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.716366,
+    "lng": 0.491841
+  },
+  {
+    "id": "oracle-stone-051",
+    "name": "谕石 #051",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.710711,
+    "lng": 0.450611
+  },
+  {
+    "id": "oracle-stone-052",
+    "name": "谕石 #052",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.639005,
+    "lng": 0.437949
+  },
+  {
+    "id": "oracle-stone-053",
+    "name": "谕石 #053",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.643722,
+    "lng": 0.455267
+  },
+  {
+    "id": "oracle-stone-054",
+    "name": "谕石 #054",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.635794,
+    "lng": 0.46705
+  },
+  {
+    "id": "oracle-stone-055",
+    "name": "谕石 #055",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.654433,
+    "lng": 0.482156
+  },
+  {
+    "id": "oracle-stone-056",
+    "name": "谕石 #056",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.602198,
+    "lng": 0.528152
+  },
+  {
+    "id": "oracle-stone-057",
+    "name": "谕石 #057",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.593235,
+    "lng": 0.474849
+  },
+  {
+    "id": "oracle-stone-058",
+    "name": "谕石 #058",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.597522,
+    "lng": 0.48802
+  },
+  {
+    "id": "oracle-stone-059",
+    "name": "谕石 #059",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.576144,
+    "lng": 0.483836
+  },
+  {
+    "id": "oracle-stone-060",
+    "name": "谕石 #060",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.549113,
+    "lng": 0.509733
+  },
+  {
+    "id": "oracle-stone-061",
+    "name": "谕石 #061",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.55007,
+    "lng": 0.486796
+  },
+  {
+    "id": "oracle-stone-062",
+    "name": "谕石 #062",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.488216,
+    "lng": 0.635774
+  },
+  {
+    "id": "oracle-stone-063",
+    "name": "谕石 #063",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.531888,
+    "lng": 0.575025
+  },
+  {
+    "id": "oracle-stone-064",
+    "name": "谕石 #064",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.499922,
+    "lng": 0.613738
+  },
+  {
+    "id": "oracle-stone-065",
+    "name": "谕石 #065",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.522036,
+    "lng": 0.621276
+  },
+  {
+    "id": "oracle-stone-066",
+    "name": "谕石 #066",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.540715,
+    "lng": 0.612347
+  },
+  {
+    "id": "oracle-stone-067",
+    "name": "谕石 #067",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.535082,
+    "lng": 0.596005
+  },
+  {
+    "id": "oracle-stone-068",
+    "name": "谕石 #068",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.565007,
+    "lng": 0.458169
+  },
+  {
+    "id": "oracle-stone-069",
+    "name": "谕石 #069",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.536077,
+    "lng": 0.477419
+  },
+  {
+    "id": "oracle-stone-070",
+    "name": "谕石 #070",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.55403,
+    "lng": 0.614649
+  },
+  {
+    "id": "oracle-stone-071",
+    "name": "谕石 #071",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.550964,
+    "lng": 0.600378
+  },
+  {
+    "id": "oracle-stone-072",
+    "name": "谕石 #072",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.593453,
+    "lng": 0.583186
+  },
+  {
+    "id": "oracle-stone-073",
+    "name": "谕石 #073",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.607382,
+    "lng": 0.589025
+  },
+  {
+    "id": "oracle-stone-074",
+    "name": "谕石 #074",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.615165,
+    "lng": 0.619699
+  },
+  {
+    "id": "oracle-stone-075",
+    "name": "谕石 #075",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.603995,
+    "lng": 0.557492
+  },
+  {
+    "id": "oracle-stone-076",
+    "name": "谕石 #076",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.590811,
+    "lng": 0.564645
+  },
+  {
+    "id": "oracle-stone-077",
+    "name": "谕石 #077",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.583705,
+    "lng": 0.540131
+  },
+  {
+    "id": "oracle-stone-078",
+    "name": "谕石 #078",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.544936,
+    "lng": 0.551829
+  },
+  {
+    "id": "oracle-stone-079",
+    "name": "谕石 #079",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.566428,
+    "lng": 0.546923
+  },
+  {
+    "id": "oracle-stone-080",
+    "name": "谕石 #080",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.571208,
+    "lng": 0.565583
+  },
+  {
+    "id": "oracle-stone-081",
+    "name": "谕石 #081",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.563893,
+    "lng": 0.580415
+  },
+  {
+    "id": "oracle-stone-082",
+    "name": "谕石 #082",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.579786,
+    "lng": 0.597232
+  },
+  {
+    "id": "oracle-stone-083",
+    "name": "谕石 #083",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.590735,
+    "lng": 0.617715
+  },
+  {
+    "id": "oracle-stone-084",
+    "name": "谕石 #084",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.558639,
+    "lng": 0.647279
+  },
+  {
+    "id": "oracle-stone-085",
+    "name": "谕石 #085",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.534997,
+    "lng": 0.637303
+  },
+  {
+    "id": "oracle-stone-086",
+    "name": "谕石 #086",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.51835,
+    "lng": 0.597246
+  },
+  {
+    "id": "oracle-stone-087",
+    "name": "谕石 #087",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.518814,
+    "lng": 0.568697
+  },
+  {
+    "id": "oracle-stone-088",
+    "name": "谕石 #088",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.485984,
+    "lng": 0.596919
+  },
+  {
+    "id": "oracle-stone-089",
+    "name": "谕石 #089",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.495902,
+    "lng": 0.487594
+  },
+  {
+    "id": "oracle-stone-090",
+    "name": "谕石 #090",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.571038,
+    "lng": 0.511537
+  },
+  {
+    "id": "oracle-stone-091",
+    "name": "谕石 #091",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.567022,
+    "lng": 0.52789
+  },
+  {
+    "id": "oracle-stone-092",
+    "name": "谕石 #092",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.543821,
+    "lng": 0.533896
+  },
+  {
+    "id": "oracle-stone-093",
+    "name": "谕石 #093",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.52903,
+    "lng": 0.520006
+  },
+  {
+    "id": "oracle-stone-094",
+    "name": "谕石 #094",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.50522,
+    "lng": 0.527721
+  },
+  {
+    "id": "oracle-stone-095",
+    "name": "谕石 #095",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.516962,
+    "lng": 0.546495
+  },
+  {
+    "id": "oracle-stone-096",
+    "name": "谕石 #096",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.44185,
+    "lng": 0.550002
+  },
+  {
+    "id": "oracle-stone-097",
+    "name": "谕石 #097",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.461174,
+    "lng": 0.579869
+  },
+  {
+    "id": "oracle-stone-098",
+    "name": "谕石 #098",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.481928,
+    "lng": 0.568986
+  },
+  {
+    "id": "oracle-stone-099",
+    "name": "谕石 #099",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.503425,
+    "lng": 0.569569
+  },
+  {
+    "id": "oracle-stone-100",
+    "name": "谕石 #100",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.478615,
+    "lng": 0.551299
+  },
+  {
+    "id": "oracle-stone-101",
+    "name": "谕石 #101",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.472981,
+    "lng": 0.534104
+  },
+  {
+    "id": "oracle-stone-102",
+    "name": "谕石 #102",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.456335,
+    "lng": 0.493986
+  },
+  {
+    "id": "oracle-stone-103",
+    "name": "谕石 #103",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.479314,
+    "lng": 0.512746
+  },
+  {
+    "id": "oracle-stone-104",
+    "name": "谕石 #104",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.516687,
+    "lng": 0.511969
+  },
+  {
+    "id": "oracle-stone-105",
+    "name": "谕石 #105",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.520954,
+    "lng": 0.502691
+  },
+  {
+    "id": "oracle-stone-106",
+    "name": "谕石 #106",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.572585,
+    "lng": 0.44271
+  },
+  {
+    "id": "oracle-stone-107",
+    "name": "谕石 #107",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.595373,
+    "lng": 0.434274
+  },
+  {
+    "id": "oracle-stone-108",
+    "name": "谕石 #108",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.472005,
+    "lng": 0.30115
+  },
+  {
+    "id": "oracle-stone-109",
+    "name": "谕石 #109",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.548442,
+    "lng": 0.397748
+  },
+  {
+    "id": "oracle-stone-110",
+    "name": "谕石 #110",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.604107,
+    "lng": 0.416397
+  },
+  {
+    "id": "oracle-stone-111",
+    "name": "谕石 #111",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.595751,
+    "lng": 0.397728
+  },
+  {
+    "id": "oracle-stone-112",
+    "name": "谕石 #112",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.606302,
+    "lng": 0.396929
+  },
+  {
+    "id": "oracle-stone-113",
+    "name": "谕石 #113",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.600076,
+    "lng": 0.377155
+  },
+  {
+    "id": "oracle-stone-114",
+    "name": "谕石 #114",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.495928,
+    "lng": 0.279805
+  },
+  {
+    "id": "oracle-stone-116",
+    "name": "谕石 #116",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.514706,
+    "lng": 0.294342
+  },
+  {
+    "id": "oracle-stone-117",
+    "name": "谕石 #117",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.578053,
+    "lng": 0.364687
+  },
+  {
+    "id": "oracle-stone-118",
+    "name": "谕石 #118",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.525545,
+    "lng": 0.289058
+  },
+  {
+    "id": "oracle-stone-119",
+    "name": "谕石 #119",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.533392,
+    "lng": 0.300192
+  },
+  {
+    "id": "oracle-stone-120",
+    "name": "谕石 #120",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.541952,
+    "lng": 0.312155
+  },
+  {
+    "id": "oracle-stone-121",
+    "name": "谕石 #121",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.530359,
+    "lng": 0.315639
+  },
+  {
+    "id": "oracle-stone-122",
+    "name": "谕石 #122",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.519821,
+    "lng": 0.315425
+  },
+  {
+    "id": "oracle-stone-123",
+    "name": "谕石 #123",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.482005,
+    "lng": 0.352989
+  },
+  {
+    "id": "oracle-stone-124",
+    "name": "谕石 #124",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.52239,
+    "lng": 0.369916
+  },
+  {
+    "id": "oracle-stone-125",
+    "name": "谕石 #125",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.543603,
+    "lng": 0.35031
+  },
+  {
+    "id": "oracle-stone-126",
+    "name": "谕石 #126",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.550765,
+    "lng": 0.361307
+  },
+  {
+    "id": "oracle-stone-127",
+    "name": "谕石 #127",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.552375,
+    "lng": 0.340904
+  },
+  {
+    "id": "oracle-stone-128",
+    "name": "谕石 #128",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.525517,
+    "lng": 0.337857
+  },
+  {
+    "id": "oracle-stone-129",
+    "name": "谕石 #129",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.498559,
+    "lng": 0.35789
+  },
+  {
+    "id": "oracle-stone-130",
+    "name": "谕石 #130",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.509965,
+    "lng": 0.35773
+  },
+  {
+    "id": "oracle-stone-132",
+    "name": "谕石 #132",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.515836,
+    "lng": 0.343673
+  },
+  {
+    "id": "oracle-stone-133",
+    "name": "谕石 #133",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.510569,
+    "lng": 0.331123
+  },
+  {
+    "id": "oracle-stone-134",
+    "name": "谕石 #134",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.50971,
+    "lng": 0.31118
+  },
+  {
+    "id": "oracle-stone-136",
+    "name": "谕石 #136",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.495225,
+    "lng": 0.309188
+  },
+  {
+    "id": "oracle-stone-137",
+    "name": "谕石 #137",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.487372,
+    "lng": 0.30252
+  },
+  {
+    "id": "oracle-stone-138",
+    "name": "谕石 #138",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.484022,
+    "lng": 0.313075
+  },
+  {
+    "id": "oracle-stone-142",
+    "name": "谕石 #142",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.484128,
+    "lng": 0.332772
+  },
+  {
+    "id": "oracle-stone-143",
+    "name": "谕石 #143",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.469477,
+    "lng": 0.316339
+  },
+  {
+    "id": "oracle-stone-144",
+    "name": "谕石 #144",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.467502,
+    "lng": 0.327377
+  },
+  {
+    "id": "oracle-stone-145",
+    "name": "谕石 #145",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.560179,
+    "lng": 0.378838
+  },
+  {
+    "id": "oracle-stone-146",
+    "name": "谕石 #146",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.574845,
+    "lng": 0.390156
+  },
+  {
+    "id": "oracle-stone-147",
+    "name": "谕石 #147",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.583467,
+    "lng": 0.403509
+  },
+  {
+    "id": "oracle-stone-149",
+    "name": "谕石 #149",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.552474,
+    "lng": 0.414643
+  },
+  {
+    "id": "oracle-stone-151",
+    "name": "谕石 #151",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.533716,
+    "lng": 0.434269
+  },
+  {
+    "id": "oracle-stone-152",
+    "name": "谕石 #152",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.494896,
+    "lng": 0.3715
+  },
+  {
+    "id": "oracle-stone-156",
+    "name": "谕石 #156",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.393813,
+    "lng": 0.39524
+  },
+  {
+    "id": "oracle-stone-157",
+    "name": "谕石 #157",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.380267,
+    "lng": 0.341968
+  },
+  {
+    "id": "oracle-stone-158",
+    "name": "谕石 #158",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.369235,
+    "lng": 0.286603
+  },
+  {
+    "id": "oracle-stone-159",
+    "name": "谕石 #159",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.376329,
+    "lng": 0.266495
+  },
+  {
+    "id": "oracle-stone-160",
+    "name": "谕石 #160",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.360632,
+    "lng": 0.294884
+  },
+  {
+    "id": "oracle-stone-161",
+    "name": "谕石 #161",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.353118,
+    "lng": 0.259529
+  },
+  {
+    "id": "oracle-stone-162",
+    "name": "谕石 #162",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.402001,
+    "lng": 0.261911
+  },
+  {
+    "id": "oracle-stone-164",
+    "name": "谕石 #164",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.434332,
+    "lng": 0.290434
+  },
+  {
+    "id": "oracle-stone-165",
+    "name": "谕石 #165",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.383468,
+    "lng": 0.358528
+  },
+  {
+    "id": "oracle-stone-166",
+    "name": "谕石 #166",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.404493,
+    "lng": 0.354932
+  },
+  {
+    "id": "oracle-stone-167",
+    "name": "谕石 #167",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.327602,
+    "lng": 0.348146
+  },
+  {
+    "id": "oracle-stone-168",
+    "name": "谕石 #168",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.349758,
+    "lng": 0.331381
+  },
+  {
+    "id": "oracle-stone-169",
+    "name": "谕石 #169",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.363922,
+    "lng": 0.342661
+  },
+  {
+    "id": "oracle-stone-170",
+    "name": "谕石 #170",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.363364,
+    "lng": 0.326022
+  },
+  {
+    "id": "oracle-stone-171",
+    "name": "谕石 #171",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.384999,
+    "lng": 0.325225
+  },
+  {
+    "id": "oracle-stone-173",
+    "name": "谕石 #173",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.412472,
+    "lng": 0.331792
+  },
+  {
+    "id": "oracle-stone-174",
+    "name": "谕石 #174",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.426778,
+    "lng": 0.329765
+  },
+  {
+    "id": "oracle-stone-175",
+    "name": "谕石 #175",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.43043,
+    "lng": 0.319701
+  },
+  {
+    "id": "oracle-stone-176",
+    "name": "谕石 #176",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.40929,
+    "lng": 0.31299
+  },
+  {
+    "id": "oracle-stone-177",
+    "name": "谕石 #177",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.392482,
+    "lng": 0.308433
+  },
+  {
+    "id": "oracle-stone-178",
+    "name": "谕石 #178",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.396334,
+    "lng": 0.278386
+  },
+  {
+    "id": "oracle-stone-181",
+    "name": "谕石 #181",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.446975,
+    "lng": 0.341405
+  },
+  {
+    "id": "oracle-stone-182",
+    "name": "谕石 #182",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.500657,
+    "lng": 0.395616
+  },
+  {
+    "id": "oracle-stone-183",
+    "name": "谕石 #183",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.496925,
+    "lng": 0.425481
+  },
+  {
+    "id": "oracle-stone-184",
+    "name": "谕石 #184",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.485841,
+    "lng": 0.42464
+  },
+  {
+    "id": "oracle-stone-185",
+    "name": "谕石 #185",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.437827,
+    "lng": 0.4133
+  },
+  {
+    "id": "oracle-stone-186",
+    "name": "谕石 #186",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.416021,
+    "lng": 0.446319
+  },
+  {
+    "id": "oracle-stone-187",
+    "name": "谕石 #187",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.443638,
+    "lng": 0.44691
+  },
+  {
+    "id": "oracle-stone-188",
+    "name": "谕石 #188",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.457742,
+    "lng": 0.455304
+  },
+  {
+    "id": "oracle-stone-189",
+    "name": "谕石 #189",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.46154,
+    "lng": 0.433767
+  },
+  {
+    "id": "oracle-stone-190",
+    "name": "谕石 #190",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.439657,
+    "lng": 0.426867
+  },
+  {
+    "id": "oracle-stone-192",
+    "name": "谕石 #192",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.4885,
+    "lng": 0.459408
+  },
+  {
+    "id": "oracle-stone-193",
+    "name": "谕石 #193",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.488565,
+    "lng": 0.447324
+  },
+  {
+    "id": "oracle-stone-194",
+    "name": "谕石 #194",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.464191,
+    "lng": 0.35794
+  },
+  {
+    "id": "oracle-stone-195",
+    "name": "谕石 #195",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.473709,
+    "lng": 0.444824
+  },
+  {
+    "id": "oracle-stone-196",
+    "name": "谕石 #196",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.457876,
+    "lng": 0.399337
+  },
+  {
+    "id": "oracle-stone-198",
+    "name": "谕石 #198",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.446155,
+    "lng": 0.396751
+  },
+  {
+    "id": "oracle-stone-200",
+    "name": "谕石 #200",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.434146,
+    "lng": 0.39476
+  },
+  {
+    "id": "oracle-stone-201",
+    "name": "谕石 #201",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.420905,
+    "lng": 0.406273
+  },
+  {
+    "id": "oracle-stone-203",
+    "name": "谕石 #203",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.416851,
+    "lng": 0.37979
+  },
+  {
+    "id": "oracle-stone-205",
+    "name": "谕石 #205",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.430995,
+    "lng": 0.375754
+  },
+  {
+    "id": "oracle-stone-206",
+    "name": "谕石 #206",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.442631,
+    "lng": 0.351957
+  },
+  {
+    "id": "oracle-stone-208",
+    "name": "谕石 #208",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.519039,
+    "lng": 0.413362
+  },
+  {
+    "id": "oracle-stone-210",
+    "name": "谕石 #210",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.461289,
+    "lng": 0.380946
+  },
+  {
+    "id": "oracle-stone-212",
+    "name": "谕石 #212",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.472337,
+    "lng": 0.367433
+  },
+  {
+    "id": "oracle-stone-213",
+    "name": "谕石 #213",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.480826,
+    "lng": 0.390078
+  },
+  {
+    "id": "oracle-stone-214",
+    "name": "谕石 #214",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.467333,
+    "lng": 0.393784
+  },
+  {
+    "id": "oracle-stone-215",
+    "name": "谕石 #215",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.474133,
+    "lng": 0.409941
+  },
+  {
+    "id": "oracle-stone-217",
+    "name": "谕石 #217",
+    "types": [
+      "oraclestone"
+    ],
+    "lat": 0.472008,
+    "lng": 0.427829
+  },
+  {
     "id": "user_1778678098980_1",
     "name": "电话亭",
     "types": [
