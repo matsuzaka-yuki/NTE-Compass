@@ -5,6 +5,7 @@ import { useGuide } from './composables/useGuide'
 import { useTheme } from './composables/useTheme'
 import MapView from './components/MapView.vue'
 import LoadingScreen from './components/LoadingScreen.vue'
+import UpdatePrompt from './components/UpdatePrompt.vue'
 import SideBar from './components/SideBar.vue'
 import MarkerPopup from './components/MarkerPopup.vue'
 import SettingsPanel from './components/SettingsPanel.vue'
@@ -143,6 +144,9 @@ window.addEventListener('resize', () => {
 
     <!-- First-paint loading screen -->
     <LoadingScreen :visible="loading" />
+
+    <!-- PWA update prompt -->
+    <UpdatePrompt />
 
     <!-- Editor mode toast -->
     <Transition name="toast">

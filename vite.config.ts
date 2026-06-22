@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
+import { VitePWA } from 'vite-plugin-pwa'
 import { fileURLToPath, URL } from 'node:url'
 import fs from 'node:fs'
 import path from 'node:path'
@@ -295,7 +296,56 @@ export default defineConfig({
   server: {
     host: '0.0.0.0',
   },
-  plugins: [vue(), markersApiPlugin()],
+  plugins: [
+    vue(),
+    markersApiPlugin(),
+    VitePWA({
+      registerType: 'autoUpdate',
+      includeAssets: ['favicon.png', 'logo.png', 'map-base.webp'],
+      manifest: {
+        name: 'NTE · 夜巡 — 异环交互式地图',
+        short_name: 'NTE 夜巡',
+        description: '游戏《异环》交互式在线地图，帮助玩家快速定位传送点、收集品、任务与圣地巡礼地点。',
+        theme_color: '#09090b',
+        background_color: '#09090b',
+        display: 'standalone',
+        orientation: 'any',
+        start_url: './',
+        scope: './',
+        icons: [
+          { src: 'favicon.png', sizes: '256x256', type: 'image/png' },
+          { src: 'favicon.png', sizes: '512x512', type: 'image/png', purpose: 'any maskable' },
+        ],
+      },
+      workbox: {
+        // Precache only app shell + icons + map base (small files).
+        // Exclude the large uploads/audio dirs — they get runtime-cached on
+        // demand so the initial install stays small.
+        globPatterns: ['**/*.{js,css,html,svg,woff2}', 'favicon.png', 'logo.png', 'map-base.webp', 'images/icons/*.webp', 'images/objects/*.png'],
+        globIgnores: ['**/images/uploads/**', '**/audio/**'],
+        maximumFileSizeToCacheInBytes: 3 * 1024 * 1024,
+        runtimeCaching: [
+          {
+            urlPattern: ({ url }) => url.pathname.includes('/images/uploads/'),
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'uploads-cache',
+              expiration: { maxEntries: 200, maxAgeSeconds: 60 * 60 * 24 * 30 },
+            },
+          },
+          {
+            urlPattern: ({ url }) => url.pathname.includes('/audio/'),
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'audio-cache',
+              expiration: { maxEntries: 20, maxAgeSeconds: 60 * 60 * 24 * 30 },
+            },
+          },
+        ],
+      },
+      devOptions: { enabled: false },
+    }),
+  ],
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),

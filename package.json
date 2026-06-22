@@ -15,7 +15,8 @@
     "leaflet.markercluster": "^1.5.3",
     "pannellum": "^2.5.7",
     "pinia": "^2.1.7",
-    "vue": "^3.4.21"
+    "vue": "^3.4.21",
+    "workbox-window": "^7.4.1"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.13",
@@ -28,6 +29,7 @@
     "tailwindcss": "^4.1.13",
     "typescript": "~5.4.0",
     "vite": "^5.2.0",
+    "vite-plugin-pwa": "^1.3.0",
     "vue-tsc": "^2.0.6"
   }
 }
