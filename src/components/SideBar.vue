@@ -28,8 +28,30 @@ const allSelected = computed(() => markerTypes.every((t) => store.selectedTypes.
 
 const detailType = ref<MarkerType | null>(null)
 const showCategoryList = ref(false)
+const showBookmarkView = ref(false)
 const categoryScrollRef = ref<HTMLElement | null>(null)
 const searchExpanded = ref(false)
+
+// Bookmarked markers (sorted by type then name)
+const bookmarkedMarkers = computed(() => {
+  return store.markers
+    .filter(m => store.bookmarkedIds.has(m.id))
+    .sort((a, b) => {
+      const ta = MARKER_TYPE_CONFIG[a.types[0]]?.label ?? ''
+      const tb = MARKER_TYPE_CONFIG[b.types[0]]?.label ?? ''
+      if (ta !== tb) return ta.localeCompare(tb)
+      return a.name.localeCompare(b.name)
+    })
+})
+
+function openBookmarkView() {
+  showBookmarkView.value = true
+  showCategoryList.value = false
+  detailType.value = null
+}
+function closeBookmarkView() {
+  showBookmarkView.value = false
+}
 
 const searchInput = ref<HTMLInputElement | null>(null)
 
@@ -519,6 +541,17 @@ function getSegmentTotalCounts(markerIds: string[]): number {
         <AppIcon name="search" class="w-5 h-5" stroke="2" />
       </button>
 
+      <!-- Mobile bookmark button -->
+      <button
+        v-if="!searchExpanded"
+        @click="showBookmarkView ? (showBookmarkView = false) : openBookmarkView()"
+        class="absolute z-30 w-9 h-9 rounded-lg bg-overlay/90 backdrop-blur-md border border-default shadow-lg flex items-center justify-center transition-colors active:scale-95 md:hidden"
+        :class="showBookmarkView ? 'text-amber-500 dark:text-amber-400 border-amber-500/40 bg-amber-500/10' : 'text-muted hover:text-base hover:border-border-strong'"
+        style="top: -2.75rem; right: 3.5rem;"
+      >
+        <AppIcon name="heart" class="w-5 h-5" stroke="2" />
+      </button>
+
       <!-- Mobile search bar (expanded) -->
       <div
         v-if="searchExpanded"
@@ -580,6 +613,15 @@ function getSegmentTotalCounts(markerIds: string[]): number {
             title="路线"
           >
             <AppIcon name="route" class="w-4 h-4" stroke="2" />
+          </button>
+          <!-- Bookmark button (desktop) -->
+          <button
+            @click="showBookmarkView ? (showBookmarkView = false) : openBookmarkView()"
+            class="w-7 h-7 flex items-center justify-center rounded-lg transition-colors flex-shrink-0 max-md:hidden"
+            :class="showBookmarkView ? 'text-amber-500 dark:text-amber-400 bg-amber-500/10' : 'text-muted hover:text-base hover:bg-elevated'"
+            title="收藏"
+          >
+            <AppIcon name="heart" class="w-4 h-4" stroke="2" />
           </button>
           <button
             v-if="!searchExpanded"
@@ -779,6 +821,54 @@ function getSegmentTotalCounts(markerIds: string[]): number {
               <AppIcon name="bolt" class="w-10 h-10 opacity-30" stroke="1.5" />
               <span class="text-xs">暂无路段</span>
               <span v-if="store.isAnyEditMode" class="text-xs text-faint">点击右上角 + 添加路段</span>
+            </div>
+          </div>
+        </div>
+      </template>
+
+      <!-- Bookmark view -->
+      <template v-else-if="showBookmarkView">
+        <div class="flex-1 flex flex-col overflow-hidden" :class="{ 'rounded-t-2xl': isMobile }">
+          <div class="flex-shrink-0 flex items-center gap-2.5 px-4 py-1.5 border-b border-default bg-overlay/80">
+            <button
+              @click="closeBookmarkView()"
+              class="w-6 h-6 flex items-center justify-center text-muted hover:text-base hover:bg-elevated rounded-md transition-colors flex-shrink-0"
+            >
+              <AppIcon name="back" class="w-3.5 h-3.5" stroke="2" />
+            </button>
+            <span class="flex-1 text-sm leading-none font-medium text-base truncate">收藏 ({{ bookmarkedMarkers.length }})</span>
+          </div>
+          <div class="flex-1 overflow-y-auto px-4 py-3 space-y-2">
+            <template v-if="bookmarkedMarkers.length > 0">
+              <div
+                v-for="m in bookmarkedMarkers"
+                :key="m.id"
+                @click="scrollToList(m.id); closeBookmarkView()"
+                class="flex items-center gap-3 px-3 py-2 cursor-pointer rounded-lg hover:bg-elevated active:bg-elevated transition-colors border border-default"
+              >
+                <img
+                  :src="resolveAssetUrl(MARKER_TYPE_CONFIG[m.types[0]]?.iconUrl)"
+                  :alt="MARKER_TYPE_CONFIG[m.types[0]]?.label"
+                  class="w-[18px] h-[18px] rounded-full object-cover flex-shrink-0"
+                  :class="iconClass(m.types[0])"
+                />
+                <div class="flex-1 min-w-0">
+                  <span class="block text-sm text-base truncate">{{ m.name }}</span>
+                  <span class="text-[11px] text-faint">{{ MARKER_TYPE_CONFIG[m.types[0]]?.label }}</span>
+                </div>
+                <button
+                  @click.stop="store.toggleBookmark(m.id)"
+                  class="w-6 h-6 flex items-center justify-center text-amber-500 dark:text-amber-400 hover:bg-amber-500/10 rounded-md transition-colors flex-shrink-0"
+                  title="取消收藏"
+                >
+                  <AppIcon name="heart" class="w-3.5 h-3.5" />
+                </button>
+              </div>
+            </template>
+            <div v-else class="flex flex-col items-center justify-center gap-2 text-faint py-12">
+              <AppIcon name="heart" class="w-8 h-8 opacity-30" stroke="1.5" />
+              <span class="text-xs">还没有收藏的标记</span>
+              <span class="text-[11px]">点击标记弹窗里的爱心即可收藏</span>
             </div>
           </div>
         </div>

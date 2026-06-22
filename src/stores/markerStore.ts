@@ -8,6 +8,7 @@ import { EDITOR_ENABLED } from '@/config'
 import { encodeProgress, decodeProgress } from '@/composables/useShareCode'
 
 const STORAGE_KEY = 'isekai-map-found'
+const BOOKMARK_KEY = 'isekai-map-bookmarks'
 const OFFLINE_MARKERS_KEY = 'isekai-map-offline-markers'
 const OFFLINE_ROUTES_KEY = 'isekai-map-offline-routes'
 
@@ -21,6 +22,18 @@ function loadFound(): Set<string> {
 
 function saveFound(set: Set<string>) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify([...set]))
+}
+
+function loadBookmarks(): Set<string> {
+  try {
+    const raw = localStorage.getItem(BOOKMARK_KEY)
+    if (raw) return new Set(JSON.parse(raw))
+  } catch { /* ignore */ }
+  return new Set()
+}
+
+function saveBookmarks(set: Set<string>) {
+  localStorage.setItem(BOOKMARK_KEY, JSON.stringify([...set]))
 }
 
 function loadOfflineMarkers(): MarkerData[] {
@@ -97,6 +110,9 @@ export const useMarkerStore = defineStore('markers', () => {
 
   // ---- found tracking (always localStorage, both modes) ----
   const foundIds = ref<Set<string>>(loadFound())
+
+  // ---- bookmarks / favorites (always localStorage, both modes) ----
+  const bookmarkedIds = ref<Set<string>>(loadBookmarks())
 
   // ---- UI state ----
   const searchQuery = ref('')
@@ -182,18 +198,41 @@ export const useMarkerStore = defineStore('markers', () => {
     localStorage.removeItem(STORAGE_KEY)
   }
 
-  /** 生成进度分享码 */
+  // ---- bookmark tracking ----
+  function isBookmarked(id: string): boolean {
+    return bookmarkedIds.value.has(id)
+  }
+
+  function toggleBookmark(id: string) {
+    const next = new Set(bookmarkedIds.value)
+    if (next.has(id)) {
+      next.delete(id)
+    } else {
+      next.add(id)
+    }
+    bookmarkedIds.value = next
+    saveBookmarks(next)
+  }
+
+  function resetBookmarks() {
+    bookmarkedIds.value = new Set()
+    localStorage.removeItem(BOOKMARK_KEY)
+  }
+
+  /** 生成进度分享码（含 found + bookmarks） */
   function shareProgress(): string {
-    return encodeProgress(foundIds.value, markers.value)
+    return encodeProgress(foundIds.value, bookmarkedIds.value, markers.value)
   }
 
   /** 从分享码导入进度。返回导入的标记数，-1 表示失败。 */
   function importProgress(code: string): number {
     const decoded = decodeProgress(code, markers.value)
     if (!decoded) return -1
-    foundIds.value = decoded
-    saveFound(decoded)
-    return decoded.size
+    foundIds.value = decoded.foundIds
+    saveFound(decoded.foundIds)
+    bookmarkedIds.value = decoded.bookmarkedIds
+    saveBookmarks(decoded.bookmarkedIds)
+    return decoded.foundIds.size
   }
 
   // ---- filters ----
@@ -413,6 +452,8 @@ export const useMarkerStore = defineStore('markers', () => {
       exportedAt: new Date().toISOString(),
       markers: editableMarkers.value,
       routes: routes.value,
+      foundIds: [...foundIds.value],
+      bookmarkedIds: [...bookmarkedIds.value],
     }
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
     const url = URL.createObjectURL(blob)
@@ -460,6 +501,16 @@ export const useMarkerStore = defineStore('markers', () => {
         persistRouteData()
       }
 
+      // Restore found/bookmark progress if present in the import
+      if (Array.isArray(data.foundIds)) {
+        foundIds.value = new Set(data.foundIds as string[])
+        saveFound(foundIds.value)
+      }
+      if (Array.isArray(data.bookmarkedIds)) {
+        bookmarkedIds.value = new Set(data.bookmarkedIds as string[])
+        saveBookmarks(bookmarkedIds.value)
+      }
+
       return { markers: importedMarkers.length, routes: importedRoutes.length }
     } catch {
       return { error: 'JSON 解析失败，请检查文件格式' }
@@ -504,6 +555,12 @@ export const useMarkerStore = defineStore('markers', () => {
         next.delete(id)
         foundIds.value = next
         saveFound(next)
+      }
+      if (bookmarkedIds.value.has(id)) {
+        const next = new Set(bookmarkedIds.value)
+        next.delete(id)
+        bookmarkedIds.value = next
+        saveBookmarks(next)
       }
     }
   }
@@ -805,6 +862,7 @@ export const useMarkerStore = defineStore('markers', () => {
     newMarkerCount,
     markers,
     foundIds,
+    bookmarkedIds,
     searchQuery,
     selectedTypes,
     filterMode,
@@ -820,6 +878,9 @@ export const useMarkerStore = defineStore('markers', () => {
     // actions
     isFound,
     toggleFound,
+    isBookmarked,
+    toggleBookmark,
+    resetBookmarks,
     resetProgress,
     shareProgress,
     importProgress,

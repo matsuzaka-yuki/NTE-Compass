@@ -3,6 +3,7 @@ import { computed, defineAsyncComponent, ref, watch } from 'vue'
 import { useMarkerStore } from '@/stores/markerStore'
 import { MARKER_TYPE_CONFIG, getItemById, TIME_OPTIONS, WEATHER_OPTIONS, iconClass } from '@/types'
 import { resolveAssetUrl } from '@/config'
+import { AppIcon } from '@/components/ui'
 // Lazy-load the panorama viewer so pannellum (~840KB) only downloads when a
 // user actually opens a panorama, not on first paint.
 const PanoramaViewer = defineAsyncComponent(() => import('./PanoramaViewer.vue'))
@@ -644,10 +645,25 @@ watch(previewOpen, (open) => {
                   >{{ store.selectedMarker.counts[t] }}</span>
                 </span>
               </div>
+              <!-- Bookmark button -->
+              <button
+                @click="store.toggleBookmark(store.selectedMarker!.id)"
+                :class="[
+                  isMobileRouteMode ? 'ml-auto py-0.5 px-1.5 rounded-md text-[10px]' : 'ml-auto py-1 px-2.5 rounded-lg text-xs',
+                  'font-medium transition-all flex items-center gap-1 flex-shrink-0 border',
+                  store.isBookmarked(store.selectedMarker!.id)
+                    ? 'bg-amber-500/15 text-amber-500 dark:text-amber-400 border-amber-500/30 hover:bg-amber-500/25'
+                    : 'bg-elevated text-muted border-default hover:text-base',
+                ]"
+                :title="store.isBookmarked(store.selectedMarker!.id) ? '取消收藏' : '收藏'"
+              >
+                <AppIcon name="heart" :class="isMobileRouteMode ? 'w-3 h-3' : 'w-3.5 h-3.5'" :stroke="2" />
+              </button>
+              <!-- Found button -->
               <button
                 @click="store.toggleFound(store.selectedMarker!.id)"
                 :class="[
-                  isMobileRouteMode ? 'ml-auto py-0.5 px-1.5 rounded-md text-[10px]' : 'ml-auto py-1 px-2.5 rounded-lg text-xs',
+                  isMobileRouteMode ? 'py-0.5 px-1.5 rounded-md text-[10px]' : 'py-1 px-2.5 rounded-lg text-xs',
                   'font-medium transition-all flex items-center gap-1 flex-shrink-0',
                   store.isFound(store.selectedMarker!.id)
                     ? 'bg-green-500/15 text-green-600 dark:text-green-400 border border-green-500/30 hover:bg-green-500/25'
