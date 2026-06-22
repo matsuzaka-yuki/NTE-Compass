@@ -18,6 +18,7 @@ const path = computed(() => ICONS[props.name])
   <svg
     class="inline-block shrink-0"
     :class="$attrs.class as string | undefined"
+    :style="($attrs.style as Record<string, string> | undefined)"
     fill="none"
     stroke="currentColor"
     :stroke-width="stroke"

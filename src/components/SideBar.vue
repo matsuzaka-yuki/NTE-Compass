@@ -559,15 +559,15 @@ function getSegmentTotalCounts(markerIds: string[]): number {
         style="top: -2.75rem; left: 3.25rem; right: 0.5rem; height: 2.25rem;"
       >
         <div class="relative w-full h-full">
-          <AppIcon name="search" class="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted pointer-events-none" stroke="2" />
           <input
             v-model="store.searchQuery"
             type="text"
             placeholder="搜索..."
             ref="searchInput"
             @keydown.enter="($event.target as HTMLInputElement).blur()"
-            class="w-full h-full pl-8 pr-7 text-xs bg-overlay/90 backdrop-blur-md border border-default rounded-lg text-base placeholder:text-faint focus:outline-none focus:border-primary-500 transition-colors"
+            class="w-full h-full pl-8 pr-7 text-xs bg-overlay/90 border border-default rounded-lg text-base placeholder:text-faint focus:outline-none focus:border-primary-500 transition-colors"
           />
+          <span class="absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-muted"><AppIcon name="search" class="w-4 h-4" stroke="2" /></span>
           <button
             @click="toggleSearch()"
             class="absolute right-1.5 top-1/2 -translate-y-1/2 w-4 h-4 flex items-center justify-center text-muted hover:text-base transition-colors"
@@ -587,7 +587,7 @@ function getSegmentTotalCounts(markerIds: string[]): number {
             <span class="text-base font-semibold tracking-[0.15em] text-base">NTE · 夜巡</span>
           </h1>
           <div v-if="searchExpanded" class="relative flex-1 min-w-0 max-md:hidden">
-            <AppIcon name="search" class="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted pointer-events-none" stroke="2" />
+          <span class="absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" style="color: var(--text);"><AppIcon name="search" class="w-4 h-4" stroke="2" /></span>
             <input
               v-model="store.searchQuery"
               type="text"
