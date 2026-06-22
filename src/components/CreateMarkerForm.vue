@@ -4,6 +4,7 @@ import { useMarkerStore } from '@/stores/markerStore'
 import { MARKER_TYPE_CONFIG, ALL_ITEMS, isEnemyClearingType, TIME_OPTIONS, WEATHER_OPTIONS, iconClass } from '@/types'
 import type { MarkerType, TimeOfDay, Weather } from '@/types'
 import { resolveAssetUrl } from '@/config'
+import { AppIcon } from '@/components/ui'
 
 const store = useMarkerStore()
 
@@ -416,9 +417,7 @@ watch(() => store.pendingMarkerPos, (pos) => {
               @click="handleCancel"
               class="w-7 h-7 flex items-center justify-center rounded-full bg-elevated/80 hover:bg-surface text-muted hover:text-base transition-colors"
             >
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-              </svg>
+              <AppIcon name="close" class="w-4 h-4" stroke="2" />
             </button>
           </div>
 
@@ -428,10 +427,7 @@ watch(() => store.pendingMarkerPos, (pos) => {
               v-if="!isEditing && store.pendingMarkerPos"
               class="flex items-center gap-1.5 text-xs text-faint bg-surface/50 rounded-lg px-3 py-2"
             >
-              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
+              <AppIcon name="mapPin" class="w-3.5 h-3.5" />
               坐标 ({{ (store.pendingMarkerPos.lat * 100).toFixed(1) }}, {{ (store.pendingMarkerPos.lng * 100).toFixed(1) }})
             </div>
 
@@ -552,17 +548,13 @@ watch(() => store.pendingMarkerPos, (pos) => {
                   <img :src="img.startsWith('data:') ? img : resolveAssetUrl('./' + img)" class="w-full h-full object-cover pointer-events-none" />
                   <!-- Drag handle indicator -->
                   <div class="absolute inset-0 flex items-center justify-center bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-                    <svg class="w-4 h-4 text-white/80" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M8 6h2v2H8V6zm6 0h2v2h-2V6zM8 11h2v2H8v-2zm6 0h2v2h-2v-2zm-6 5h2v2H8v-2zm6 0h2v2h-2v-2z"/>
-                    </svg>
+                    <AppIcon name="dragGrid" class="w-4 h-4 text-white/80" />
                   </div>
                   <button
                     @click="removeImage(idx)"
                     class="absolute top-0.5 right-0.5 w-5 h-5 flex items-center justify-center rounded-full bg-black/70 text-red-400 hover:text-red-300 transition-colors opacity-0 group-hover:opacity-100"
                   >
-                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
+                    <AppIcon name="close" class="w-3 h-3" stroke="2" />
                   </button>
                 </div>
               </div>
@@ -570,9 +562,7 @@ watch(() => store.pendingMarkerPos, (pos) => {
               <label
                 class="flex items-center justify-center gap-2 px-3 py-2.5 border border-dashed border-default rounded-lg cursor-pointer hover:border-border-strong hover:bg-surface/50 transition-colors text-xs text-muted"
               >
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
+                <AppIcon name="image" class="w-4 h-4" stroke="2" />
                 {{ images.length > 0 ? '继续添加图片' : '上传图片' }}
                 <input
                   type="file"
@@ -590,9 +580,7 @@ watch(() => store.pendingMarkerPos, (pos) => {
                   @click="showImageBrowser = !showImageBrowser; if (showImageBrowser && existingImages.length === 0) fetchExistingImages()"
                   class="flex items-center justify-center gap-1.5 w-full px-3 py-2 border border-dashed border-default rounded-lg cursor-pointer hover:border-border-strong hover:bg-surface/50 transition-colors text-xs text-muted"
                 >
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                  </svg>
+                  <AppIcon name="image" class="w-4 h-4" stroke="2" />
                   选择已有图片
                 </button>
 
@@ -615,9 +603,7 @@ watch(() => store.pendingMarkerPos, (pos) => {
                           v-if="selectedExisting.has(img.path)"
                           class="absolute inset-0 bg-primary-500/20 flex items-center justify-center"
                         >
-                          <svg class="w-5 h-5 text-primary-400" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-                          </svg>
+                          <AppIcon name="checkCircle" class="w-5 h-5 text-primary-400" />
                         </div>
                       </div>
                     </div>
@@ -653,9 +639,7 @@ watch(() => store.pendingMarkerPos, (pos) => {
                   @click="removePanorama"
                   class="absolute top-1.5 right-1.5 w-6 h-6 flex items-center justify-center rounded-full bg-black/70 text-red-400 hover:text-red-300 transition-colors opacity-0 group-hover:opacity-100"
                 >
-                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                  </svg>
+                  <AppIcon name="close" class="w-3.5 h-3.5" stroke="2" />
                 </button>
                 <div class="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-black/60 to-transparent pointer-events-none flex items-end pb-2 px-3">
                   <span class="text-xs text-white/70">全景图</span>
@@ -665,9 +649,7 @@ watch(() => store.pendingMarkerPos, (pos) => {
               <label
                 class="flex items-center justify-center gap-2 px-3 py-2.5 border border-dashed border-default rounded-lg cursor-pointer hover:border-border-strong hover:bg-surface/50 transition-colors text-xs text-muted"
               >
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
+                <AppIcon name="image" class="w-4 h-4" stroke="2" />
                 {{ panoramaImage ? '替换全景图' : '上传全景图' }}
                 <input
                   type="file"
@@ -686,17 +668,13 @@ watch(() => store.pendingMarkerPos, (pos) => {
                 </div>
                 <!-- Selected audio -->
                 <div v-if="audioFile" class="flex items-center gap-2 mb-2 px-3 py-2 rounded-lg border border-default bg-surface/50">
-                  <svg class="w-4 h-4 text-cyan-400 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
-                  </svg>
+                  <AppIcon name="music" class="w-4 h-4 text-cyan-400 flex-shrink-0" />
                   <span class="text-xs text-muted truncate flex-1">{{ audioFile.replace('audio/', '') }}</span>
                   <button
                     @click="removeAudioFile"
                     class="w-5 h-5 flex items-center justify-center rounded-full bg-black/50 text-red-400 hover:text-red-300 transition-colors flex-shrink-0"
                   >
-                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
+                    <AppIcon name="close" class="w-3 h-3" stroke="2" />
                   </button>
                 </div>
                 <!-- Select button -->
@@ -704,9 +682,7 @@ watch(() => store.pendingMarkerPos, (pos) => {
                   @click="showAudioBrowser = !showAudioBrowser; if (showAudioBrowser && audioFiles.length === 0) fetchAudioFiles()"
                   class="flex items-center justify-center gap-1.5 w-full px-3 py-2 border border-dashed border-default rounded-lg cursor-pointer hover:border-border-strong hover:bg-surface/50 transition-colors text-xs text-muted"
                 >
-                  <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
-                  </svg>
+                  <AppIcon name="music" class="w-4 h-4" />
                   {{ audioFile ? '更换音乐' : '选择音乐' }}
                 </button>
 
@@ -723,9 +699,7 @@ watch(() => store.pendingMarkerPos, (pos) => {
                       class="flex items-center gap-2 w-full px-3 py-2 rounded-lg text-left transition-all"
                       :class="audioFile === audio.path ? 'bg-cyan-500/20 text-cyan-600 dark:text-cyan-300' : 'text-muted hover:bg-elevated hover:text-muted'"
                     >
-                      <svg class="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
-                      </svg>
+                      <AppIcon name="music" class="w-4 h-4 flex-shrink-0" />
                       <span class="text-xs truncate">{{ audio.name }}</span>
                     </button>
                   </template>
