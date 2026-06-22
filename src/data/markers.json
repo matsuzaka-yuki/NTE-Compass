@@ -7098,12 +7098,30 @@
     ]
   },
   {
+    "id": "user_1782136084501_3",
     "name": "妖刀",
     "types": [
       "yd"
     ],
     "lat": 0.5628487503585315,
     "lng": 0.5058751598535971,
+    "images": [
+      "images/uploads/yd_12.webp"
+    ],
+    "relatedItems": [
+      "sf"
+    ],
+    "counts": {
+      "yd": 1
+    }
+  },
+  {
+    "name": "妖刀",
+    "types": [
+      "yd"
+    ],
+    "lat": 0.18833851964045192,
+    "lng": 0.155006697679441,
     "relatedItems": [
       "sf"
     ],
@@ -7111,8 +7129,8 @@
       "yd": 1
     },
     "images": [
-      "images/uploads/yd_12.webp"
+      "images/uploads/yd_13.webp"
     ],
-    "id": "user_1782136084501_3"
+    "id": "user_1782136404051_4"
   }
 ]
