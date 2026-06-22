@@ -1,5 +1,320 @@
 [
   {
+    "id": "checkin-001",
+    "name": "打卡 #001",
+    "types": [
+      "checkin"
+    ],
+    "lat": 0.629374,
+    "lng": 0.597599
+  },
+  {
+    "id": "checkin-002",
+    "name": "打卡 #002",
+    "types": [
+      "checkin"
+    ],
+    "lat": 0.684498,
+    "lng": 0.434112
+  },
+  {
+    "id": "checkin-003",
+    "name": "打卡 #003",
+    "types": [
+      "checkin"
+    ],
+    "lat": 0.662766,
+    "lng": 0.582248
+  },
+  {
+    "id": "checkin-004",
+    "name": "打卡 #004",
+    "types": [
+      "checkin"
+    ],
+    "lat": 0.683033,
+    "lng": 0.573988
+  },
+  {
+    "id": "checkin-005",
+    "name": "打卡 #005",
+    "types": [
+      "checkin"
+    ],
+    "lat": 0.682168,
+    "lng": 0.493102
+  },
+  {
+    "id": "checkin-006",
+    "name": "打卡 #006",
+    "types": [
+      "checkin"
+    ],
+    "lat": 0.704884,
+    "lng": 0.490635
+  },
+  {
+    "id": "checkin-007",
+    "name": "打卡 #007",
+    "types": [
+      "checkin"
+    ],
+    "lat": 0.628992,
+    "lng": 0.440889
+  },
+  {
+    "id": "checkin-008",
+    "name": "打卡 #008",
+    "types": [
+      "checkin"
+    ],
+    "lat": 0.638692,
+    "lng": 0.499499
+  },
+  {
+    "id": "checkin-009",
+    "name": "打卡 #009",
+    "types": [
+      "checkin"
+    ],
+    "lat": 0.624632,
+    "lng": 0.483412
+  },
+  {
+    "id": "checkin-010",
+    "name": "打卡 #010",
+    "types": [
+      "checkin"
+    ],
+    "lat": 0.435671,
+    "lng": 0.46839
+  },
+  {
+    "id": "checkin-011",
+    "name": "打卡 #011",
+    "types": [
+      "checkin"
+    ],
+    "lat": 0.564522,
+    "lng": 0.462988
+  },
+  {
+    "id": "checkin-012",
+    "name": "打卡 #012",
+    "types": [
+      "checkin"
+    ],
+    "lat": 0.589311,
+    "lng": 0.595086
+  },
+  {
+    "id": "checkin-013",
+    "name": "打卡 #013",
+    "types": [
+      "checkin"
+    ],
+    "lat": 0.546341,
+    "lng": 0.551827
+  },
+  {
+    "id": "checkin-014",
+    "name": "打卡 #014",
+    "types": [
+      "checkin"
+    ],
+    "lat": 0.533041,
+    "lng": 0.635292
+  },
+  {
+    "id": "checkin-015",
+    "name": "打卡 #015",
+    "types": [
+      "checkin"
+    ],
+    "lat": 0.516388,
+    "lng": 0.587854
+  },
+  {
+    "id": "checkin-016",
+    "name": "打卡 #016",
+    "types": [
+      "checkin"
+    ],
+    "lat": 0.508067,
+    "lng": 0.570296
+  },
+  {
+    "id": "checkin-017",
+    "name": "打卡 #017",
+    "types": [
+      "checkin"
+    ],
+    "lat": 0.513657,
+    "lng": 0.538081
+  },
+  {
+    "id": "checkin-018",
+    "name": "打卡 #018",
+    "types": [
+      "checkin"
+    ],
+    "lat": 0.489011,
+    "lng": 0.567879
+  },
+  {
+    "id": "checkin-019",
+    "name": "打卡 #019",
+    "types": [
+      "checkin"
+    ],
+    "lat": 0.530146,
+    "lng": 0.31619
+  },
+  {
+    "id": "checkin-020",
+    "name": "打卡 #020",
+    "types": [
+      "checkin"
+    ],
+    "lat": 0.521559,
+    "lng": 0.36265
+  },
+  {
+    "id": "checkin-021",
+    "name": "打卡 #021",
+    "types": [
+      "checkin"
+    ],
+    "lat": 0.537658,
+    "lng": 0.336652
+  },
+  {
+    "id": "checkin-022",
+    "name": "打卡 #022",
+    "types": [
+      "checkin"
+    ],
+    "lat": 0.495005,
+    "lng": 0.336704
+  },
+  {
+    "id": "checkin-023",
+    "name": "打卡 #023",
+    "types": [
+      "checkin"
+    ],
+    "lat": 0.473423,
+    "lng": 0.339699
+  },
+  {
+    "id": "checkin-024",
+    "name": "打卡 #024",
+    "types": [
+      "checkin"
+    ],
+    "lat": 0.593287,
+    "lng": 0.389576
+  },
+  {
+    "id": "checkin-025",
+    "name": "打卡 #025",
+    "types": [
+      "checkin"
+    ],
+    "lat": 0.394694,
+    "lng": 0.355125
+  },
+  {
+    "id": "checkin-026",
+    "name": "打卡 #026",
+    "types": [
+      "checkin"
+    ],
+    "lat": 0.341287,
+    "lng": 0.344157
+  },
+  {
+    "id": "checkin-027",
+    "name": "打卡 #027",
+    "types": [
+      "checkin"
+    ],
+    "lat": 0.363988,
+    "lng": 0.337352
+  },
+  {
+    "id": "checkin-028",
+    "name": "打卡 #028",
+    "types": [
+      "checkin"
+    ],
+    "lat": 0.381605,
+    "lng": 0.285555
+  },
+  {
+    "id": "checkin-029",
+    "name": "打卡 #029",
+    "types": [
+      "checkin"
+    ],
+    "lat": 0.421987,
+    "lng": 0.325641
+  },
+  {
+    "id": "checkin-030",
+    "name": "打卡 #030",
+    "types": [
+      "checkin"
+    ],
+    "lat": 0.45433,
+    "lng": 0.369689
+  },
+  {
+    "id": "checkin-031",
+    "name": "打卡 #031",
+    "types": [
+      "checkin"
+    ],
+    "lat": 0.438652,
+    "lng": 0.364843
+  },
+  {
+    "id": "checkin-032",
+    "name": "打卡 #032",
+    "types": [
+      "checkin"
+    ],
+    "lat": 0.469456,
+    "lng": 0.42732
+  },
+  {
+    "id": "checkin-033",
+    "name": "打卡 #033",
+    "types": [
+      "checkin"
+    ],
+    "lat": 0.466171,
+    "lng": 0.395401
+  },
+  {
+    "id": "checkin-034",
+    "name": "打卡 #034",
+    "types": [
+      "checkin"
+    ],
+    "lat": 0.439007,
+    "lng": 0.41247
+  },
+  {
+    "id": "checkin-035",
+    "name": "打卡 #035",
+    "types": [
+      "checkin"
+    ],
+    "lat": 0.499271,
+    "lng": 0.422955
+  },
+  {
     "id": "gift-21-010",
     "name": "21的赠礼 #010",
     "types": [
