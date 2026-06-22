@@ -606,8 +606,12 @@ export const useMarkerStore = defineStore('markers', () => {
   const segmentTempMarkerIds = ref<string[]>([])
   const currentSegmentIndex = ref(-1)
 
+  // 全怪路线：纯内存临时数据，不持久化、不导出，每次会话独立
+  const autoRoute = ref<RouteData | null>(null)
+
   const currentRoute = computed(() => {
     if (!currentRouteId.value) return null
+    if (currentRouteId.value === '__auto__') return autoRoute.value
     return routes.value.find(r => r.id === currentRouteId.value) ?? null
   })
 
@@ -638,6 +642,7 @@ export const useMarkerStore = defineStore('markers', () => {
     segmentTempMarkerIds.value = []
     routeMarkerFilterIds.value = null
     focusMarkerIds.value = []
+    autoRoute.value = null
     stopFarmingMode()
   }
 
@@ -656,27 +661,23 @@ export const useMarkerStore = defineStore('markers', () => {
     if (orderedIds.length === 0) return 0
 
     const segs = segmentRoute(orderedIds, markers.value)
-    const segments: RouteSegment[] = segs.map((s, i) => ({
+    const segments: RouteSegment[] = segs.map(s => ({
       id: generateId(),
       name: s.name,
       markerIds: s.markerIds,
     }))
 
-    // 删除旧的全怪路线（同名）
-    routes.value = routes.value.filter(r => r.name !== '全怪路线')
-
-    const route: RouteData = {
-      id: generateId(),
+    // 纯内存临时路线，不进 routes、不持久化
+    autoRoute.value = {
+      id: '__auto__',
       name: '全怪路线',
       image: undefined,
       segments,
     }
-    routes.value = [...routes.value, route]
-    persistRouteData()
 
     // 自动打开路线详情
     showRouteView.value = true
-    currentRouteId.value = route.id
+    currentRouteId.value = '__auto__'
     currentSegmentIndex.value = 0
     focusMarkerIds.value = [startId!]
 
