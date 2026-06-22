@@ -495,6 +495,7 @@ onMounted(async () => {
   // Tag the map container with the current zoom level so CSS can scale
   // individual markers smaller when zoomed far out (fewer overlapping blobs).
   function updateZoomTag() {
+    if (!map) return
     const z = map.getZoom()
     const el = map.getContainer()
     el.classList.toggle('zoom-far', z <= 3)
