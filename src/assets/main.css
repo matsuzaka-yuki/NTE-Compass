@@ -264,6 +264,18 @@
   filter: grayscale(0.6);
 }
 
+/* Scale individual markers smaller when zoomed far out, so a screen full of
+ * markers at low zoom doesn't look like a pile of oversized blobs. The map
+ * container gets .zoom-far / .zoom-mid classes via updateZoomTag(). */
+.zoom-far .custom-marker > div {
+  transform: scale(0.62);
+  transform-origin: center;
+}
+.zoom-mid .custom-marker > div {
+  transform: scale(0.8);
+  transform-origin: center;
+}
+
 /* ---------- White-on-dark icons: invert in light mode only ---------- */
 /* Some marker PNGs (e.g. 钓鱼点/异闻录) are pure white, designed for the dark
  * map. In light mode they vanish on a light background — invert them.

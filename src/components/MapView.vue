@@ -472,7 +472,13 @@ onMounted(async () => {
   markerClusterGroup = L.markerClusterGroup({
     chunkedLoading: true,
     animate: false,
-    maxClusterRadius: 50,
+    maxClusterRadius: (zoom: number) => {
+      // 远距离（低缩放）用大半径聚成大簇，近距离用小半径保持细节
+      if (zoom <= 2) return 120
+      if (zoom <= 4) return 90
+      if (zoom <= 6) return 60
+      return 40
+    },
     spiderfyOnMaxZoom: true,
     showCoverageOnHover: false,
     zoomToBoundsOnClick: true,
@@ -485,6 +491,17 @@ onMounted(async () => {
   map.addLayer(markerClusterGroup)
 
   arrowLayerGroup = L.layerGroup().addTo(map)
+
+  // Tag the map container with the current zoom level so CSS can scale
+  // individual markers smaller when zoomed far out (fewer overlapping blobs).
+  function updateZoomTag() {
+    const z = map.getZoom()
+    const el = map.getContainer()
+    el.classList.toggle('zoom-far', z <= 3)
+    el.classList.toggle('zoom-mid', z > 3 && z <= 5)
+  }
+  updateZoomTag()
+  map.on('zoomend', updateZoomTag)
 
   map.on('moveend', () => {
     if (isFlying) return
