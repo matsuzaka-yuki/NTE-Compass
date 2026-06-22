@@ -75,6 +75,13 @@ onMounted(() => {
 })
 onUnmounted(() => window.removeEventListener('keydown', onKeydown))
 
+// Notify when marker data has been updated since last visit.
+watch(() => store.newMarkerCount, (n) => {
+  if (n > 0) {
+    showToast(`地图数据已更新，新增 ${n} 个标记点`)
+  }
+})
+
 watch(() => store.isOfflineEditMode, (val, oldVal) => {
   if (oldVal !== undefined) {
     showToast(val ? '自定义编辑模式已开启' : '自定义编辑模式已关闭')

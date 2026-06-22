@@ -239,12 +239,14 @@ export const useMarkerStore = defineStore('markers', () => {
       loadRoutesFromApi().then(data => {
         if (data.length > 0) routes.value = data
       })
+      checkDataVersion()
       return
     }
 
     // EDITOR_ENABLED = false: check localStorage
     const storedMarkers = loadOfflineMarkers()
     const storedRoutes = loadOfflineRoutes()
+    checkDataVersion()
 
     if (storedMarkers.length > 0 || storedRoutes.length > 0) {
       // If localStorage data is identical to built-in JSON, skip the choice dialog
@@ -270,6 +272,24 @@ export const useMarkerStore = defineStore('markers', () => {
     routes.value = builtinRoutes
     saveOfflineMarkers(builtinMarkers)
     saveOfflineRoutes(builtinRoutes)
+  }
+
+  /**
+   * Compare built-in marker count against last-seen count in localStorage.
+   * If different (data updated since last visit), set a flag for the UI to
+   * show a "new markers available" toast.
+   */
+  const VERSION_KEY = 'isekai-map-data-version'
+  const newMarkerCount = ref(0)
+
+  function checkDataVersion() {
+    const builtin = getBuiltinMarkers()
+    const current = builtin.length
+    const last = parseInt(localStorage.getItem(VERSION_KEY) || '0', 10)
+    if (last > 0 && current > last) {
+      newMarkerCount.value = current - last
+    }
+    localStorage.setItem(VERSION_KEY, String(current))
   }
 
   function chooseDataSource(choice: 'builtin' | 'localstorage') {
@@ -767,6 +787,7 @@ export const useMarkerStore = defineStore('markers', () => {
     isAnyEditMode,
     needsDataSourceChoice,
     dataInitialized,
+    newMarkerCount,
     markers,
     foundIds,
     searchQuery,
