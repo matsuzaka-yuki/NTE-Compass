@@ -9,7 +9,7 @@ import UpdatePrompt from './components/UpdatePrompt.vue'
 import SideBar from './components/SideBar.vue'
 import MarkerPopup from './components/MarkerPopup.vue'
 import SettingsPanel from './components/SettingsPanel.vue'
-import { ConfirmHost } from './components/ui'
+import { ConfirmHost, AppIcon } from './components/ui'
 import { EDITOR_ENABLED } from './config'
 
 // Lazy-load less-critical components so they (and their deps) are split into
@@ -174,9 +174,7 @@ window.addEventListener('resize', () => {
       :class="store.isEditorMode ? 'text-base border-border-strong bg-elevated' : 'text-muted hover:text-base hover:border-border-strong'"
       title="编辑者模式"
     >
-      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-      </svg>
+      <AppIcon name="edit" class="w-5 h-5" />
     </button>
 
     <!-- Mobile route button (top-left) -->
@@ -186,9 +184,7 @@ window.addEventListener('resize', () => {
       :class="store.showRouteView ? 'text-base border-border-strong bg-elevated' : 'text-muted hover:text-base hover:border-border-strong'"
       title="路线"
     >
-      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
-      </svg>
+      <AppIcon name="route" class="w-5 h-5" />
     </button>
 
     <!-- Sidebar toggle button -->
@@ -197,12 +193,7 @@ window.addEventListener('resize', () => {
       class="fixed z-30 w-9 h-9 rounded-lg bg-overlay/90 backdrop-blur-md border border-default shadow-lg flex items-center justify-center text-muted hover:text-base hover:border-border-strong transition-colors active:scale-95 top-4 max-md:hidden"
       :class="store.sidebarOpen ? 'left-[350px]' : 'left-4'"
     >
-      <svg v-if="!store.sidebarOpen" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-      </svg>
-      <svg v-else class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-      </svg>
+      <AppIcon :name="store.sidebarOpen ? 'close' : 'menu'" class="w-5 h-5" />
     </button>
 
     <!-- Farming button (开刷) / up-down controls -->
@@ -216,9 +207,7 @@ window.addEventListener('resize', () => {
         class="w-9 h-9 rounded-lg bg-amber-500/20 backdrop-blur-md border border-amber-500/40 shadow-lg flex items-center justify-center text-amber-400 hover:text-amber-300 hover:bg-amber-500/30 hover:border-amber-400/60 transition-colors active:scale-95"
         title="开刷"
       >
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
-        </svg>
+        <AppIcon name="bolt" class="w-5 h-5" />
       </button>
     </div>
 
@@ -234,9 +223,7 @@ window.addEventListener('resize', () => {
         class="w-9 h-9 rounded-lg bg-amber-500/20 backdrop-blur-md border border-amber-500/40 shadow-lg flex items-center justify-center text-amber-400 hover:text-amber-300 hover:bg-amber-500/30 hover:border-amber-400/60 disabled:opacity-30 disabled:cursor-not-allowed transition-colors active:scale-95"
         title="上一组"
       >
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M18 15l-6-6-6 6" />
-        </svg>
+        <AppIcon name="chevronUp" class="w-5 h-5" stroke="2.5" />
       </button>
       <button
         @click="store.farmingNextPair()"
@@ -244,9 +231,7 @@ window.addEventListener('resize', () => {
         class="w-9 h-9 rounded-lg bg-amber-500/20 backdrop-blur-md border border-amber-500/40 shadow-lg flex items-center justify-center text-amber-400 hover:text-amber-300 hover:bg-amber-500/30 hover:border-amber-400/60 disabled:opacity-30 disabled:cursor-not-allowed transition-colors active:scale-95"
         title="下一组"
       >
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M6 9l6 6 6-6" />
-        </svg>
+        <AppIcon name="chevronDown" class="w-5 h-5" stroke="2.5" />
       </button>
     </div>
 
