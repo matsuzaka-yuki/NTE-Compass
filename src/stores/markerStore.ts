@@ -608,6 +608,8 @@ export const useMarkerStore = defineStore('markers', () => {
 
   // 全怪路线：纯内存临时数据，不持久化、不导出，每次会话独立
   const autoRoute = ref<RouteData | null>(null)
+  // 全怪路线起始点（独立高亮，不被 focusSegment 覆盖）
+  const autoRouteStartId = ref<string | null>(null)
 
   const currentRoute = computed(() => {
     if (!currentRouteId.value) return null
@@ -643,6 +645,7 @@ export const useMarkerStore = defineStore('markers', () => {
     routeMarkerFilterIds.value = null
     focusMarkerIds.value = []
     autoRoute.value = null
+    autoRouteStartId.value = null
     stopFarmingMode()
   }
 
@@ -679,6 +682,7 @@ export const useMarkerStore = defineStore('markers', () => {
     showRouteView.value = true
     currentRouteId.value = '__auto__'
     currentSegmentIndex.value = 0
+    autoRouteStartId.value = startId
     focusMarkerIds.value = [startId!]
 
     return orderedIds.length
@@ -968,6 +972,7 @@ export const useMarkerStore = defineStore('markers', () => {
     getMarkerById,
     // map focus
     focusMarkerIds,
+    autoRouteStartId,
     requestFocusMarkers,
     // route marker filter
     routeMarkerFilterIds,
