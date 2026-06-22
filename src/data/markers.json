@@ -5949,15 +5949,6 @@
     "lng": 0.240035
   },
   {
-    "id": "lost-wallet-559",
-    "name": "丢失的钱包 #559",
-    "types": [
-      "lostwallet"
-    ],
-    "lat": 0.889946,
-    "lng": 0.382063
-  },
-  {
     "id": "lost-wallet-560",
     "name": "丢失的钱包 #560",
     "types": [
