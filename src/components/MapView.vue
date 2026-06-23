@@ -334,7 +334,7 @@ function buildMarkers() {
   for (const m of store.filteredMarkers) {
     const found = store.isFound(m.id)
     const icon = createMarkerIcon(m, found)
-    const marker = L.marker([m.lat, m.lng], { icon })
+    const marker = L.marker([m.lat, m.lng], { icon, draggable: store.isAnyEditMode })
     marker.on('click', () => {
       if (store.isAddingSegment) {
         store.addTempMarker(m.id)
@@ -342,6 +342,13 @@ function buildMarkers() {
         store.selectMarker(m.id)
       }
     })
+    // 编辑模式下：拖拽结束 → 更新坐标 → 路线箭头自动重绘
+    if (store.isAnyEditMode) {
+      marker.on('dragend', () => {
+        const pos = marker.getLatLng()
+        store.moveMarker(m.id, pos.lat, pos.lng)
+      })
+    }
     if (canHover) {
       marker.on('mouseover', () => {
         if (!map) return
@@ -406,6 +413,15 @@ watch(
     nextTick(() => buildRouteArrows())
   },
   { deep: false }
+)
+
+// 编辑模式切换时重建 marker，让 draggable 属性生效/失效
+watch(
+  () => store.isAnyEditMode,
+  () => {
+    buildMarkers()
+    nextTick(() => buildRouteArrows())
+  }
 )
 
 watch(

@@ -658,6 +658,20 @@ export const useMarkerStore = defineStore('markers', () => {
     editingMarkerId.value = null
   }
 
+  /** 仅更新标记坐标（编辑模式拖拽用）。不可变替换触发响应式，
+   *  持久化，不影响编辑表单状态。路线箭头会因 filteredMarkers 刷新自动重绘。 */
+  function moveMarker(id: string, lat: number, lng: number) {
+    const idx = editableMarkers.value.findIndex((m) => m.id === id)
+    if (idx === -1) return
+    const old = editableMarkers.value[idx]
+    editableMarkers.value = [
+      ...editableMarkers.value.slice(0, idx),
+      { ...old, lat, lng },
+      ...editableMarkers.value.slice(idx + 1),
+    ]
+    saveMarkersToFile(editableMarkers.value)
+  }
+
   function openCreateMarker(lat: number, lng: number) {
     editingMarkerId.value = null
     pendingMarkerPos.value = { lat, lng }
@@ -1019,6 +1033,7 @@ export const useMarkerStore = defineStore('markers', () => {
     startEditMarker,
     cancelEditMarker,
     updateMarker,
+    moveMarker,
     openCreateMarker,
     closeCreateMarker,
     // routes
