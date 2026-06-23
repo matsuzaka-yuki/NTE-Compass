@@ -392,20 +392,18 @@ export const useMarkerStore = defineStore('markers', () => {
       // Exiting offline mode
       isOfflineEditMode.value = false
       if (EDITOR_ENABLED) {
-        // Restore from built-in data, then try API
+        // EDITOR_ENABLED=true: restore from built-in data, then try API
         editableMarkers.value = getBuiltinMarkers()
         routes.value = getBuiltinRoutes()
         loadLatestMarkers()
         loadRoutesFromApi().then(data => {
           if (data.length > 0) routes.value = data
         })
-      } else {
-        // EDITOR_ENABLED = false: reload from localStorage (may have been modified)
-        const markers = loadOfflineMarkers()
-        const routeData = loadOfflineRoutes()
-        if (markers.length > 0) editableMarkers.value = markers
-        if (routeData.length > 0) routes.value = routeData
       }
+      // EDITOR_ENABLED=false: 内存中的数据（含用户编辑）已是最新，
+      // 且 persistRouteData 在 !EDITOR_ENABLED 时总是写 localStorage，
+      // 所以退出时无需从 localStorage 重读——直接保留内存数据即可。
+      // 之前这里从 localStorage 重读会覆盖内存，导致用户刚创建的路线消失。
     } else {
       // Entering offline mode
       if (EDITOR_ENABLED) {
@@ -429,7 +427,7 @@ export const useMarkerStore = defineStore('markers', () => {
           saveOfflineRoutes(builtinRoutes)
         }
       }
-      // When EDITOR_ENABLED = false: data is already in localStorage, no switch needed
+      // EDITOR_ENABLED=false: data is already in localStorage, no switch needed
 
       isOfflineEditMode.value = true
       isEditorMode.value = false
@@ -513,6 +511,79 @@ export const useMarkerStore = defineStore('markers', () => {
       }
 
       return { markers: importedMarkers.length, routes: importedRoutes.length }
+    } catch {
+      return { error: 'JSON 解析失败，请检查文件格式' }
+    }
+  }
+
+  // ---- route-only export/import ----
+  /** 仅导出路线数据（不含 markers/进度），生成 JSON 文件下载 */
+  function exportRoutes() {
+    const data = {
+      version: 1,
+      type: 'routes',
+      exportedAt: new Date().toISOString(),
+      routes: routes.value,
+    }
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `routes-${new Date().toISOString().slice(0, 10)}.json`
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
+  }
+
+  /** 仅导入路线。同名路线合并路段（按路段 id 去重，仅追加不存在的路段），
+   *  新名称的路线作为新路线加入（重新生成 id 避免冲突）。返回新增/更新的路线数。 */
+  function importRoutes(jsonString: string): { routes: number } | { error: string } {
+    try {
+      const data = JSON.parse(jsonString)
+      if (!data.routes || !Array.isArray(data.routes)) {
+        return { error: '无效的数据格式：缺少 routes 字段' }
+      }
+      const importedRoutes = data.routes as RouteData[]
+      let changed = 0
+      let nextRoutes = [...routes.value]
+
+      for (const r of importedRoutes) {
+        const existingIdx = nextRoutes.findIndex(x => x.name === r.name)
+        if (existingIdx >= 0) {
+          // 同名路线：按路段名称去重，仅追加现有路线中没有的路段
+          // 用名称而非 id，因为导入追加的路段会重新生成 id，
+          // 再次导入同一文件时 id 对不上会导致重复追加
+          const existing = nextRoutes[existingIdx]
+          const existingSegNames = new Set(existing.segments.map(s => s.name))
+          const extraSegs: RouteSegment[] = (r.segments || [])
+            .filter(s => !existingSegNames.has(s.name))
+            .map(s => ({ id: generateId(), name: s.name, markerIds: [...(s.markerIds || [])] }))
+          if (extraSegs.length > 0) {
+            nextRoutes[existingIdx] = {
+              ...existing,
+              segments: [...existing.segments, ...extraSegs],
+            }
+            changed++
+          }
+        } else {
+          // 新路线：重新生成 id
+          const routeId = generateId()
+          const segments: RouteSegment[] = (r.segments || []).map(s => ({
+            id: generateId(),
+            name: s.name,
+            markerIds: [...(s.markerIds || [])],
+          }))
+          nextRoutes.push({ id: routeId, name: r.name, image: r.image, segments })
+          changed++
+        }
+      }
+
+      if (changed > 0) {
+        routes.value = nextRoutes
+        persistRouteData()
+      }
+      return { routes: changed }
     } catch {
       return { error: 'JSON 解析失败，请检查文件格式' }
     }
@@ -940,6 +1011,8 @@ export const useMarkerStore = defineStore('markers', () => {
     toggleOfflineEditMode,
     exportData,
     importData,
+    exportRoutes,
+    importRoutes,
     loadLatestMarkers,
     addMarker,
     deleteMarker,

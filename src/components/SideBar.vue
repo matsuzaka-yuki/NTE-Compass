@@ -473,6 +473,43 @@ function getSegmentTotalCounts(markerIds: string[]): number {
   return total
 }
 
+// ---- route export/import ----
+const routeFileInput = ref<HTMLInputElement | null>(null)
+const routeImportMsg = ref('')
+let routeImportTimer: ReturnType<typeof setTimeout> | null = null
+
+function handleRouteExport() {
+  store.exportRoutes()
+  routeImportMsg.value = '路线已导出'
+  if (routeImportTimer) clearTimeout(routeImportTimer)
+  routeImportTimer = setTimeout(() => { routeImportMsg.value = '' }, 2000)
+}
+
+function triggerRouteImport() {
+  routeFileInput.value?.click()
+}
+
+function handleRouteImport(e: Event) {
+  const input = e.target as HTMLInputElement
+  const file = input.files?.[0]
+  if (!file) return
+  const reader = new FileReader()
+  reader.onload = () => {
+    const result = store.importRoutes(reader.result as string)
+    if ('error' in result) {
+      routeImportMsg.value = result.error
+    } else {
+      routeImportMsg.value = result.routes > 0
+        ? `导入成功：${result.routes} 条路线已更新或新增`
+        : '没有变化（路线和路段均已存在）'
+    }
+    if (routeImportTimer) clearTimeout(routeImportTimer)
+    routeImportTimer = setTimeout(() => { routeImportMsg.value = '' }, 3000)
+  }
+  reader.readAsText(file)
+  input.value = ''
+}
+
 </script>
 
 <template>
@@ -673,6 +710,20 @@ function getSegmentTotalCounts(markerIds: string[]): number {
               全怪路线
             </button>
             <button
+              @click="handleRouteExport()"
+              class="w-6 h-6 flex items-center justify-center text-muted hover:text-base hover:bg-elevated rounded-md transition-colors flex-shrink-0"
+              title="导出路线"
+            >
+              <AppIcon name="download" class="w-4 h-4" stroke="2" />
+            </button>
+            <button
+              @click="triggerRouteImport()"
+              class="w-6 h-6 flex items-center justify-center text-muted hover:text-base hover:bg-elevated rounded-md transition-colors flex-shrink-0"
+              title="导入路线"
+            >
+              <AppIcon name="upload" class="w-4 h-4" stroke="2" />
+            </button>
+            <button
               v-if="store.isAnyEditMode"
               @click="routeDialogsRef?.openCreateRouteDialog()"
               class="w-6 h-6 flex items-center justify-center text-muted hover:text-primary-400 hover:bg-elevated rounded-md transition-colors flex-shrink-0"
@@ -681,6 +732,18 @@ function getSegmentTotalCounts(markerIds: string[]): number {
               <AppIcon name="plus" class="w-4 h-4" stroke="2" />
             </button>
           </div>
+          <div
+            v-if="routeImportMsg"
+            class="flex-shrink-0 px-4 py-1 text-center text-[11px] text-green-500 dark:text-green-400"
+          >{{ routeImportMsg }}</div>
+
+          <input
+            ref="routeFileInput"
+            type="file"
+            accept=".json"
+            class="hidden"
+            @change="handleRouteImport"
+          />
 
           <div class="flex-1 overflow-y-auto px-4 py-3 space-y-2">
             <template v-if="store.routes.length > 0">
