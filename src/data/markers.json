@@ -5527,7 +5527,7 @@
   },
   {
     "id": "lost-wallet-512",
-    "name": "丢失的钱����� #512",
+    "name": "丢失的钱������� #512",
     "types": [
       "lostwallet"
     ],
@@ -14108,6 +14108,7 @@
     }
   },
   {
+    "id": "user_1782028910921_2",
     "name": "波普",
     "types": [
       "gift21",
@@ -14115,16 +14116,15 @@
     ],
     "lat": 0.5490720461702887,
     "lng": 0.42688251359973034,
+    "images": [
+      "images/uploads/gift21_7.webp"
+    ],
     "relatedItems": [
       "ly"
     ],
     "counts": {
       "bp": 1
-    },
-    "images": [
-      "images/uploads/gift21_7.webp"
-    ],
-    "id": "user_1782028910921_2"
+    }
   },
   {
     "id": "user_1782029091082_3",
@@ -14900,5 +14900,24 @@
     "counts": {
       "wmz": 5
     }
+  },
+  {
+    "name": "小混混聚集地P4",
+    "types": [
+      "wmz"
+    ],
+    "lat": 0.5063656074095576,
+    "lng": 0.29583509771176264,
+    "description": "这个位置有几个小混混",
+    "relatedItems": [
+      "ly"
+    ],
+    "counts": {
+      "wmz": 3
+    },
+    "images": [
+      "images/uploads/wmz_3.webp"
+    ],
+    "id": "user_1782229590640_1"
   }
 ]
