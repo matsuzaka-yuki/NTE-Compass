@@ -61,7 +61,9 @@ function stopAudio() {
   if (audioRef.value) {
     try {
       audioRef.value.pause()
-    } catch { /* ignore */ }
+    } catch {
+      /* ignore */
+    }
   }
 }
 
@@ -157,17 +159,18 @@ function initViewer() {
   nextTick(() => {
     // Build hotspot configs from panoramaLinks
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const hotSpots: any[] | undefined = (props.links && props.links.length > 0)
-      ? props.links.map((link: PanoramaLink) => ({
-          pitch: link.pitch,
-          yaw: link.yaw,
-          type: 'info' as const,
-          text: link.label || '前往',
-          cssClass: 'pano-nav-arrow',
-          // Render custom arrow content directly into the hotspot div
-          createTooltipFunc: (hotSpotDiv: HTMLElement) => {
-            hotSpotDiv.classList.add('pano-nav-arrow')
-            hotSpotDiv.innerHTML = `
+    const hotSpots: any[] | undefined =
+      props.links && props.links.length > 0
+        ? props.links.map((link: PanoramaLink) => ({
+            pitch: link.pitch,
+            yaw: link.yaw,
+            type: 'info' as const,
+            text: link.label || '前往',
+            cssClass: 'pano-nav-arrow',
+            // Render custom arrow content directly into the hotspot div
+            createTooltipFunc: (hotSpotDiv: HTMLElement) => {
+              hotSpotDiv.classList.add('pano-nav-arrow')
+              hotSpotDiv.innerHTML = `
               <div class="pano-arrow-icon">
                 <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                   <line x1="12" y1="4" x2="12" y2="20" />
@@ -176,12 +179,12 @@ function initViewer() {
               </div>
               <div class="pano-arrow-label">${link.label || '前往'}</div>
             `
-          },
-          clickHandlerFunc: () => {
-            emit('navigate', link.targetMarkerId)
-          },
-        }))
-      : undefined
+            },
+            clickHandlerFunc: () => {
+              emit('navigate', link.targetMarkerId)
+            },
+          }))
+        : undefined
 
     viewer = pannellum.viewer(viewerContainer.value!, {
       type: 'equirectangular',
@@ -209,36 +212,44 @@ function destroyViewer() {
   if (viewer) {
     try {
       viewer.destroy()
-    } catch { /* ignore */ }
+    } catch {
+      /* ignore */
+    }
     viewer = null
   }
 }
 
-watch(() => props.visible, (v) => {
-  if (v) {
-    playAudio()
-    nextTick(() => {
-      initViewer()
-    })
-  } else {
-    stopShake()
-    destroyViewer()
-    stopAudio()
-  }
-})
+watch(
+  () => props.visible,
+  (v) => {
+    if (v) {
+      playAudio()
+      nextTick(() => {
+        initViewer()
+      })
+    } else {
+      stopShake()
+      destroyViewer()
+      stopAudio()
+    }
+  },
+)
 
 // When src changes while viewer is visible, re-init to show the new panorama
-watch(() => props.src, (newSrc, oldSrc) => {
-  if (newSrc && newSrc !== oldSrc && props.visible) {
-    stopShake()
-    destroyViewer()
-    stopAudio()
-    playAudio()
-    nextTick(() => {
-      initViewer()
-    })
-  }
-})
+watch(
+  () => props.src,
+  (newSrc, oldSrc) => {
+    if (newSrc && newSrc !== oldSrc && props.visible) {
+      stopShake()
+      destroyViewer()
+      stopAudio()
+      playAudio()
+      nextTick(() => {
+        initViewer()
+      })
+    }
+  },
+)
 
 onUnmounted(() => {
   destroyViewer()

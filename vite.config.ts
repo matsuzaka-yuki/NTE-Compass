@@ -40,7 +40,9 @@ function markersApiPlugin() {
 
         if (req.method === 'POST') {
           let body = ''
-          req.on('data', (chunk: string) => { body += chunk })
+          req.on('data', (chunk: string) => {
+            body += chunk
+          })
           req.on('end', () => {
             try {
               const markers = JSON.parse(body)
@@ -79,7 +81,9 @@ function markersApiPlugin() {
 
         if (req.method === 'POST') {
           let body = ''
-          req.on('data', (chunk: string) => { body += chunk })
+          req.on('data', (chunk: string) => {
+            body += chunk
+          })
           req.on('end', () => {
             try {
               const { data, type, ext } = JSON.parse(body)
@@ -141,8 +145,8 @@ function markersApiPlugin() {
             fs.mkdirSync(UPLOADS_DIR, { recursive: true })
             const files = fs.readdirSync(UPLOADS_DIR)
             const images = files
-              .filter(f => /\.(png|jpe?g|webp|gif|svg)$/i.test(f))
-              .map(f => ({
+              .filter((f) => /\.(png|jpe?g|webp|gif|svg)$/i.test(f))
+              .map((f) => ({
                 name: f,
                 path: `images/uploads/${f}`,
               }))
@@ -177,8 +181,8 @@ function markersApiPlugin() {
             fs.mkdirSync(AUDIO_DIR, { recursive: true })
             const files = fs.readdirSync(AUDIO_DIR)
             const audioFiles = files
-              .filter(f => /\.(mp3|wav|ogg|aac|m4a|flac|webm)$/i.test(f))
-              .map(f => ({
+              .filter((f) => /\.(mp3|wav|ogg|aac|m4a|flac|webm)$/i.test(f))
+              .map((f) => ({
                 name: f,
                 path: `audio/${f}`,
               }))
@@ -263,7 +267,9 @@ function markersApiPlugin() {
 
         if (req.method === 'POST') {
           let body = ''
-          req.on('data', (chunk: string) => { body += chunk })
+          req.on('data', (chunk: string) => {
+            body += chunk
+          })
           req.on('end', () => {
             try {
               const routes = JSON.parse(body)
@@ -323,7 +329,14 @@ export default defineConfig({
         // Precache only app shell + icons + map base (small files).
         // Exclude the large uploads/audio dirs — they get runtime-cached on
         // demand so the initial install stays small.
-        globPatterns: ['**/*.{js,css,html,svg,woff2}', 'favicon.png', 'logo.png', 'map-base.webp', 'images/icons/*.webp', 'images/objects/*.png'],
+        globPatterns: [
+          '**/*.{js,css,html,svg,woff2}',
+          'favicon.png',
+          'logo.png',
+          'map-base.webp',
+          'images/icons/*.webp',
+          'images/objects/*.png',
+        ],
         globIgnores: ['**/images/uploads/**', '**/audio/**'],
         maximumFileSizeToCacheInBytes: 3 * 1024 * 1024,
         runtimeCaching: [

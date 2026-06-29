@@ -76,17 +76,23 @@ onMounted(() => {
 onUnmounted(() => window.removeEventListener('keydown', onKeydown))
 
 // Notify when marker data has been updated since last visit.
-watch(() => store.newMarkerCount, (n) => {
-  if (n > 0) {
-    showToast(`地图数据已更新，新增 ${n} 个标记点`)
-  }
-})
+watch(
+  () => store.newMarkerCount,
+  (n) => {
+    if (n > 0) {
+      showToast(`地图数据已更新，新增 ${n} 个标记点`)
+    }
+  },
+)
 
-watch(() => store.isOfflineEditMode, (val, oldVal) => {
-  if (oldVal !== undefined) {
-    showToast(val ? '自定义编辑模式已开启' : '自定义编辑模式已关闭')
-  }
-})
+watch(
+  () => store.isOfflineEditMode,
+  (val, oldVal) => {
+    if (oldVal !== undefined) {
+      showToast(val ? '自定义编辑模式已开启' : '自定义编辑模式已关闭')
+    }
+  },
+)
 
 // ---- Farming button visibility & positioning ----
 const isMobile = ref(window.innerWidth < 768)
@@ -108,9 +114,9 @@ const farmingButtonClass = computed(() => {
     // Mobile sidebar closed: above the open button (bottom-6 left-6)
     return {
       position: 'fixed' as const,
-      bottom: '84px',  // bottom-6 (24px) + button 36px + gap 24px
+      bottom: '84px', // bottom-6 (24px) + button 36px + gap 24px
       left: '24px',
-      zIndex: 40,      // above popup backdrop (z-30)
+      zIndex: 40, // above popup backdrop (z-30)
     }
   }
 
@@ -118,16 +124,16 @@ const farmingButtonClass = computed(() => {
   if (sidebarOpen) {
     return {
       position: 'fixed' as const,
-      top: '64px',    // below close button at top-4 (16px + 36px + 12px gap)
-      left: '350px',  // same as sidebar toggle when open
-      zIndex: 40,     // above popup backdrop (z-30)
+      top: '64px', // below close button at top-4 (16px + 36px + 12px gap)
+      left: '350px', // same as sidebar toggle when open
+      zIndex: 40, // above popup backdrop (z-30)
     }
   }
   return {
     position: 'fixed' as const,
-    top: '64px',    // below hamburger at top-4
+    top: '64px', // below hamburger at top-4
     left: '16px',
-    zIndex: 40,     // above popup backdrop (z-30)
+    zIndex: 40, // above popup backdrop (z-30)
   }
 })
 

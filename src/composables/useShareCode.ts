@@ -59,12 +59,14 @@ function bitmapFromSet(ids: Set<string>, markers: MarkerData[]): string {
   const byteCount = Math.ceil(count / 8)
   const bytes = new Uint8Array(byteCount)
   const idToIndex = new Map<string, number>()
-  markers.forEach((m, i) => idToIndex.set(m.id, i))
+  markers.forEach((m, i) => {
+    idToIndex.set(m.id, i)
+  })
 
   for (const id of ids) {
     const idx = idToIndex.get(id)
     if (idx !== undefined) {
-      bytes[Math.floor(idx / 8)] |= (1 << (idx % 8))
+      bytes[Math.floor(idx / 8)] |= 1 << (idx % 8)
     }
   }
   return bytesToBase64Url(bytes)
@@ -88,10 +90,7 @@ function setFromBitmap(b64: string, count: number, markers: MarkerData[]): Set<s
 function bytesToBase64Url(bytes: Uint8Array): string {
   let binary = ''
   for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i])
-  return btoa(binary)
-    .replace(/\+/g, '-')
-    .replace(/\//g, '_')
-    .replace(/=+$/, '')
+  return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')
 }
 
 function base64UrlToBytes(str: string): Uint8Array | null {

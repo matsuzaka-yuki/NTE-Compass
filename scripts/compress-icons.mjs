@@ -12,7 +12,7 @@ const ICONS_DIR = path.resolve(import.meta.dirname, '..', 'public', 'images', 'i
 const TARGET_SIZE = 96
 const QUALITY = 85
 
-const files = fs.readdirSync(ICONS_DIR).filter(f => f.endsWith('.png'))
+const files = fs.readdirSync(ICONS_DIR).filter((f) => f.endsWith('.png'))
 
 let totalBefore = 0
 let totalAfter = 0
@@ -52,7 +52,5 @@ console.log(
 )
 
 function formatKB(bytes) {
-  return bytes > 1024 * 1024
-    ? (bytes / 1024 / 1024).toFixed(2) + 'M'
-    : (bytes / 1024).toFixed(0) + 'K'
+  return bytes > 1024 * 1024 ? (bytes / 1024 / 1024).toFixed(2) + 'M' : (bytes / 1024).toFixed(0) + 'K'
 }

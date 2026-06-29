@@ -25,7 +25,7 @@ const props = withDefaults(
   { width: '380px', noDismiss: false },
 )
 
-const emit = defineEmits<{ (e: 'close'): void }>()
+const emit = defineEmits<(e: 'close') => void>()
 
 function onKey(e: KeyboardEvent) {
   if (e.key === 'Escape' && props.open && !props.noDismiss) emit('close')

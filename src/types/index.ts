@@ -127,7 +127,7 @@ export function migrateMarker(raw: LegacyMarkerData): MarkerData {
   const types: MarkerType[] = raw.types ?? (raw.type ? [raw.type] : ['phonebooth'])
   let counts: Record<string, number> | undefined = raw.counts
   if (!counts && raw.count !== undefined && raw.count > 0) {
-    const ec = types.find(t => ENEMY_CLEARING_TYPES.includes(t))
+    const ec = types.find((t) => ENEMY_CLEARING_TYPES.includes(t))
     if (ec) counts = { [ec]: raw.count }
   }
   return {
@@ -241,7 +241,35 @@ export interface CategoryDef {
   types: MarkerType[]
 }
 
-export const ENEMY_CLEARING_TYPES: MarkerType[] = ['pyz', 'msz', 'fdz', 'dyz', 'tcs', 'lmz', 'sxyx', 'sqn', 'kkj', 'yo', 'gmz', 'cpjfdl', 'nns', 'zyzd', 'bbt', 'cmd', 'fsjfdl', 'fjz', 'wz', 'mrr', 'wlcb', 'dht', 'htyf', 'yr', 'yd', 'wmz', 'bp']
+export const ENEMY_CLEARING_TYPES: MarkerType[] = [
+  'pyz',
+  'msz',
+  'fdz',
+  'dyz',
+  'tcs',
+  'lmz',
+  'sxyx',
+  'sqn',
+  'kkj',
+  'yo',
+  'gmz',
+  'cpjfdl',
+  'nns',
+  'zyzd',
+  'bbt',
+  'cmd',
+  'fsjfdl',
+  'fjz',
+  'wz',
+  'mrr',
+  'wlcb',
+  'dht',
+  'htyf',
+  'yr',
+  'yd',
+  'wmz',
+  'bp',
+]
 
 /** 传送点中折叠为一组的子类型（异象巡礼/界域/追猎/魔女之家/粉爪总行/轨外之境） */
 export const TELEPORT_SUB_TYPES: MarkerType[] = ['yxxl', 'yxjy', 'yxqd', 'mnzj', 'fzyh', 'gwzj']
@@ -254,11 +282,11 @@ export function isEnemyClearingType(type: MarkerType): boolean {
 }
 
 export function getEnemyClearingTypes(types: MarkerType[]): MarkerType[] {
-  return types.filter(t => isEnemyClearingType(t))
+  return types.filter((t) => isEnemyClearingType(t))
 }
 
 export function getPrimaryType(types: MarkerType[], selectedTypes: Set<MarkerType>): MarkerType {
-  return types.find(t => selectedTypes.has(t)) || types[0]
+  return types.find((t) => selectedTypes.has(t)) || types[0]
 }
 
 /**
@@ -271,7 +299,7 @@ export function iconClass(type: MarkerType): string {
 }
 
 export function getOverlayTypes(types: MarkerType[], selectedTypes: Set<MarkerType>): MarkerType[] {
-  const allMatching = types.filter(t => selectedTypes.has(t))
+  const allMatching = types.filter((t) => selectedTypes.has(t))
   if (allMatching.length <= 1) return []
   return allMatching.slice(1)
 }
@@ -281,10 +309,40 @@ export const MARKER_CATEGORIES: CategoryDef[] = [
   { label: '收集品', types: ['oraclestone', 'gift21', 'package', 'lostwallet'] },
   { label: '任务', types: ['anomaly', 'sidequest'] },
   { label: '景点', types: ['checkin', 'pilgrimage', 'qj'] },
-  { label: '敌影清剿', types: ['pyz', 'msz', 'fdz', 'dyz', 'tcs', 'lmz', 'sxyx', 'sqn', 'kkj', 'yo', 'gmz', 'cpjfdl', 'nns', 'zyzd', 'bbt', 'cmd', 'fsjfdl', 'fjz', 'wz', 'mrr', 'wlcb', 'dht', 'htyf', 'yr', 'yd', 'wmz', 'bp'] },
+  {
+    label: '敌影清剿',
+    types: [
+      'pyz',
+      'msz',
+      'fdz',
+      'dyz',
+      'tcs',
+      'lmz',
+      'sxyx',
+      'sqn',
+      'kkj',
+      'yo',
+      'gmz',
+      'cpjfdl',
+      'nns',
+      'zyzd',
+      'bbt',
+      'cmd',
+      'fsjfdl',
+      'fjz',
+      'wz',
+      'mrr',
+      'wlcb',
+      'dht',
+      'htyf',
+      'yr',
+      'yd',
+      'wmz',
+      'bp',
+    ],
+  },
   { label: '其他', types: ['car', 'ywl', 'fq', 'dyd', 'shop'] },
 ]
-
 
 import { resolveAssetUrl } from '@/config'
 

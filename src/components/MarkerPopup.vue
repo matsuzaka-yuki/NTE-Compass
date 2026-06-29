@@ -15,12 +15,15 @@ const galleryRef = ref<HTMLElement | null>(null)
 // ── Image loading state ──
 const markerImageKey = computed(() => store.selectedMarkerId ?? '__none__')
 const imagesReady = ref(false)
-watch(() => store.selectedMarkerId, () => {
-  imagesReady.value = false
-  // Close preview overlay when switching markers to avoid showing wrong image
-  previewIndex.value = -1
-  previewDirectUrl.value = null
-})
+watch(
+  () => store.selectedMarkerId,
+  () => {
+    imagesReady.value = false
+    // Close preview overlay when switching markers to avoid showing wrong image
+    previewIndex.value = -1
+    previewDirectUrl.value = null
+  },
+)
 
 function onGalleryWheel(e: WheelEvent) {
   if (!galleryRef.value) return
@@ -33,7 +36,7 @@ const allImages = computed(() => {
   if (!m) return []
   const list: string[] = []
   if (m.image) list.push(resolveAssetUrl('./' + m.image))
-  if (m.images) list.push(...m.images.map((p) => p.startsWith('data:') ? p : resolveAssetUrl('./' + p)))
+  if (m.images) list.push(...m.images.map((p) => (p.startsWith('data:') ? p : resolveAssetUrl('./' + p))))
   return list
 })
 
@@ -159,13 +162,13 @@ const relatedItems = computed(() => {
 const timeInfo = computed(() => {
   const t = store.selectedMarker?.time
   if (!t) return null
-  return TIME_OPTIONS.find(o => o.value === t) ?? null
+  return TIME_OPTIONS.find((o) => o.value === t) ?? null
 })
 
 const weatherInfo = computed(() => {
   const w = store.selectedMarker?.weather
   if (!w) return null
-  return WEATHER_OPTIONS.find(o => o.value === w) ?? null
+  return WEATHER_OPTIONS.find((o) => o.value === w) ?? null
 })
 
 const hasMultipleImages = computed(() => allImages.value.length > 1)
@@ -321,10 +324,7 @@ function onTouchMove(e: TouchEvent) {
     const dy = e.touches[0].clientY - e.touches[1].clientY
     const dist = Math.hypot(dx, dy)
     if (touchStartDist.value > 0) {
-      previewScale.value = Math.min(
-        Math.max(touchStartScale.value * (dist / touchStartDist.value), 0.5),
-        5
-      )
+      previewScale.value = Math.min(Math.max(touchStartScale.value * (dist / touchStartDist.value), 0.5), 5)
     }
     swipeHandled.value = true
   } else if (e.touches.length === 1 && isPanning.value) {
@@ -354,12 +354,25 @@ function onTouchEnd(_e: TouchEvent) {
 // keyboard
 function onKeydown(e: KeyboardEvent) {
   switch (e.key) {
-    case 'Escape': closePreview(); break
-    case 'ArrowLeft': prevImage(); break
-    case 'ArrowRight': nextImage(); break
-    case '+': case '=': zoomIn(); break
-    case '-': zoomOut(); break
-    case '0': resetZoom(); break
+    case 'Escape':
+      closePreview()
+      break
+    case 'ArrowLeft':
+      prevImage()
+      break
+    case 'ArrowRight':
+      nextImage()
+      break
+    case '+':
+    case '=':
+      zoomIn()
+      break
+    case '-':
+      zoomOut()
+      break
+    case '0':
+      resetZoom()
+      break
   }
 }
 

@@ -17,15 +17,11 @@ function loadMode(): ThemeMode {
 }
 
 function matchesSystemDark(): boolean {
-  return typeof window !== 'undefined'
-    ? window.matchMedia('(prefers-color-scheme: dark)').matches
-    : true
+  return typeof window !== 'undefined' ? window.matchMedia('(prefers-color-scheme: dark)').matches : true
 }
 
 /** True when the *effective* theme is dark. */
-export const isDark = computed(() =>
-  mode.value === 'system' ? systemDark.value : mode.value === 'dark',
-)
+export const isDark = computed(() => (mode.value === 'system' ? systemDark.value : mode.value === 'dark'))
 
 export const themeMode = readonly(mode)
 
@@ -43,7 +39,9 @@ export function setThemeMode(next: ThemeMode) {
   mode.value = next
   localStorage.setItem(STORAGE_KEY, next)
   apply()
-  listeners.forEach((fn) => fn(isDark.value))
+  listeners.forEach((fn) => {
+    fn(isDark.value)
+  })
 }
 
 /**

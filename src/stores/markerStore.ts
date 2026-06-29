@@ -17,7 +17,9 @@ function loadFound(): Set<string> {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
     if (raw) return new Set(JSON.parse(raw))
-  } catch { /* ignore */ }
+  } catch {
+    /* ignore */
+  }
   return new Set()
 }
 
@@ -29,7 +31,9 @@ function loadBookmarks(): Set<string> {
   try {
     const raw = localStorage.getItem(BOOKMARK_KEY)
     if (raw) return new Set(JSON.parse(raw))
-  } catch { /* ignore */ }
+  } catch {
+    /* ignore */
+  }
   return new Set()
 }
 
@@ -41,7 +45,9 @@ function loadOfflineMarkers(): MarkerData[] {
   try {
     const raw = localStorage.getItem(OFFLINE_MARKERS_KEY)
     if (raw) return JSON.parse(raw)
-  } catch { /* ignore */ }
+  } catch {
+    /* ignore */
+  }
   return []
 }
 
@@ -53,7 +59,9 @@ function loadOfflineRoutes(): RouteData[] {
   try {
     const raw = localStorage.getItem(OFFLINE_ROUTES_KEY)
     if (raw) return JSON.parse(raw)
-  } catch { /* ignore */ }
+  } catch {
+    /* ignore */
+  }
   return []
 }
 
@@ -68,7 +76,9 @@ async function loadRoutesFromApi(): Promise<RouteData[]> {
       const json = await res.json()
       if (Array.isArray(json)) return json
     }
-  } catch { /* ignore */ }
+  } catch {
+    /* ignore */
+  }
   return []
 }
 
@@ -79,7 +89,9 @@ async function saveRoutesToApi(routes: RouteData[]) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(routes),
     })
-  } catch { /* ignore */ }
+  } catch {
+    /* ignore */
+  }
 }
 
 let nextId = 1
@@ -271,7 +283,9 @@ export const useMarkerStore = defineStore('markers', () => {
         const json = await res.json()
         editableMarkers.value = (json as LegacyMarkerData[]).map(migrateMarker)
       }
-    } catch { /* keep current if API unavailable */ }
+    } catch {
+      /* keep current if API unavailable */
+    }
   }
 
   function isLocalStorageIdenticalToBuiltin(): boolean {
@@ -291,7 +305,7 @@ export const useMarkerStore = defineStore('markers', () => {
       // Load from built-in JSON (already set as default), then try API for latest
       dataInitialized.value = true
       loadLatestMarkers()
-      loadRoutesFromApi().then(data => {
+      loadRoutesFromApi().then((data) => {
         if (data.length > 0) routes.value = data
       })
       checkDataVersion()
@@ -396,7 +410,7 @@ export const useMarkerStore = defineStore('markers', () => {
         editableMarkers.value = getBuiltinMarkers()
         routes.value = getBuiltinRoutes()
         loadLatestMarkers()
-        loadRoutesFromApi().then(data => {
+        loadRoutesFromApi().then((data) => {
           if (data.length > 0) routes.value = data
         })
       }
@@ -489,13 +503,13 @@ export const useMarkerStore = defineStore('markers', () => {
         saveOfflineRoutes(importedRoutes)
       } else {
         // Editor mode with API: merge into current data
-        const existingIds = new Set(editableMarkers.value.map(m => m.id))
-        const newMarkers = importedMarkers.filter(m => !existingIds.has(m.id))
+        const existingIds = new Set(editableMarkers.value.map((m) => m.id))
+        const newMarkers = importedMarkers.filter((m) => !existingIds.has(m.id))
         editableMarkers.value = [...editableMarkers.value, ...newMarkers]
         saveMarkersToFile(editableMarkers.value)
 
-        const existingRouteIds = new Set(routes.value.map(r => r.id))
-        const newRoutes = importedRoutes.filter(r => !existingRouteIds.has(r.id))
+        const existingRouteIds = new Set(routes.value.map((r) => r.id))
+        const newRoutes = importedRoutes.filter((r) => !existingRouteIds.has(r.id))
         routes.value = [...routes.value, ...newRoutes]
         persistRouteData()
       }
@@ -546,19 +560,19 @@ export const useMarkerStore = defineStore('markers', () => {
       }
       const importedRoutes = data.routes as RouteData[]
       let changed = 0
-      let nextRoutes = [...routes.value]
+      const nextRoutes = [...routes.value]
 
       for (const r of importedRoutes) {
-        const existingIdx = nextRoutes.findIndex(x => x.name === r.name)
+        const existingIdx = nextRoutes.findIndex((x) => x.name === r.name)
         if (existingIdx >= 0) {
           // 同名路线：按路段名称去重，仅追加现有路线中没有的路段
           // 用名称而非 id，因为导入追加的路段会重新生成 id，
           // 再次导入同一文件时 id 对不上会导致重复追加
           const existing = nextRoutes[existingIdx]
-          const existingSegNames = new Set(existing.segments.map(s => s.name))
+          const existingSegNames = new Set(existing.segments.map((s) => s.name))
           const extraSegs: RouteSegment[] = (r.segments || [])
-            .filter(s => !existingSegNames.has(s.name))
-            .map(s => ({ id: generateId(), name: s.name, markerIds: [...(s.markerIds || [])] }))
+            .filter((s) => !existingSegNames.has(s.name))
+            .map((s) => ({ id: generateId(), name: s.name, markerIds: [...(s.markerIds || [])] }))
           if (extraSegs.length > 0) {
             nextRoutes[existingIdx] = {
               ...existing,
@@ -569,7 +583,7 @@ export const useMarkerStore = defineStore('markers', () => {
         } else {
           // 新路线：重新生成 id
           const routeId = generateId()
-          const segments: RouteSegment[] = (r.segments || []).map(s => ({
+          const segments: RouteSegment[] = (r.segments || []).map((s) => ({
             id: generateId(),
             name: s.name,
             markerIds: [...(s.markerIds || [])],
@@ -602,7 +616,9 @@ export const useMarkerStore = defineStore('markers', () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(list),
       })
-    } catch { /* silently fail for now */ }
+    } catch {
+      /* silently fail for now */
+    }
   }
 
   // ---- marker CRUD ----
@@ -701,12 +717,12 @@ export const useMarkerStore = defineStore('markers', () => {
   const currentRoute = computed(() => {
     if (!currentRouteId.value) return null
     if (currentRouteId.value === '__auto__') return autoRoute.value
-    return routes.value.find(r => r.id === currentRouteId.value) ?? null
+    return routes.value.find((r) => r.id === currentRouteId.value) ?? null
   })
 
   const segmentTempMarkers = computed(() => {
     return segmentTempMarkerIds.value
-      .map(id => markers.value.find(m => m.id === id))
+      .map((id) => markers.value.find((m) => m.id === id))
       .filter((m): m is MarkerData => m != null)
   })
 
@@ -752,7 +768,7 @@ export const useMarkerStore = defineStore('markers', () => {
     if (orderedIds.length === 0) return 0
 
     const segs = segmentRoute(orderedIds, markers.value)
-    const segments: RouteSegment[] = segs.map(s => ({
+    const segments: RouteSegment[] = segs.map((s) => ({
       id: generateId(),
       name: s.name,
       markerIds: s.markerIds,
@@ -780,7 +796,7 @@ export const useMarkerStore = defineStore('markers', () => {
   }
 
   function updateRoute(routeId: string, data: Partial<Pick<RouteData, 'name' | 'image'>>) {
-    const idx = routes.value.findIndex(r => r.id === routeId)
+    const idx = routes.value.findIndex((r) => r.id === routeId)
     if (idx === -1) return
     const updated = { ...routes.value[idx], ...data }
     routes.value = [...routes.value.slice(0, idx), updated, ...routes.value.slice(idx + 1)]
@@ -789,12 +805,10 @@ export const useMarkerStore = defineStore('markers', () => {
 
   function updateSegment(segmentId: string, data: Partial<Pick<RouteSegment, 'name'>>) {
     if (!currentRouteId.value) return
-    const routeIdx = routes.value.findIndex(r => r.id === currentRouteId.value)
+    const routeIdx = routes.value.findIndex((r) => r.id === currentRouteId.value)
     if (routeIdx === -1) return
     const route = routes.value[routeIdx]
-    const updatedSegments = route.segments.map(s =>
-      s.id === segmentId ? { ...s, ...data } : s
-    )
+    const updatedSegments = route.segments.map((s) => (s.id === segmentId ? { ...s, ...data } : s))
     const updated = { ...route, segments: updatedSegments }
     routes.value = [...routes.value.slice(0, routeIdx), updated, ...routes.value.slice(routeIdx + 1)]
     persistRouteData()
@@ -802,7 +816,7 @@ export const useMarkerStore = defineStore('markers', () => {
 
   function reorderSegments(fromIdx: number, toIdx: number) {
     if (!currentRouteId.value) return
-    const routeIdx = routes.value.findIndex(r => r.id === currentRouteId.value)
+    const routeIdx = routes.value.findIndex((r) => r.id === currentRouteId.value)
     if (routeIdx === -1) return
     const route = routes.value[routeIdx]
     if (fromIdx < 0 || fromIdx >= route.segments.length) return
@@ -816,7 +830,7 @@ export const useMarkerStore = defineStore('markers', () => {
   }
 
   function deleteRoute(routeId: string) {
-    routes.value = routes.value.filter(r => r.id !== routeId)
+    routes.value = routes.value.filter((r) => r.id !== routeId)
     persistRouteData()
     if (currentRouteId.value === routeId) {
       currentRouteId.value = null
@@ -873,7 +887,7 @@ export const useMarkerStore = defineStore('markers', () => {
 
   function finishAddSegment(name: string) {
     if (!currentRouteId.value || segmentTempMarkerIds.value.length < 2) return
-    const route = routes.value.find(r => r.id === currentRouteId.value)
+    const route = routes.value.find((r) => r.id === currentRouteId.value)
     if (!route) return
     const segment: RouteSegment = {
       id: generateId(),
@@ -881,7 +895,7 @@ export const useMarkerStore = defineStore('markers', () => {
       markerIds: [...segmentTempMarkerIds.value],
     }
     const updated = { ...route, segments: [...route.segments, segment] }
-    const idx = routes.value.findIndex(r => r.id === currentRouteId.value)
+    const idx = routes.value.findIndex((r) => r.id === currentRouteId.value)
     if (idx === -1) return
     routes.value = [...routes.value.slice(0, idx), updated, ...routes.value.slice(idx + 1)]
     persistRouteData()
@@ -891,17 +905,17 @@ export const useMarkerStore = defineStore('markers', () => {
 
   function deleteSegment(segmentId: string) {
     if (!currentRouteId.value) return
-    const route = routes.value.find(r => r.id === currentRouteId.value)
+    const route = routes.value.find((r) => r.id === currentRouteId.value)
     if (!route) return
-    const updated = { ...route, segments: route.segments.filter(s => s.id !== segmentId) }
-    const idx = routes.value.findIndex(r => r.id === currentRouteId.value)
+    const updated = { ...route, segments: route.segments.filter((s) => s.id !== segmentId) }
+    const idx = routes.value.findIndex((r) => r.id === currentRouteId.value)
     if (idx === -1) return
     routes.value = [...routes.value.slice(0, idx), updated, ...routes.value.slice(idx + 1)]
     persistRouteData()
   }
 
   function getMarkerById(id: string): MarkerData | undefined {
-    return markers.value.find(m => m.id === id)
+    return markers.value.find((m) => m.id === id)
   }
 
   // ---- map focus ----

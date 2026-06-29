@@ -10,7 +10,7 @@ defineProps<{
   disabled?: boolean
 }>()
 
-const emit = defineEmits<{ (e: 'update:modelValue', v: boolean): void }>()
+const emit = defineEmits<(e: 'update:modelValue', v: boolean) => void>()
 
 function toggle() {
   emit('update:modelValue', true)

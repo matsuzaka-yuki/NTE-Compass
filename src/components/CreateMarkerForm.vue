@@ -26,9 +26,7 @@ const weather = ref<Weather | undefined>(undefined)
 
 const isEditing = computed(() => !!store.editingMarker)
 
-const enemyClearingTypes = computed(() =>
-  selectedTypes.value.filter(t => isEnemyClearingType(t))
-)
+const enemyClearingTypes = computed(() => selectedTypes.value.filter((t) => isEnemyClearingType(t)))
 
 function toggleType(type: MarkerType) {
   const idx = selectedTypes.value.indexOf(type)
@@ -69,7 +67,9 @@ async function fetchExistingImages() {
     if (Array.isArray(json)) {
       existingImages.value = json
     }
-  } catch { /* ignore */ }
+  } catch {
+    /* ignore */
+  }
   loadingExisting.value = false
 }
 
@@ -84,12 +84,10 @@ function toggleExistingSelect(img: { name: string; path: string }) {
 }
 
 function addSelectedImages() {
-  const toAdd = existingImages.value
-    .filter(img => selectedExisting.value.has(img.path))
-    .map(img => img.path)
+  const toAdd = existingImages.value.filter((img) => selectedExisting.value.has(img.path)).map((img) => img.path)
   if (toAdd.length === 0) return
   // Filter out paths already in images
-  const newPaths = toAdd.filter(p => !images.value.includes(p))
+  const newPaths = toAdd.filter((p) => !images.value.includes(p))
   images.value = [...images.value, ...newPaths]
   selectedExisting.value = new Set()
   showImageBrowser.value = false
@@ -108,7 +106,9 @@ async function fetchAudioFiles() {
     if (Array.isArray(json)) {
       audioFiles.value = json
     }
-  } catch { /* ignore */ }
+  } catch {
+    /* ignore */
+  }
   loadingAudio.value = false
 }
 
@@ -188,7 +188,9 @@ async function uploadPanoramaIfNeeded(): Promise<string | undefined> {
       uploadedPaths.value.set(img, json.path)
       return json.path
     }
-  } catch { /* skip */ }
+  } catch {
+    /* skip */
+  }
   return undefined
 }
 
@@ -338,7 +340,9 @@ async function uploadNewImages(): Promise<string[]> {
         result.push(json.path)
         uploadedPaths.value.set(img, json.path)
       }
-    } catch { /* skip failed upload */ }
+    } catch {
+      /* skip failed upload */
+    }
   }
 
   return result
@@ -367,29 +371,35 @@ function resetForm() {
 }
 
 // Pre-fill form when editing a marker
-watch(() => store.editingMarker, (m) => {
-  if (m) {
-    name.value = m.name
-    selectedTypes.value = [...m.types]
-    description.value = m.description || ''
-    refreshTime.value = m.refreshTime || ''
-    relatedQuest.value = m.relatedQuest || ''
-    selectedItems.value = m.relatedItems ? [...m.relatedItems] : []
-    counts.value = m.counts ? { ...m.counts } : {}
-    images.value = m.images ? [...m.images] : []
-    panoramaImage.value = m.panoramaImage || ''
-    audioFile.value = m.audioFile || ''
-    time.value = m.time
-    weather.value = m.weather
-  }
-})
+watch(
+  () => store.editingMarker,
+  (m) => {
+    if (m) {
+      name.value = m.name
+      selectedTypes.value = [...m.types]
+      description.value = m.description || ''
+      refreshTime.value = m.refreshTime || ''
+      relatedQuest.value = m.relatedQuest || ''
+      selectedItems.value = m.relatedItems ? [...m.relatedItems] : []
+      counts.value = m.counts ? { ...m.counts } : {}
+      images.value = m.images ? [...m.images] : []
+      panoramaImage.value = m.panoramaImage || ''
+      audioFile.value = m.audioFile || ''
+      time.value = m.time
+      weather.value = m.weather
+    }
+  },
+)
 
 // Reset form when a new position is opened for create
-watch(() => store.pendingMarkerPos, (pos) => {
-  if (pos) {
-    resetForm()
-  }
-})
+watch(
+  () => store.pendingMarkerPos,
+  (pos) => {
+    if (pos) {
+      resetForm()
+    }
+  },
+)
 </script>
 
 <template>

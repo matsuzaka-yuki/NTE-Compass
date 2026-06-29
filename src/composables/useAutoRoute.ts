@@ -55,23 +55,19 @@ function nearestTeleport(from: Point, teleports: Point[]): Point | null {
 export function generateOptimalRoute(
   markers: MarkerData[],
   selectedTypes: Set<MarkerType>,
-  useTeleportStart = false
+  useTeleportStart = false,
 ): { orderedIds: string[]; startId: string | null } {
   // 收集敌人标记
   const enemies: Point[] = markers
-    .filter(m =>
-      m.types.some(t => ENEMY_CLEARING_TYPES.includes(t) && selectedTypes.has(t))
-    )
-    .map(m => ({ id: m.id, lat: m.lat, lng: m.lng, name: m.name }))
+    .filter((m) => m.types.some((t) => ENEMY_CLEARING_TYPES.includes(t) && selectedTypes.has(t)))
+    .map((m) => ({ id: m.id, lat: m.lat, lng: m.lng, name: m.name }))
 
   if (enemies.length === 0) return { orderedIds: [], startId: null }
 
   // 收集传送点
   const teleports: Point[] = markers
-    .filter(m =>
-      m.types.some(t => TELEPORT_TYPES.includes(t) && selectedTypes.has(t))
-    )
-    .map(m => ({ id: m.id, lat: m.lat, lng: m.lng, name: m.name }))
+    .filter((m) => m.types.some((t) => TELEPORT_TYPES.includes(t) && selectedTypes.has(t)))
+    .map((m) => ({ id: m.id, lat: m.lat, lng: m.lng, name: m.name }))
 
   // 最近邻贪心 TSP
   const visited = new Set<string>()
@@ -89,7 +85,7 @@ export function generateOptimalRoute(
     // 按类型分组，每类取最近的
     const teleportByType = new Map<string, { point: Point; d: number }>()
     for (const tp of teleports) {
-      const m = markers.find(mk => mk.id === tp.id)
+      const m = markers.find((mk) => mk.id === tp.id)
       if (!m) continue
       for (const t of m.types) {
         if (!TELEPORT_TYPES.includes(t)) continue
@@ -109,7 +105,10 @@ export function generateOptimalRoute(
     let firstDist = Infinity
     for (const e of enemies) {
       const d = dist(current, e)
-      if (d < firstDist) { firstDist = d; firstEnemy = e }
+      if (d < firstDist) {
+        firstDist = d
+        firstEnemy = e
+      }
     }
     if (firstEnemy) {
       current = firstEnemy
@@ -133,9 +132,7 @@ export function generateOptimalRoute(
   }
 
   // 距离阈值：超过这个距离考虑传送
-  const avgDist = enemies.length > 1
-    ? enemies.reduce((s, p) => s + dist(current, p), 0) / enemies.length
-    : 0
+  const avgDist = enemies.length > 1 ? enemies.reduce((s, p) => s + dist(current, p), 0) / enemies.length : 0
   const teleportThreshold = Math.max(0.05, avgDist * 1.8)
 
   // 逐步找最近未访问的敌人
@@ -174,13 +171,10 @@ export function generateOptimalRoute(
  * 将排序的标记 ID 列表分成路段（按地理位置聚类）。
  * 每段包含地理位置相近的标记。
  */
-export function segmentRoute(
-  orderedIds: string[],
-  markers: MarkerData[]
-): { name: string; markerIds: string[] }[] {
+export function segmentRoute(orderedIds: string[], markers: MarkerData[]): { name: string; markerIds: string[] }[] {
   if (orderedIds.length === 0) return []
 
-  const idToMarker = new Map(markers.map(m => [m.id, m]))
+  const idToMarker = new Map(markers.map((m) => [m.id, m]))
 
   // 计算相邻标记间距离，距离突变处分段
   const segments: { name: string; markerIds: string[] }[] = []
@@ -196,7 +190,7 @@ export function segmentRoute(
 
     const d = dist(
       { id: prev.id, lat: prev.lat, lng: prev.lng, name: prev.name },
-      { id: curr.id, lat: curr.lat, lng: curr.lng, name: curr.name }
+      { id: curr.id, lat: curr.lat, lng: curr.lng, name: curr.name },
     )
 
     if (d > segmentDistance && currentSegment.length >= 2) {

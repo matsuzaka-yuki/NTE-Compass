@@ -8549,7 +8549,7 @@
     ],
     "lat": 0.6913504017135296,
     "lng": 0.4351835494396147,
-    "description": "豆腐店和86",
+    "description": "豆腐店与AE86。改编自重野秀一的经典漫画《头文字D》，故事主要讲述高中生藤原拓海每天开着父亲的老旧AE86上秋名山送豆腐，在不知不觉中练就了极高的山路漂移技术，成为赛车高手。他先后击败中里毅、须藤京一等强敌，与恋人茂木夏树的感情却陷入危机。最终，拓海决定加入高桥兄弟的“Project D”车队，正式开启真正赛车手的人生。",
     "images": [
       "images/uploads/pilgrimage_92.webp",
       "images/uploads/pilgrimage_93.webp"
@@ -14769,20 +14769,18 @@
     ]
   },
   {
-    "id": "user_1782134258203_4",
-    "name": "茂藏家 豆腐店",
+    "name": "茂藏家豆腐店",
     "types": [
-      "pilgrimage",
       "shop"
     ],
     "lat": 0.46299901641182944,
     "lng": 0.4274562194269442,
-    "description": "复现自重野秀一的漫画集《头文字D》，主要讲述了藤原拓海代替父亲藤原文太每天运送豆腐而无意中成长为一个“飘移”高手并打败了中里毅、须藤京一等赛车高手。而这时，藤原拓海的恋爱出现了危机。最终藤原拓海决定加入赛车队，开始一个真正赛车手的生活\n这个店铺同时也销售着便宜实惠的回血道具",
+    "description": "这个店铺销售着便宜实惠的回血道具",
     "images": [
-      "images/uploads/pilgrimage_105.webp",
-      "images/uploads/pilgrimage_106.webp",
-      "images/uploads/pilgrimage_107.webp"
-    ]
+      "images/uploads/shop_12.webp",
+      "images/uploads/shop_13.webp"
+    ],
+    "id": "user_1782134258203_4"
   },
   {
     "id": "user_1782134603389_5",
@@ -14823,9 +14821,9 @@
     "lng": 0.1517669374991042,
     "description": "向阳岛的这个地方是动漫《夏日重现》的经典小岛打卡点位,可以来这里和朋友一起打卡",
     "images": [
-      "images/uploads/pilgrimage_108.webp",
-      "images/uploads/pilgrimage_109.webp",
-      "images/uploads/pilgrimage_110.webp"
+      "images/uploads/pilgrimage_105.webp",
+      "images/uploads/pilgrimage_106.webp",
+      "images/uploads/pilgrimage_107.webp"
     ]
   },
   {
@@ -14902,6 +14900,7 @@
     }
   },
   {
+    "id": "user_1782229590640_1",
     "name": "小混混聚集地P4",
     "types": [
       "wmz"
@@ -14909,15 +14908,14 @@
     "lat": 0.5063656074095576,
     "lng": 0.29583509771176264,
     "description": "这个位置有几个小混混",
+    "images": [
+      "images/uploads/wmz_3.webp"
+    ],
     "relatedItems": [
       "ly"
     ],
     "counts": {
       "wmz": 3
-    },
-    "images": [
-      "images/uploads/wmz_3.webp"
-    ],
-    "id": "user_1782229590640_1"
+    }
   }
 ]

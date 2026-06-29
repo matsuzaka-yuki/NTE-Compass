@@ -16,7 +16,7 @@
  */
 
 @theme inline {
-  --font-sans: 'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue', sans-serif;
+  --font-sans: "PingFang SC", "Microsoft YaHei", "Helvetica Neue", sans-serif;
 
   /* Default responsive breakpoints — Tailwind v4 derives the md:/max-md:
    * variants from these. They MUST be present or all responsive layout
@@ -188,7 +188,9 @@
   justify-content: center;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
   padding: 0;
-  transition: background 0.15s ease, transform 0.1s ease;
+  transition:
+    background 0.15s ease,
+    transform 0.1s ease;
 }
 .fullscreen-toggle:hover {
   background: var(--elevated);

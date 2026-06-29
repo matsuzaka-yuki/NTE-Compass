@@ -50,9 +50,7 @@ async function convertAll() {
     const ratio = ((1 - statAfter.size / statBefore.size) * 100).toFixed(1)
     const beforeKB = (statBefore.size / 1024).toFixed(0)
     const afterKB = (statAfter.size / 1024).toFixed(0)
-    console.log(
-      `${file} -> ${webpFile}  [${beforeKB}KB → ${afterKB}KB, ${ratio}% smaller]`
-    )
+    console.log(`${file} -> ${webpFile}  [${beforeKB}KB → ${afterKB}KB, ${ratio}% smaller]`)
 
     // Step 2: delete original (separate from conversion so EPERM doesn't undo the work)
     try {
@@ -67,7 +65,7 @@ async function convertAll() {
   console.log(`Converted: ${converted}, Skipped: ${skipped}`)
   if (converted > 0) {
     console.log(
-      `Total: ${(totalBefore / 1024 / 1024).toFixed(1)}MB → ${(totalAfter / 1024 / 1024).toFixed(1)}MB (${((1 - totalAfter / totalBefore) * 100).toFixed(1)}% smaller)`
+      `Total: ${(totalBefore / 1024 / 1024).toFixed(1)}MB → ${(totalAfter / 1024 / 1024).toFixed(1)}MB (${((1 - totalAfter / totalBefore) * 100).toFixed(1)}% smaller)`,
     )
   }
 

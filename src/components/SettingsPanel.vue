@@ -35,7 +35,9 @@ async function copyShareCode() {
   try {
     await navigator.clipboard.writeText(shareCode.value)
     shareCodeCopied.value = true
-    setTimeout(() => { shareCodeCopied.value = false }, 2000)
+    setTimeout(() => {
+      shareCodeCopied.value = false
+    }, 2000)
   } catch {
     // fallback: select the text
     shareCodeCopied.value = false
@@ -55,7 +57,9 @@ function importFromCode() {
     importCodeError.value = ''
     importResult.value = `导入成功：${result} 个已收集标记`
     if (importResultTimer) clearTimeout(importResultTimer)
-    importResultTimer = setTimeout(() => { importResult.value = '' }, 3000)
+    importResultTimer = setTimeout(() => {
+      importResult.value = ''
+    }, 3000)
     shareDialogOpen.value = false
   }
 }

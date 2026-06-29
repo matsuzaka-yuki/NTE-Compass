@@ -10,7 +10,7 @@ import { Dialog, Btn, AppIcon, type IconName } from '@/components/ui'
 import { resolveAssetUrl } from '@/config'
 
 const props = defineProps<{ forceOpen?: boolean }>()
-const emit = defineEmits<{ (e: 'close'): void }>()
+const emit = defineEmits<(e: 'close') => void>()
 
 const STORAGE_KEY = 'isekai-map-onboarding-done'
 const SEEN = typeof localStorage !== 'undefined' && localStorage.getItem(STORAGE_KEY) === '1'

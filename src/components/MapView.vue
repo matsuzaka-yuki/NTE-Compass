@@ -36,9 +36,15 @@ const mapImgPath = resolveAssetUrl('./map-base.webp')
 function computeBounds(imgW: number, imgH: number): L.LatLngBoundsLiteral {
   const ratio = imgW / imgH
   if (ratio >= 1) {
-    return [[0, 0], [1, ratio]]
+    return [
+      [0, 0],
+      [1, ratio],
+    ]
   } else {
-    return [[0, 0], [1 / ratio, 1]]
+    return [
+      [0, 0],
+      [1 / ratio, 1],
+    ]
   }
 }
 
@@ -102,17 +108,17 @@ function createMarkerIcon(m: MarkerData, found: boolean): L.DivIcon {
   const overlayIconSize = 16
   const overlayGap = 2
   const overlayTrackLeft = size - overlayIconSize // pin left edge so icons fan out to the right
-  const overlaysHtml = overlayTypes.length > 0
-    ? `<div class="marker-overlay-track" style="position:absolute;top:0;left:${overlayTrackLeft}px;height:${overlayIconSize}px;width:${overlayIconSize}px;overflow:hidden;transition:width 0.25s ease;border-radius:7px">
+  const overlaysHtml =
+    overlayTypes.length > 0
+      ? `<div class="marker-overlay-track" style="position:absolute;top:0;left:${overlayTrackLeft}px;height:${overlayIconSize}px;width:${overlayIconSize}px;overflow:hidden;transition:width 0.25s ease;border-radius:7px">
         <div style="display:flex;gap:${overlayGap}px;height:${overlayIconSize}px">
-          ${overlayTypes.map(t => `<img src="${resolveAssetUrl(MARKER_TYPE_CONFIG[t].iconUrl)}" style="width:${overlayIconSize}px;height:${overlayIconSize}px;border-radius:50%;object-fit:cover;flex-shrink:0;box-shadow:0 1px 3px rgba(0,0,0,0.5)" />`).join('')}
+          ${overlayTypes.map((t) => `<img src="${resolveAssetUrl(MARKER_TYPE_CONFIG[t].iconUrl)}" style="width:${overlayIconSize}px;height:${overlayIconSize}px;border-radius:50%;object-fit:cover;flex-shrink:0;box-shadow:0 1px 3px rgba(0,0,0,0.5)" />`).join('')}
         </div>
       </div>`
-    : ''
+      : ''
 
-  const totalOverlayWidth = overlayTypes.length > 0
-    ? overlayTypes.length * overlayIconSize + (overlayTypes.length - 1) * overlayGap
-    : 0
+  const totalOverlayWidth =
+    overlayTypes.length > 0 ? overlayTypes.length * overlayIconSize + (overlayTypes.length - 1) * overlayGap : 0
 
   // ── Time badge (bottom-left, lower) ──
   let timeBadgeHtml = ''
@@ -133,7 +139,7 @@ function createMarkerIcon(m: MarkerData, found: boolean): L.DivIcon {
     const weatherLabels: Record<string, string> = { sunny: '晴天', rainy: '雨天', snowy: '雪天' }
     const wc = weatherColors[m.weather]
     const wl = weatherLabels[m.weather]
-    const wb = (m.time && store.showMarkerTime) ? '14px' : '1px'  // above time if both shown, otherwise at corner
+    const wb = m.time && store.showMarkerTime ? '14px' : '1px' // above time if both shown, otherwise at corner
     if (m.weather === 'sunny') {
       weatherBadgeHtml = `<div style="position:absolute;bottom:${wb};left:2px;width:13px;height:13px;border-radius:50%;background:${wc};box-shadow:0 1px 3px rgba(0,0,0,0.45);display:flex;align-items:center;justify-content:center" title="${wl}"><svg width="11" height="11" viewBox="0 0 13 13"><circle cx="6.5" cy="6.5" r="2.5" fill="white"/><line x1="6.5" y1="1.5" x2="6.5" y2="3" stroke="white" stroke-width="1.2" stroke-linecap="round"/><line x1="6.5" y1="10" x2="6.5" y2="11.5" stroke="white" stroke-width="1.2" stroke-linecap="round"/><line x1="1.5" y1="6.5" x2="3" y2="6.5" stroke="white" stroke-width="1.2" stroke-linecap="round"/><line x1="10" y1="6.5" x2="11.5" y2="6.5" stroke="white" stroke-width="1.2" stroke-linecap="round"/></svg></div>`
     } else if (m.weather === 'rainy') {
@@ -164,7 +170,10 @@ function createMarkerIcon(m: MarkerData, found: boolean): L.DivIcon {
 
 function drawArrowLine(from: MarkerData, to: MarkerData, color: string, isTemp: boolean) {
   if (!arrowLayerGroup) return
-  const latlngs: L.LatLngTuple[] = [[from.lat, from.lng], [to.lat, to.lng]]
+  const latlngs: L.LatLngTuple[] = [
+    [from.lat, from.lng],
+    [to.lat, to.lng],
+  ]
   const polyline = L.polyline(latlngs, {
     color,
     weight: 3,
@@ -214,8 +223,8 @@ function buildRouteArrows() {
     const isAutoRoute = store.currentRouteId === '__auto__' && store.autoRouteUseTeleport
     if (isAutoRoute) {
       // 收集所有传送点
-      const teleports = store.markers.filter(m =>
-        m.types.some(t => ['phonebooth', 'tower', 'mnzj', 'fzyh'].includes(t))
+      const teleports = store.markers.filter((m) =>
+        m.types.some((t) => ['phonebooth', 'tower', 'mnzj', 'fzyh'].includes(t)),
       )
       for (let si = 0; si < store.currentRoute.segments.length; si++) {
         const segment = store.currentRoute.segments[si]
@@ -228,14 +237,20 @@ function buildRouteArrows() {
           const dy = firstMarker.lat - tp.lat
           const dx = firstMarker.lng - tp.lng
           const d = Math.sqrt(dx * dx + dy * dy)
-          if (d < minD) { minD = d; nearestTp = tp }
+          if (d < minD) {
+            minD = d
+            nearestTp = tp
+          }
         }
         if (nearestTp) {
           // 虚线连接，使用该路段对应颜色
           const segColor = segmentColors[si % segmentColors.length]
           L.polyline(
-            [[firstMarker.lat, firstMarker.lng], [nearestTp.lat, nearestTp.lng]],
-            { color: segColor, weight: 1.5, opacity: 0.5, dashArray: '4 6' }
+            [
+              [firstMarker.lat, firstMarker.lng],
+              [nearestTp.lat, nearestTp.lng],
+            ],
+            { color: segColor, weight: 1.5, opacity: 0.5, dashArray: '4 6' },
           ).addTo(arrowLayerGroup)
         }
       }
@@ -262,7 +277,7 @@ function createHighlightIcon(color: string): L.DivIcon {
   const w = 3
   return L.divIcon({
     className: 'highlight-circle',
-    html: `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" style="display:block"><circle cx="${size/2}" cy="${size/2}" r="${r}" fill="${color}" fill-opacity="0.2" stroke="${color}" stroke-width="${w}" stroke-opacity="0.9"/></svg>`,
+    html: `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" style="display:block"><circle cx="${size / 2}" cy="${size / 2}" r="${r}" fill="${color}" fill-opacity="0.2" stroke="${color}" stroke-width="${w}" stroke-opacity="0.9"/></svg>`,
     iconSize: [size, size],
     iconAnchor: [size / 2, size / 2],
   })
@@ -307,9 +322,7 @@ function updateFocusedHighlights() {
   }
 
   // In farming mode, only highlight the second marker of the current pair
-  const ids = store.farmingMode && store.farmingHighlightId
-    ? [store.farmingHighlightId]
-    : store.focusMarkerIds
+  const ids = store.farmingMode && store.farmingHighlightId ? [store.farmingHighlightId] : store.focusMarkerIds
 
   if (ids.length === 0) return
   const color = focusedSegmentColor.value ?? '#f59e0b'
@@ -407,12 +420,20 @@ function updateSelectedMarkerScreenPos(m?: MarkerData) {
 }
 
 watch(
-  () => [store.filteredMarkers, store.foundIds, store.segmentTempMarkerIds, store.showMarkerTime, store.showMarkerWeather, store.showMarkerCount] as const,
+  () =>
+    [
+      store.filteredMarkers,
+      store.foundIds,
+      store.segmentTempMarkerIds,
+      store.showMarkerTime,
+      store.showMarkerWeather,
+      store.showMarkerCount,
+    ] as const,
   () => {
     buildMarkers()
     nextTick(() => buildRouteArrows())
   },
-  { deep: false }
+  { deep: false },
 )
 
 // 编辑模式切换时重建 marker，让 draggable 属性生效/失效
@@ -421,7 +442,7 @@ watch(
   () => {
     buildMarkers()
     nextTick(() => buildRouteArrows())
-  }
+  },
 )
 
 watch(
@@ -429,21 +450,21 @@ watch(
   () => {
     buildRouteArrows()
     updateTempHighlights()
-  }
+  },
 )
 
 watch(
   () => store.currentRouteId,
   () => {
     nextTick(() => buildRouteArrows())
-  }
+  },
 )
 
 watch(
   () => store.farmingMode,
   () => {
     nextTick(() => buildRouteArrows())
-  }
+  },
 )
 
 watch(
@@ -473,8 +494,10 @@ watch(
         ? { paddingTopLeft: [100, 80] as const, paddingBottomRight: [100, 400] as const }
         : { paddingTopLeft: [400, 120] as const, paddingBottomRight: [400, 120] as const }),
     })
-    map.once('moveend', () => { isFlying = false })
-  }
+    map.once('moveend', () => {
+      isFlying = false
+    })
+  },
 )
 
 watch(
@@ -493,7 +516,7 @@ watch(
         }
       }
     }
-  }
+  },
 )
 
 onMounted(async () => {
@@ -505,7 +528,7 @@ onMounted(async () => {
   const mapBounds = computeBounds(w, h)
   const ratio = w / h
   const cx = ratio >= 1 ? ratio / 2 : 0.5
-  const cy = ratio >= 1 ? 0.5 : (1 / ratio) / 2
+  const cy = ratio >= 1 ? 0.5 : 1 / ratio / 2
   const pad = 0.15
   const maxBounds = L.latLngBounds([
     [mapBounds[0][0] - pad, mapBounds[0][1] - pad],
@@ -615,7 +638,7 @@ onUnmounted(() => {
   }
 })
 
-const emit = defineEmits<{ (e: 'ready'): void }>()
+const emit = defineEmits<(e: 'ready') => void>()
 
 defineExpose({ flyToMarker })
 </script>

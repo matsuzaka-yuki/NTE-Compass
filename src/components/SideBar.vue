@@ -1,11 +1,18 @@
 <script setup lang="ts">
 import { computed, ref, nextTick, watch, onMounted, onUnmounted } from 'vue'
 import { useMarkerStore } from '@/stores/markerStore'
-import { MARKER_TYPE_CONFIG, MARKER_CATEGORIES, ENEMY_CLEARING_TYPES, TELEPORT_SUB_TYPES, TELEPORT_BASIC_TYPES, iconClass } from '@/types'
+import {
+  MARKER_TYPE_CONFIG,
+  MARKER_CATEGORIES,
+  ENEMY_CLEARING_TYPES,
+  TELEPORT_SUB_TYPES,
+  TELEPORT_BASIC_TYPES,
+  iconClass,
+} from '@/types'
 import type { MarkerType } from '@/types'
 import { resolveAssetUrl } from '@/config'
 import { AppIcon, Dialog, Btn } from '@/components/ui'
-import RouteDialogs from './sidebar/RouteDialogs.vue'
+import type RouteDialogs from './sidebar/RouteDialogs.vue'
 
 const routeDialogsRef = ref<InstanceType<typeof RouteDialogs> | null>(null)
 
@@ -37,7 +44,7 @@ const searchExpanded = ref(false)
 // Bookmarked markers (sorted by type then name)
 const bookmarkedMarkers = computed(() => {
   return store.markers
-    .filter(m => store.bookmarkedIds.has(m.id))
+    .filter((m) => store.bookmarkedIds.has(m.id))
     .sort((a, b) => {
       const ta = MARKER_TYPE_CONFIG[a.types[0]]?.label ?? ''
       const tb = MARKER_TYPE_CONFIG[b.types[0]]?.label ?? ''
@@ -85,7 +92,7 @@ const categoryListData = computed(() => {
 })
 
 // Enemy clearing section computed
-const enemyActiveTypes = computed(() => ENEMY_CLEARING_TYPES.filter(t => store.selectedTypes.has(t)))
+const enemyActiveTypes = computed(() => ENEMY_CLEARING_TYPES.filter((t) => store.selectedTypes.has(t)))
 
 const enemyCombinedStats = computed(() => {
   let found = 0
@@ -111,7 +118,7 @@ const enemyAllTypes = computed(() => {
 
 const enemyPopoverStyle = computed(() => {
   const raw = enemyTriggerRef.value
-  const el: HTMLElement | null = Array.isArray(raw) ? raw[0] ?? null : raw
+  const el: HTMLElement | null = Array.isArray(raw) ? (raw[0] ?? null) : raw
   if (!el) return { display: 'none' }
   const rect = el.getBoundingClientRect()
   return {
@@ -123,7 +130,7 @@ const enemyPopoverStyle = computed(() => {
 })
 
 // Teleport sub-group computed
-const teleportSubActiveTypes = computed(() => TELEPORT_SUB_TYPES.filter(t => store.selectedTypes.has(t)))
+const teleportSubActiveTypes = computed(() => TELEPORT_SUB_TYPES.filter((t) => store.selectedTypes.has(t)))
 
 const teleportSubCombinedStats = computed(() => {
   let found = 0
@@ -149,7 +156,7 @@ const teleportSubAllTypes = computed(() => {
 
 const teleportSubPopoverStyle = computed(() => {
   const raw = teleportSubTriggerRef.value
-  const el: HTMLElement | null = Array.isArray(raw) ? raw[0] ?? null : raw
+  const el: HTMLElement | null = Array.isArray(raw) ? (raw[0] ?? null) : raw
   if (!el) return { display: 'none' }
   const rect = el.getBoundingClientRect()
   return {
@@ -271,7 +278,9 @@ const flatVisibleTypes = computed(() => {
       const stats = store.typeStats[type]
       if (stats.total > 0) {
         const item: { type: MarkerType; foundCount: number; totalCount: number; monsterSum?: number } = {
-          type, foundCount: stats.found, totalCount: stats.total
+          type,
+          foundCount: stats.found,
+          totalCount: stats.total,
         }
         if (ENEMY_CLEARING_TYPES.includes(type)) {
           let sum = 0
@@ -444,7 +453,7 @@ function getMarkerName(id: string): string {
 }
 
 function getSegmentMarkerNames(ids: string[]): string {
-  return ids.map(id => getMarkerName(id)).join(' → ')
+  return ids.map((id) => getMarkerName(id)).join(' → ')
 }
 
 function getSegmentTypeStats(markerIds: string[]): { type: MarkerType; count: number }[] {
@@ -482,7 +491,9 @@ function handleRouteExport() {
   store.exportRoutes()
   routeImportMsg.value = '路线已导出'
   if (routeImportTimer) clearTimeout(routeImportTimer)
-  routeImportTimer = setTimeout(() => { routeImportMsg.value = '' }, 2000)
+  routeImportTimer = setTimeout(() => {
+    routeImportMsg.value = ''
+  }, 2000)
 }
 
 function triggerRouteImport() {
@@ -499,17 +510,17 @@ function handleRouteImport(e: Event) {
     if ('error' in result) {
       routeImportMsg.value = result.error
     } else {
-      routeImportMsg.value = result.routes > 0
-        ? `导入成功：${result.routes} 条路线已更新或新增`
-        : '没有变化（路线和路段均已存在）'
+      routeImportMsg.value =
+        result.routes > 0 ? `导入成功：${result.routes} 条路线已更新或新增` : '没有变化（路线和路段均已存在）'
     }
     if (routeImportTimer) clearTimeout(routeImportTimer)
-    routeImportTimer = setTimeout(() => { routeImportMsg.value = '' }, 3000)
+    routeImportTimer = setTimeout(() => {
+      routeImportMsg.value = ''
+    }, 3000)
   }
   reader.readAsText(file)
   input.value = ''
 }
-
 </script>
 
 <template>

@@ -39,7 +39,10 @@ export function useRouteDialogs() {
     for (const type of ALL_MARKER_TYPES) {
       const cfg = MARKER_TYPE_CONFIG[type]
       const url = getIconUrl(type)
-      if (!seen.has(url)) { seen.add(url); images.push({ url, label: cfg.label }) }
+      if (!seen.has(url)) {
+        seen.add(url)
+        images.push({ url, label: cfg.label })
+      }
     }
     for (const item of ALL_ITEMS) {
       if (item.image && !seen.has(item.image)) {
@@ -94,7 +97,7 @@ export function useRouteDialogs() {
   function openEditSegmentDialog(segmentId: string) {
     const route = store.currentRoute
     if (!route) return
-    const seg = route.segments.find(s => s.id === segmentId)
+    const seg = route.segments.find((s) => s.id === segmentId)
     if (!seg) return
     editingSegmentId.value = segmentId
     editSegmentName.value = seg.name
@@ -109,14 +112,25 @@ export function useRouteDialogs() {
   }
 
   return {
-    showCreateRouteDialog, newRouteName, newRouteImage,
-    showCreateSegmentDialog, newSegmentName,
-    showEditRouteDialog, editRouteName, editRouteImage,
-    showEditSegmentDialog, editSegmentName, editingSegmentId,
+    showCreateRouteDialog,
+    newRouteName,
+    newRouteImage,
+    showCreateSegmentDialog,
+    newSegmentName,
+    showEditRouteDialog,
+    editRouteName,
+    editRouteImage,
+    showEditSegmentDialog,
+    editSegmentName,
+    editingSegmentId,
     routeImageOptions,
-    openCreateRouteDialog, confirmCreateRoute,
-    openCreateSegmentDialog, confirmCreateSegment,
-    openEditRouteDialog, confirmEditRoute,
-    openEditSegmentDialog, confirmEditSegment,
+    openCreateRouteDialog,
+    confirmCreateRoute,
+    openCreateSegmentDialog,
+    confirmCreateSegment,
+    openEditRouteDialog,
+    confirmEditRoute,
+    openEditSegmentDialog,
+    confirmEditSegment,
   }
 }

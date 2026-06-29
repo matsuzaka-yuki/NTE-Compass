@@ -6,7 +6,7 @@
 import { resolveAssetUrl } from '@/config'
 
 defineProps<{ visible: boolean }>()
-const emit = defineEmits<{ (e: 'vanished'): void }>()
+const emit = defineEmits<(e: 'vanished') => void>()
 
 function onAfterLeave() {
   emit('vanished')
