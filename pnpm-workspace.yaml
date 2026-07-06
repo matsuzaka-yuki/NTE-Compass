@@ -1,7 +1,7 @@
 packages:
   - .
 
-onlyBuiltDependencies:
-  - esbuild
-  - sharp
-  - vue-demi
+allowBuilds:
+  esbuild: true
+  sharp: true
+  vue-demi: true
